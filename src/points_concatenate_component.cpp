@@ -6,6 +6,7 @@ namespace pcl_apps
     : Node("points_concatenate", options)
     {
         declare_parameter("num_input",2);
+        get_parameter("num_input",num_input_);
         set_on_parameters_set_callback([this](const std::vector<rclcpp::Parameter> params) 
             -> rcl_interfaces::msg::SetParametersResult
         {
