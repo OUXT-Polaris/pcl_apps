@@ -21,6 +21,9 @@ find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(pcl_conversions REQUIRED)
 find_package(tf2_ros REQUIRED)
+find_package(tf2_eigen REQUIRED)
+find_package(sensor_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
 find_package(message_filters REQUIRED)
 find_package(PCL REQUIRED)
 find_package(Boost REQUIRED system)
@@ -41,36 +44,36 @@ add_library(points_concatenate_component SHARED
   src/points_concatenate_component.cpp
 )
 target_link_libraries(points_concatenate_component
-  boost_system)
+  boost_system ${PCL_LIBRARIES})
 ament_target_dependencies(points_concatenate_component
-  rclcpp rclcpp_components pcl_conversions)
+  rclcpp rclcpp_components pcl_conversions sensor_msgs)
 rclcpp_components_register_nodes(points_concatenate_component 
   "pcl_apps::PointsConcatenateComponent")
 
 add_executable(points_concatenate_node
   src/points_concatenate_node.cpp)
 target_link_libraries(points_concatenate_node 
-  points_concatenate_component)
+  points_concatenate_component ${PCL_LIBRARIES})
 ament_target_dependencies(points_concatenate_node
-  rclcpp rclcpp_components pcl_conversions)
+  rclcpp rclcpp_components pcl_conversions sensor_msgs)
 
 # Points Transform Component/Node
 add_library(points_transform_component SHARED
   src/points_transform_component.cpp
 )
 target_link_libraries(points_transform_component
-  boost_system)
+  boost_system ${PCL_LIBRARIES})
 ament_target_dependencies(points_transform_component
-  rclcpp rclcpp_components pcl_conversions tf2_ros)
+  rclcpp rclcpp_components pcl_conversions tf2_ros sensor_msgs)
 rclcpp_components_register_nodes(points_transform_component 
   "pcl_apps::PointsTransformComponent")
 
 add_executable(points_transform_node
   src/points_transform_node.cpp)
 target_link_libraries(points_transform_node 
-  points_transform_component)
+  points_transform_component ${PCL_LIBRARIES})
 ament_target_dependencies(points_transform_node
-  rclcpp rclcpp_components pcl_conversions tf2_ros)
+  rclcpp rclcpp_components pcl_conversions tf2_ros sensor_msgs)
 
 # install executables/libs
 install(TARGETS 

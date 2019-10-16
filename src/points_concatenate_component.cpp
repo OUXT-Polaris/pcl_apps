@@ -7,26 +7,6 @@ namespace pcl_apps
     {
         declare_parameter("num_input",2);
         get_parameter("num_input",num_input_);
-        set_on_parameters_set_callback([this](const std::vector<rclcpp::Parameter> params) 
-            -> rcl_interfaces::msg::SetParametersResult
-        {
-            auto results = rcl_interfaces::msg::SetParametersResult();
-            results.successful = false;
-            for(auto param : params)
-            {
-                if(param.get_name() == "num_input")
-                {
-                    num_input_ = param.as_int();
-                    results.successful = true;
-                    results.reason = "num_input recieved";
-                }
-            }
-            if(!results.successful)
-            {
-                results.reason = "param name does not match";
-            }
-            return results;
-        });
     }
 
     /*

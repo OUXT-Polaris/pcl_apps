@@ -14,6 +14,9 @@
   <depend>pcl_conversions</depend>
   <depend>message_filters</depend>
   <depend>tf2_ros</depend>
+  <depend>tf2_eigen</depend>
+  <depend>geometry_msgs</depend>
+  <depend>sensor_msgs</depend>
   <depend>libpcl-all-dev</depend>
   <depend>libboost-system-dev</depend>
 

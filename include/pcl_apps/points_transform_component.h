@@ -39,10 +39,18 @@ extern "C" {
 } // extern "C"
 #endif
 
+// Headers in ROS2
 #include <rclcpp/rclcpp.hpp>
 #include <pcl_conversions/pcl_conversions.h>
 #include <sensor_msgs/msg/point_cloud2.hpp>
 #include <tf2_ros/transform_listener.h>
+#include <tf2_eigen/tf2_eigen.h>
+#include <geometry_msgs/msg/transform_stamped.hpp>
+
+// Headers in PCL
+#include <pcl/common/transforms.h>
+#include <pcl/point_types.h>
+#include <pcl/point_cloud.h>
 
 namespace pcl_apps
 {
@@ -52,11 +60,15 @@ namespace pcl_apps
         PCL_APPS_POINTS_TRANSFORM_PUBLIC
         explicit PointsTransformComponent(const rclcpp::NodeOptions & options);
     private:
-        void input(const sensor_msgs::msg::PointCloud2::SharedPtr &in);
         std::string output_frame_id_;
         rclcpp::Clock ros_clock_;
         tf2_ros::Buffer buffer_;
         tf2_ros::TransformListener listener_;
+        rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr sub_;
+        rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr pub_;
+        void transformPointCloud (const Eigen::Matrix4f &transform, 
+            const sensor_msgs::msg::PointCloud2 &in,
+            sensor_msgs::msg::PointCloud2 &out);
     };
 }
 
