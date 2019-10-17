@@ -7,6 +7,14 @@ namespace pcl_apps
     {
         declare_parameter("num_input",2);
         get_parameter("num_input",num_input_);
+        assert(num_input_>=2 && num_input_<=8);
+        for(int i=0; i<num_input_; i++)
+        {
+            std::string input_topic_name = get_name() + std::to_string(i);
+            std::shared_ptr<PointCloudSubsciber> sub_ptr = 
+                std::make_shared<PointCloudSubsciber>(this,input_topic_name);
+            sub_ptrs_[i] = sub_ptr;
+        }
     }
 
     void PointsConcatenateComponent::input

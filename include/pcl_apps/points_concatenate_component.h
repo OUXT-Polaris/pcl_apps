@@ -53,6 +53,7 @@ extern "C" {
 namespace pcl_apps
 {
     typedef sensor_msgs::msg::PointCloud2 PointCloud2;
+    typedef message_filters::Subscriber<PointCloud2> PointCloudSubsciber;
     typedef message_filters::sync_policies::ApproximateTime
       <PointCloud2, PointCloud2, PointCloud2, PointCloud2, PointCloud2, PointCloud2, PointCloud2, PointCloud2> SyncPolicy;
 
@@ -67,7 +68,7 @@ namespace pcl_apps
           const PointCloud2::SharedPtr &in4, const PointCloud2::SharedPtr &in5,
           const PointCloud2::SharedPtr &in6, const PointCloud2::SharedPtr &in7);
         int num_input_;
-        std::array<message_filters::Subscriber<PointCloud2>,8> subs_;
+        std::array<std::shared_ptr<PointCloudSubsciber>,8> sub_ptrs_;
         message_filters::PassThrough<PointCloud2> nf_;
     };
 }
