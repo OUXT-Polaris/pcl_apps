@@ -39,26 +39,36 @@ extern "C" {
 } // extern "C"
 #endif
 
+// Headers in STL
+#include <array>
+
+// Headers in ROS2
 #include <rclcpp/rclcpp.hpp>
 #include <message_filters/subscriber.h>
+#include <message_filters/pass_through.h>
+#include <message_filters/sync_policies/approximate_time.h>
 #include <pcl_conversions/pcl_conversions.h>
 #include <sensor_msgs/msg/point_cloud2.hpp>
 
 namespace pcl_apps
 {
+    typedef sensor_msgs::msg::PointCloud2 PointCloud2;
+    typedef message_filters::sync_policies::ApproximateTime
+      <PointCloud2, PointCloud2, PointCloud2, PointCloud2, PointCloud2, PointCloud2, PointCloud2, PointCloud2> SyncPolicy;
+
     class PointsConcatenateComponent: public rclcpp::Node
     {
     public:
         PCL_APPS_POINTS_CONCATENATE_PUBLIC 
             explicit PointsConcatenateComponent(const rclcpp::NodeOptions & options);
     private:
-        /*
-        void input(const sensor_msgs::msg::PointCloud2::SharedPtr &in0, const sensor_msgs::msg::PointCloud2::SharedPtr &in1, 
-                const sensor_msgs::msg::PointCloud2::SharedPtr &in2, const sensor_msgs::msg::PointCloud2::SharedPtr &in3, 
-                const sensor_msgs::msg::PointCloud2::SharedPtr &in4, const sensor_msgs::msg::PointCloud2::SharedPtr &in5, 
-                const sensor_msgs::msg::PointCloud2::SharedPtr &in6, const sensor_msgs::msg::PointCloud2::SharedPtr &in7);
-                */
+        void input(const PointCloud2::SharedPtr &in0, const PointCloud2::SharedPtr &in1,
+          const PointCloud2::SharedPtr &in2, const PointCloud2::SharedPtr &in3,
+          const PointCloud2::SharedPtr &in4, const PointCloud2::SharedPtr &in5,
+          const PointCloud2::SharedPtr &in6, const PointCloud2::SharedPtr &in7);
         int num_input_;
+        std::array<message_filters::Subscriber<PointCloud2>,8> subs_;
+        message_filters::PassThrough<PointCloud2> nf_;
     };
 }
 
