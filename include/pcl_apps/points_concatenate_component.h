@@ -50,6 +50,10 @@ extern "C" {
 #include <pcl_conversions/pcl_conversions.h>
 #include <sensor_msgs/msg/point_cloud2.hpp>
 
+// Headers in PCL
+#include <pcl/point_types.h>
+#include <pcl/point_cloud.h>
+
 namespace pcl_apps
 {
     typedef sensor_msgs::msg::PointCloud2 PointCloud2;
@@ -63,6 +67,7 @@ namespace pcl_apps
         PCL_APPS_POINTS_CONCATENATE_PUBLIC 
             explicit PointsConcatenateComponent(const rclcpp::NodeOptions & options);
     private:
+        std::shared_ptr<message_filters::Synchronizer<SyncPolicy> > sync_;
         void input(const PointCloud2::SharedPtr &in0, const PointCloud2::SharedPtr &in1,
           const PointCloud2::SharedPtr &in2, const PointCloud2::SharedPtr &in3,
           const PointCloud2::SharedPtr &in4, const PointCloud2::SharedPtr &in5,
