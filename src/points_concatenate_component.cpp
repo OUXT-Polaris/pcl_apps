@@ -8,11 +8,14 @@ namespace pcl_apps
         declare_parameter("num_input",2);
         get_parameter("num_input",num_input_);
         assert(num_input_>=2 && num_input_<=8);
+        std::string output_topic_name = get_name() + std::string("/output");
+        pub_ = create_publisher<sensor_msgs::msg::PointCloud2>(output_topic_name,10);
+        sync_.reset(new message_filters::Synchronizer<SyncPolicy>(10));
         for(int i=0; i<num_input_; i++)
         {
-            std::string input_topic_name = get_name() + std::to_string(i);
-            std::shared_ptr<PointCloudSubsciber> sub_ptr = 
-                std::make_shared<PointCloudSubsciber>(this,input_topic_name);
+            std::string input_topic_name = get_name() + std::string("/input") + std::to_string(i);
+            boost::shared_ptr<PointCloudSubsciber> sub_ptr = 
+                boost::make_shared<PointCloudSubsciber>(this,input_topic_name);
             sub_ptrs_[i] = sub_ptr;
         }
         switch(num_input_)
@@ -55,6 +58,7 @@ namespace pcl_apps
           const PointCloud2::SharedPtr &in6, const PointCloud2::SharedPtr &in7)
         {
             assert(num_input_>=2 && num_input_<=8);
+            pcl::PCLPointCloud2 output_cloud;
             switch(num_input_)
             {
                 case 2:
@@ -64,6 +68,7 @@ namespace pcl_apps
                     pcl_conversions::toPCL(*in0,pc0);
                     pcl::PCLPointCloud2 pc1;
                     pcl_conversions::toPCL(*in1,pc1);
+                    pcl::concatenateFields(pc0,pc1,output_cloud);
                     break;
                 }
                 case 3:
@@ -76,6 +81,8 @@ namespace pcl_apps
                     pcl_conversions::toPCL(*in1,pc1);
                     pcl::PCLPointCloud2 pc2;
                     pcl_conversions::toPCL(*in2,pc2);
+                    pcl::concatenateFields(pc0,pc1,output_cloud);
+                    pcl::concatenateFields(output_cloud,pc2,output_cloud);
                     break;
                 }
                 case 4:
@@ -91,6 +98,9 @@ namespace pcl_apps
                     pcl_conversions::toPCL(*in2,pc2);
                     pcl::PCLPointCloud2 pc3;
                     pcl_conversions::toPCL(*in3,pc3);
+                    pcl::concatenateFields(pc0,pc1,output_cloud);
+                    pcl::concatenateFields(output_cloud,pc2,output_cloud);
+                    pcl::concatenateFields(output_cloud,pc3,output_cloud);
                     break;
                 }
                 case 5:
@@ -109,6 +119,10 @@ namespace pcl_apps
                     pcl_conversions::toPCL(*in3,pc3);
                     pcl::PCLPointCloud2 pc4;
                     pcl_conversions::toPCL(*in4,pc4);
+                    pcl::concatenateFields(pc0,pc1,output_cloud);
+                    pcl::concatenateFields(output_cloud,pc2,output_cloud);
+                    pcl::concatenateFields(output_cloud,pc3,output_cloud);
+                    pcl::concatenateFields(output_cloud,pc4,output_cloud);
                     break;
                 }
                 case 6:
@@ -130,6 +144,11 @@ namespace pcl_apps
                     pcl_conversions::toPCL(*in4,pc4);
                     pcl::PCLPointCloud2 pc5;
                     pcl_conversions::toPCL(*in5,pc5);
+                    pcl::concatenateFields(pc0,pc1,output_cloud);
+                    pcl::concatenateFields(output_cloud,pc2,output_cloud);
+                    pcl::concatenateFields(output_cloud,pc3,output_cloud);
+                    pcl::concatenateFields(output_cloud,pc4,output_cloud);
+                    pcl::concatenateFields(output_cloud,pc5,output_cloud);
                     break;
                 }
                 case 7:
@@ -154,6 +173,12 @@ namespace pcl_apps
                     pcl_conversions::toPCL(*in5,pc5);
                     pcl::PCLPointCloud2 pc6;
                     pcl_conversions::toPCL(*in6,pc6);
+                    pcl::concatenateFields(pc0,pc1,output_cloud);
+                    pcl::concatenateFields(output_cloud,pc2,output_cloud);
+                    pcl::concatenateFields(output_cloud,pc3,output_cloud);
+                    pcl::concatenateFields(output_cloud,pc4,output_cloud);
+                    pcl::concatenateFields(output_cloud,pc5,output_cloud);
+                    pcl::concatenateFields(output_cloud,pc6,output_cloud);
                     break;
                 }
                 case 8:
@@ -181,9 +206,19 @@ namespace pcl_apps
                     pcl_conversions::toPCL(*in6,pc6);
                     pcl::PCLPointCloud2 pc7;
                     pcl_conversions::toPCL(*in7,pc7);
+                    pcl::concatenateFields(pc0,pc1,output_cloud);
+                    pcl::concatenateFields(output_cloud,pc2,output_cloud);
+                    pcl::concatenateFields(output_cloud,pc3,output_cloud);
+                    pcl::concatenateFields(output_cloud,pc4,output_cloud);
+                    pcl::concatenateFields(output_cloud,pc5,output_cloud);
+                    pcl::concatenateFields(output_cloud,pc6,output_cloud);
+                    pcl::concatenateFields(output_cloud,pc7,output_cloud);
                     break;
                 }
             }
+            sensor_msgs::msg::PointCloud2 output_cloud_msg;
+            pcl_conversions::fromPCL(output_cloud,output_cloud_msg);
+            pub_->publish(output_cloud_msg);
         }
 }
 
