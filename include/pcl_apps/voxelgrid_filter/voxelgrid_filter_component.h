@@ -59,6 +59,7 @@ namespace pcl_apps
         rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr pub_;
         pcl::VoxelGrid<pcl::PCLPointCloud2> filter_;
         double leaf_size_;
+        std::string input_topic_;
     };
 }
 

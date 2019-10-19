@@ -7,6 +7,8 @@ namespace pcl_apps
     {
         declare_parameter("leaf_size",1.0);
         get_parameter("leaf_size",leaf_size_);
+        declare_parameter("input_topic",get_name() + std::string("/input"));
+        get_parameter("input_topic",input_topic_);
         set_on_parameters_set_callback(
         [this](const std::vector<rclcpp::Parameter> params) -> rcl_interfaces::msg::SetParametersResult 
         {
@@ -38,7 +40,6 @@ namespace pcl_apps
         );
         std::string output_topic_name = get_name() + std::string("/output");
         pub_ = create_publisher<sensor_msgs::msg::PointCloud2>(output_topic_name,10);
-        leaf_size_ = 0.01;
         auto callback =
         [this](const typename sensor_msgs::msg::PointCloud2::SharedPtr msg) -> void
         {
@@ -53,8 +54,7 @@ namespace pcl_apps
             pcl_conversions::fromPCL(*cloud_filtered,output_cloud_msg);
             pub_->publish(output_cloud_msg);
         };
-        std::string input_topic_name = get_name() + std::string("/input");
-        sub_ = create_subscription<sensor_msgs::msg::PointCloud2>(input_topic_name, 10, callback);
+        sub_ = create_subscription<sensor_msgs::msg::PointCloud2>(input_topic_, 10, callback);
     }
 }
 
