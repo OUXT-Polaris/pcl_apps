@@ -28,3 +28,10 @@ pcl_apps::VoexlGridFilterComponent subscribe PointCloud topic and publish downsa
 Requirements
 ----------------------------------------
 1. leaf_size should be over 0
+
+How to launch with single node
+------------------------------
+
+.. code-block:: bash
+
+    ros2 run pcl_apps voxelgrid_filter_node

@@ -23,4 +23,4 @@ Welcome to pcl_apps's documentation!
 
    modules/points_transform
    modules/points_concatenate
-
+   modules/voxelgrid_filter
