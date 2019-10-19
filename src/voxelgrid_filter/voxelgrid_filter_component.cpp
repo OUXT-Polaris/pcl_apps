@@ -11,18 +11,24 @@ namespace pcl_apps
         [this](const std::vector<rclcpp::Parameter> params) -> rcl_interfaces::msg::SetParametersResult 
         {
             auto results = std::make_shared<rcl_interfaces::msg::SetParametersResult>();
-            bool param_updated = false;
             for(auto param : params)
             {
                 if(param.get_name() == "leaf_size")
                 {
-                    param_updated = true;
-                    leaf_size_ = param.as_double();
-                    results->successful = true;
-                    results->reason = "";
+                    if(leaf_size_ >0)
+                    {
+                        leaf_size_ = param.as_double();
+                        results->successful = true;
+                        results->reason = "";
+                    }
+                    else
+                    {
+                        results->successful = false;
+                        results->reason = "leaf size must over 0";
+                    }
                 }
             }
-            if(param_updated)
+            if(!results->successful)
             {
                 results->successful = false;
                 results->reason = "";
@@ -39,6 +45,7 @@ namespace pcl_apps
             pcl::PCLPointCloud2::Ptr cloud(new pcl::PCLPointCloud2());
             pcl_conversions::toPCL(*msg,*cloud);
             filter_.setInputCloud(cloud);
+            assert(leaf_size_>0.0);
             filter_.setLeafSize(leaf_size_, leaf_size_, leaf_size_);
             pcl::PCLPointCloud2::Ptr cloud_filtered(new pcl::PCLPointCloud2());
             filter_.filter(*cloud_filtered);
