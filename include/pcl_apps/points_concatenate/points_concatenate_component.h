@@ -76,6 +76,7 @@ namespace pcl_apps
         std::array<boost::shared_ptr<PointCloudSubsciber>,8> sub_ptrs_;
         message_filters::PassThrough<PointCloud2> nf_;
         rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr pub_;
+        std::array<std::string,8> input_topics_;
     };
 }
 
