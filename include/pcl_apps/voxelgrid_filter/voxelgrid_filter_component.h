@@ -44,6 +44,9 @@ extern "C" {
 #include <pcl_conversions/pcl_conversions.h>
 #include <sensor_msgs/msg/point_cloud2.hpp>
 
+// Headers in PCL
+#include <pcl/filters/voxel_grid.h>
+
 namespace pcl_apps
 {
     class VoxelgridFilterComponent: public rclcpp::Node
@@ -51,6 +54,11 @@ namespace pcl_apps
     public:
         PCL_APPS_VOEXLGRID_FILTER_PUBLIC
         explicit VoxelgridFilterComponent(const rclcpp::NodeOptions & options);
+    private:
+        rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr sub_;
+        rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr pub_;
+        pcl::VoxelGrid<pcl::PCLPointCloud2> filter_;
+        double leaf_size_;
     };
 }
 

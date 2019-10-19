@@ -92,6 +92,15 @@ voxelgrid_filter_component ${PCL_LIBRARIES})
 ament_target_dependencies(voxelgrid_filter_node
   rclcpp rclcpp_components pcl_conversions tf2_ros sensor_msgs)
 
+ament_export_dependencies(ament_cmake)
+ament_export_dependencies(rclcpp)
+ament_export_dependencies(rclcpp_components)
+ament_export_dependencies(pcl_conversions)
+ament_export_dependencies(tf2_ros)
+ament_export_dependencies(sensor_msgs)
+
+ament_export_include_directories(include)
+
 # install executables/libs
 install(TARGETS 
   points_transform_component
