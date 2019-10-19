@@ -17,7 +17,7 @@ pcl_apps::PointsTransformComponent has these topic interface.
 
 +--------------------+----------+---------------------------------------+---------+
 | Parameter          | Type     | Description                           | Default |
-+====================+==========+=======================================+---------+
++====================+==========+=======================================+=========+
 | ~/output_frame_id  | String   | Frame ID of the Output Point Cloud    | ""      |
 +--------------------+----------+---------------------------------------+---------+
 | ~/input_topic      | String   | input topic name                      | ~/input |
