@@ -69,6 +69,7 @@ namespace pcl_apps
         void transformPointCloud (const Eigen::Matrix4f &transform, 
             const sensor_msgs::msg::PointCloud2 &in,
             sensor_msgs::msg::PointCloud2 &out);
+        std::string input_topic_;
     };
 }
 

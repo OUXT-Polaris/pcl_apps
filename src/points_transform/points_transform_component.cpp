@@ -35,8 +35,9 @@ namespace pcl_apps
                 pub_->publish(output_msg);
             }
         };
-        std::string input_topic_name = get_name() + std::string("/input");
-        sub_ = create_subscription<sensor_msgs::msg::PointCloud2>(input_topic_name, 10, callback);
+        declare_parameter("input_topic",get_name() + std::string("/input"));
+        get_parameter("input_topic",input_topic_);
+        sub_ = create_subscription<sensor_msgs::msg::PointCloud2>(input_topic_, 10, callback);
     }
 
     void PointsTransformComponent::transformPointCloud (
