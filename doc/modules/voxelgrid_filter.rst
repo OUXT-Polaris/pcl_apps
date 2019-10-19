@@ -1,4 +1,4 @@
-Voexlgrid Filter
+VoexlGrid Filter
 ================
 
 .. image:: img/VoxelGridFilter.png
