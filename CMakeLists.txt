@@ -41,7 +41,7 @@ add_definitions(${PCL_DEFINITIONS})
 
 # Points Concatenate Component/Node
 add_library(points_concatenate_component SHARED
-  src/points_concatenate_component.cpp
+  src/points_concatenate/points_concatenate_component.cpp
 )
 target_link_libraries(points_concatenate_component
   boost_system ${PCL_LIBRARIES})
@@ -51,7 +51,7 @@ rclcpp_components_register_nodes(points_concatenate_component
   "pcl_apps::PointsConcatenateComponent")
 
 add_executable(points_concatenate_node
-  src/points_concatenate_node.cpp)
+  src/points_concatenate/points_concatenate_node.cpp)
 target_link_libraries(points_concatenate_node 
   points_concatenate_component ${PCL_LIBRARIES})
 ament_target_dependencies(points_concatenate_node
@@ -59,7 +59,7 @@ ament_target_dependencies(points_concatenate_node
 
 # Points Transform Component/Node
 add_library(points_transform_component SHARED
-  src/points_transform_component.cpp
+  src/points_transform/points_transform_component.cpp
 )
 target_link_libraries(points_transform_component
   boost_system ${PCL_LIBRARIES})
@@ -69,7 +69,7 @@ rclcpp_components_register_nodes(points_transform_component
   "pcl_apps::PointsTransformComponent")
 
 add_executable(points_transform_node
-  src/points_transform_node.cpp)
+  src/points_transform/points_transform_node.cpp)
 target_link_libraries(points_transform_node 
   points_transform_component ${PCL_LIBRARIES})
 ament_target_dependencies(points_transform_node

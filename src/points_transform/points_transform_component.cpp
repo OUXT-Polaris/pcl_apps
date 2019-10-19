@@ -1,4 +1,4 @@
-#include <pcl_apps/points_transform_component.h>
+#include <pcl_apps/points_transform/points_transform_component.h>
 
 namespace pcl_apps
 {
