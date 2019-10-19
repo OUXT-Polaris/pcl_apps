@@ -75,12 +75,31 @@ target_link_libraries(points_transform_node
 ament_target_dependencies(points_transform_node
   rclcpp rclcpp_components pcl_conversions tf2_ros sensor_msgs)
 
+# Voxelgrid Filter Component/Node
+add_library(voxelgrid_filter_component SHARED
+  src/voxelgrid_filter/voxelgrid_filter_component.cpp
+)
+ament_target_dependencies(voxelgrid_filter_component
+  rclcpp rclcpp_components pcl_conversions sensor_msgs)
+rclcpp_components_register_nodes(voxelgrid_filter_component
+  "pcl_apps::VoxelgridFilterComponent")
+
+add_executable(voxelgrid_filter_node
+  src/voxelgrid_filter/voxelgrid_filter_node.cpp
+)
+target_link_libraries(voxelgrid_filter_node
+voxelgrid_filter_component ${PCL_LIBRARIES})
+ament_target_dependencies(voxelgrid_filter_node
+  rclcpp rclcpp_components pcl_conversions tf2_ros sensor_msgs)
+
 # install executables/libs
 install(TARGETS 
   points_transform_component
   points_transform_node
   points_concatenate_component
   points_concatenate_node
+  voxelgrid_filter_component
+  voxelgrid_filter_node
   DESTINATION lib/pcl_apps
 )
 
