@@ -92,8 +92,18 @@ namespace pcl_apps
         get_parameter("reference_cloud_topic",reference_cloud_topic_);
         declare_parameter("input_cloud_topic",get_name() + std::string("/input"));
         get_parameter("input_cloud_topic",input_cloud_topic_);
+        declare_parameter("initial_pose_topic",get_name() + std::string("/initial_pose"));
+        get_parameter("initial_pose_topic",initial_pose_topic_);
+
+        /* Setup Publisher */
+        std::string output_topic_name = get_name() + std::string("/current_relative_poseoutput");
+        current_relative_pose_pub_ = 
+            create_publisher<geometry_msgs::msg::PoseStamped>(output_topic_name,10);
+
+        /* Setup Subscriber */
         reference_cloud_recieved_ = false;
         initial_pose_recieved_ = false;
+
         auto reference_cloud_callback =
         [this](const typename sensor_msgs::msg::PointCloud2::SharedPtr msg) -> void
         {
@@ -113,7 +123,8 @@ namespace pcl_apps
         {
             pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud;
             pcl::fromROSMsg(*msg,*input_cloud);
-            updateRelativePose(input_cloud);
+            updateRelativePose(input_cloud,msg->header.stamp);
+            current_relative_pose_pub_->publish(current_relative_pose_);
         };
         rmw_qos_profile_t qos;
         qos.depth = 1;
@@ -123,9 +134,12 @@ namespace pcl_apps
                 reference_cloud_callback, qos);
         sub_input_cloud_ = 
             create_subscription<sensor_msgs::msg::PointCloud2>(input_cloud_topic_, 10, callback);
+        sub_initial_pose_ = 
+            create_subscription<geometry_msgs::msg::PoseStamped>(initial_pose_topic_,
+                initial_pose_callback, qos);
     }   
 
-    void NdtMatchingComponent::updateRelativePose(pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud)
+    void NdtMatchingComponent::updateRelativePose(pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud,rclcpp::Time stamp)
     {
         ndt_.setTransformationEpsilon(transform_epsilon_);
         ndt_.setStepSize(step_size_);
@@ -134,7 +148,30 @@ namespace pcl_apps
         ndt_.setInputSource(input_cloud);
         ndt_.setInputTarget(reference_cloud_);
         geometry_msgs::msg::Transform transform;
+        transform.translation.x = current_relative_pose_.pose.position.x;
+        transform.translation.y = current_relative_pose_.pose.position.y;
+        transform.translation.z = current_relative_pose_.pose.position.z;
+        transform.rotation = current_relative_pose_.pose.orientation;
         Eigen::Matrix4f mat = tf2::transformToEigen(transform).matrix().cast<float>();
+        pcl::PointCloud<pcl::PointXYZ>::Ptr output_cloud(new pcl::PointCloud<pcl::PointXYZ>);
+        ndt_.align(*output_cloud, mat);
+        Eigen::Matrix4f final_transform = ndt_.getFinalTransformation();
+        tf2::Matrix3x3 rotation_mat;
+        rotation_mat.setValue(static_cast<double>(final_transform(0, 0)), static_cast<double>(final_transform(0, 1)),
+            static_cast<double>(final_transform(0, 2)), static_cast<double>(final_transform(1, 0)),
+            static_cast<double>(final_transform(1, 1)), static_cast<double>(final_transform(1, 2)), 
+            static_cast<double>(final_transform(2, 0)), static_cast<double>(final_transform(2, 1)), 
+            static_cast<double>(final_transform(2, 2)));
+        tf2::Quaternion quat;
+        rotation_mat.getRotation(quat);
+        current_relative_pose_.header.stamp = stamp;
+        current_relative_pose_.header.frame_id = reference_frame_id_;
+        current_relative_pose_.pose.position.x = static_cast<double>(final_transform(0, 3));
+        current_relative_pose_.pose.position.y = static_cast<double>(final_transform(1, 3));
+        current_relative_pose_.pose.position.z = static_cast<double>(final_transform(2, 3));
+        current_relative_pose_.pose.orientation.x = quat.x();
+        current_relative_pose_.pose.orientation.y = quat.y();
+        current_relative_pose_.pose.orientation.z = quat.z();
         return;
     }
 }

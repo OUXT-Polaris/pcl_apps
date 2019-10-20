@@ -46,6 +46,7 @@ extern "C" {
 #include <geometry_msgs/msg/pose_stamped.hpp>
 #include <geometry_msgs/msg/transform.hpp>
 #include <tf2/transform_datatypes.h>
+#include <tf2/LinearMath/Matrix3x3.h>
 #include <tf2_eigen/tf2_eigen.h>
 
 // Headers in PCL
@@ -63,6 +64,7 @@ namespace pcl_apps
         std::string reference_frame_id_;
         std::string reference_cloud_topic_;
         std::string input_cloud_topic_;
+        std::string initial_pose_topic_;
         double transform_epsilon_;
         double step_size_;
         double resolution_;
@@ -73,7 +75,8 @@ namespace pcl_apps
         rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr sub_reference_cloud_;
         rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr sub_input_cloud_;
         rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr sub_initial_pose_;
-        void updateRelativePose(pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud);
+        rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr current_relative_pose_pub_;
+        void updateRelativePose(pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud,rclcpp::Time stamp);
         pcl::NormalDistributionsTransform<pcl::PointXYZ, pcl::PointXYZ> ndt_;
         geometry_msgs::msg::PoseStamped current_relative_pose_;
     };
