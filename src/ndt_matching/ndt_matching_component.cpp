@@ -3,8 +3,17 @@
 namespace pcl_apps
 {
     NdtMatchingComponent::NdtMatchingComponent(const rclcpp::NodeOptions & options)
-    : Node("voxelgrid_filter", options)
+    : Node("ndt_matching", options)
     {
+        /* Static Parameters */
+        declare_parameter("reference_frame_id","map");
+        get_parameter("reference_frame_id",reference_frame_id_);
+        declare_parameter("reference_cloud_topic",get_name() + std::string("/reference"));
+        get_parameter("reference_cloud_topic",reference_cloud_topic_);
+        declare_parameter("input_cloud_topic",get_name() + std::string("/input"));
+        get_parameter("input_cloud_topic",input_cloud_topic_);
+        declare_parameter("initial_pose_topic",get_name() + std::string("/initial_pose"));
+        get_parameter("initial_pose_topic",initial_pose_topic_);
         /* Dynamic Parameters */
         declare_parameter("transform_epsilon",1.0);
         get_parameter("transform_epsilon",transform_epsilon_);
@@ -85,18 +94,8 @@ namespace pcl_apps
             return *results;
         }
         );
-        /* Static Parameters */
-        declare_parameter("reference_frame_id","map");
-        declare_parameter("reference_frame_id",reference_frame_id_);
-        declare_parameter("reference_cloud_topic",get_name() + std::string("/reference"));
-        get_parameter("reference_cloud_topic",reference_cloud_topic_);
-        declare_parameter("input_cloud_topic",get_name() + std::string("/input"));
-        get_parameter("input_cloud_topic",input_cloud_topic_);
-        declare_parameter("initial_pose_topic",get_name() + std::string("/initial_pose"));
-        get_parameter("initial_pose_topic",initial_pose_topic_);
-
         /* Setup Publisher */
-        std::string output_topic_name = get_name() + std::string("/current_relative_poseoutput");
+        std::string output_topic_name = get_name() + std::string("/current_relative_pose");
         current_relative_pose_pub_ = 
             create_publisher<geometry_msgs::msg::PoseStamped>(output_topic_name,10);
 
@@ -126,17 +125,17 @@ namespace pcl_apps
             updateRelativePose(input_cloud,msg->header.stamp);
             current_relative_pose_pub_->publish(current_relative_pose_);
         };
-        rmw_qos_profile_t qos;
-        qos.depth = 1;
-        qos.durability = RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL;
+        //rmw_qos_profile_t qos;
+        //qos.depth = 1;
+        //qos.durability = RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL;
         sub_reference_cloud_  = 
-            create_subscription<sensor_msgs::msg::PointCloud2>(reference_cloud_topic_, 
-                reference_cloud_callback, qos);
+            create_subscription<sensor_msgs::msg::PointCloud2>(reference_cloud_topic_, 1,
+                reference_cloud_callback);
         sub_input_cloud_ = 
             create_subscription<sensor_msgs::msg::PointCloud2>(input_cloud_topic_, 10, callback);
         sub_initial_pose_ = 
-            create_subscription<geometry_msgs::msg::PoseStamped>(initial_pose_topic_,
-                initial_pose_callback, qos);
+            create_subscription<geometry_msgs::msg::PoseStamped>(initial_pose_topic_, 1,
+                initial_pose_callback);
     }   
 
     void NdtMatchingComponent::updateRelativePose(pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud,rclcpp::Time stamp)
