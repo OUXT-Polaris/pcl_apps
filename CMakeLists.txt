@@ -90,8 +90,27 @@ add_executable(voxelgrid_filter_node
 target_link_libraries(voxelgrid_filter_node
 voxelgrid_filter_component ${PCL_LIBRARIES})
 ament_target_dependencies(voxelgrid_filter_node
-  rclcpp rclcpp_components pcl_conversions tf2_ros sensor_msgs)
+  rclcpp rclcpp_components pcl_conversions sensor_msgs)
 
+# Ndt Matching Component/Node
+add_library(ndt_matching_component SHARED
+  src/ndt_matching/ndt_matching_component.cpp
+)
+ament_target_dependencies(ndt_matching_component
+  rclcpp rclcpp_components pcl_conversions sensor_msgs tf2_eigen)
+rclcpp_components_register_nodes(ndt_matching_component
+  "pcl_apps::NdtMatchingComponent")
+
+add_executable(ndt_matching_node
+  src/ndt_matching/ndt_matching_node.cpp
+)
+target_link_libraries(ndt_matching_node
+ndt_matching_component ${PCL_LIBRARIES})
+ament_target_dependencies(ndt_matching_node
+  rclcpp rclcpp_components pcl_conversions sensor_msgs tf2_eigen)
+
+
+# export
 ament_export_dependencies(ament_cmake)
 ament_export_dependencies(rclcpp)
 ament_export_dependencies(rclcpp_components)
@@ -109,6 +128,8 @@ install(TARGETS
   points_concatenate_node
   voxelgrid_filter_component
   voxelgrid_filter_node
+  ndt_matching_component
+  ndt_matching_node
   DESTINATION lib/pcl_apps
 )
 
