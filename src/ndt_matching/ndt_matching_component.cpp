@@ -107,6 +107,7 @@ namespace pcl_apps
         [this](const typename sensor_msgs::msg::PointCloud2::SharedPtr msg) -> void
         {
             initial_pose_recieved_ = false;
+            assert(msg->header.frame_id == reference_frame_id_);
             reference_cloud_recieved_ = true;
             pcl::fromROSMsg(*msg,*reference_cloud_);
         };
