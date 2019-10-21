@@ -1,4 +1,4 @@
-#include <pcl_apps/voxelgrid_filter/voxelgrid_filter_component.h>
+#include <pcl_apps/filter/voxelgrid_filter/voxelgrid_filter_component.h>
 
 namespace pcl_apps
 {

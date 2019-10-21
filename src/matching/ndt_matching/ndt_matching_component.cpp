@@ -1,4 +1,4 @@
-#include <pcl_apps/ndt_matching/ndt_matching_component.h>
+#include <pcl_apps/matching/ndt_matching/ndt_matching_component.h>
 
 namespace pcl_apps
 {

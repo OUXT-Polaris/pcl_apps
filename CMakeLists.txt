@@ -41,7 +41,7 @@ add_definitions(${PCL_DEFINITIONS})
 
 # Points Concatenate Component/Node
 add_library(points_concatenate_component SHARED
-  src/points_concatenate/points_concatenate_component.cpp
+  src/filter/points_concatenate/points_concatenate_component.cpp
 )
 target_link_libraries(points_concatenate_component
   boost_system ${PCL_LIBRARIES})
@@ -51,7 +51,7 @@ rclcpp_components_register_nodes(points_concatenate_component
   "pcl_apps::PointsConcatenateComponent")
 
 add_executable(points_concatenate_node
-  src/points_concatenate/points_concatenate_node.cpp)
+  src/filter/points_concatenate/points_concatenate_node.cpp)
 target_link_libraries(points_concatenate_node 
   points_concatenate_component ${PCL_LIBRARIES})
 ament_target_dependencies(points_concatenate_node
@@ -59,7 +59,7 @@ ament_target_dependencies(points_concatenate_node
 
 # Points Transform Component/Node
 add_library(points_transform_component SHARED
-  src/points_transform/points_transform_component.cpp
+  src/filter/points_transform/points_transform_component.cpp
 )
 target_link_libraries(points_transform_component
   boost_system ${PCL_LIBRARIES})
@@ -69,7 +69,7 @@ rclcpp_components_register_nodes(points_transform_component
   "pcl_apps::PointsTransformComponent")
 
 add_executable(points_transform_node
-  src/points_transform/points_transform_node.cpp)
+  src/filter/points_transform/points_transform_node.cpp)
 target_link_libraries(points_transform_node 
   points_transform_component ${PCL_LIBRARIES})
 ament_target_dependencies(points_transform_node
@@ -77,7 +77,7 @@ ament_target_dependencies(points_transform_node
 
 # Voxelgrid Filter Component/Node
 add_library(voxelgrid_filter_component SHARED
-  src/voxelgrid_filter/voxelgrid_filter_component.cpp
+  src/filter/voxelgrid_filter/voxelgrid_filter_component.cpp
 )
 ament_target_dependencies(voxelgrid_filter_component
   rclcpp rclcpp_components pcl_conversions sensor_msgs)
@@ -85,7 +85,7 @@ rclcpp_components_register_nodes(voxelgrid_filter_component
   "pcl_apps::VoxelgridFilterComponent")
 
 add_executable(voxelgrid_filter_node
-  src/voxelgrid_filter/voxelgrid_filter_node.cpp
+  src/filter/voxelgrid_filter/voxelgrid_filter_node.cpp
 )
 target_link_libraries(voxelgrid_filter_node
 voxelgrid_filter_component ${PCL_LIBRARIES})
@@ -94,7 +94,7 @@ ament_target_dependencies(voxelgrid_filter_node
 
 # Ndt Matching Component/Node
 add_library(ndt_matching_component SHARED
-  src/ndt_matching/ndt_matching_component.cpp
+  src/matching/ndt_matching/ndt_matching_component.cpp
 )
 ament_target_dependencies(ndt_matching_component
   rclcpp rclcpp_components pcl_conversions sensor_msgs tf2_eigen)
@@ -102,7 +102,7 @@ rclcpp_components_register_nodes(ndt_matching_component
   "pcl_apps::NdtMatchingComponent")
 
 add_executable(ndt_matching_node
-  src/ndt_matching/ndt_matching_node.cpp
+  src/matching/ndt_matching/ndt_matching_node.cpp
 )
 target_link_libraries(ndt_matching_node
 ndt_matching_component ${PCL_LIBRARIES})

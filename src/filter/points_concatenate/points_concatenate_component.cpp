@@ -1,4 +1,4 @@
-#include <pcl_apps/points_concatenate/points_concatenate_component.h>
+#include <pcl_apps/filter/points_concatenate/points_concatenate_component.h>
 
 namespace pcl_apps
 {

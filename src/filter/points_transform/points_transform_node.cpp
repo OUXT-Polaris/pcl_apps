@@ -1,5 +1,5 @@
 // Headers in this package
-#include <pcl_apps/voxelgrid_filter/voxelgrid_filter_component.h>
+#include <pcl_apps/filter/points_transform/points_transform_component.h>
 // Headers in RCLCPP
 #include <rclcpp/rclcpp.hpp>
 
@@ -7,7 +7,7 @@ int main(int argc, char *argv[])
 {
     rclcpp::init(argc, argv);
     rclcpp::NodeOptions options;
-    auto component = std::make_shared<pcl_apps::VoxelgridFilterComponent>(options);
+    auto component = std::make_shared<pcl_apps::PointsTransformComponent>(options);
     rclcpp::spin(component);
     rclcpp::shutdown();
     return 0;
