@@ -23,7 +23,7 @@ jobs:
             source `find /opt/ros -maxdepth 2 -name setup.bash | sort | head -1`
     working_directory: ~/src
     environment:
-      - MAKEFLAGS: -j4
+      - MAKEFLAGS: -j1
 
 workflows:
   version: 2
