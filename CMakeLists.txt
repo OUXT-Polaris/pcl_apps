@@ -45,6 +45,9 @@ add_subdirectory(src/filter)
 # Matching Modules
 add_subdirectory(src/matching)
 
+# IO Module
+add_subdirectory(src/io)
+
 # export
 ament_export_dependencies(ament_cmake)
 ament_export_dependencies(rclcpp)
