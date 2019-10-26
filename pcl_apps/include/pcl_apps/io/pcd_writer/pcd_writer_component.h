@@ -43,6 +43,7 @@ extern "C" {
 #include <rclcpp/rclcpp.hpp>
 #include <pcl_conversions/pcl_conversions.h>
 #include <sensor_msgs/msg/point_cloud2.hpp>
+#include <pcl_apps_msgs/srv/write_pcd.hpp>
 
 // Headers in PCL
 #include <pcl/io/pcd_io.h>

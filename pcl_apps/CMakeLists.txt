@@ -25,8 +25,7 @@ find_package(tf2_eigen REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(message_filters REQUIRED)
-find_package(std_msgs REQUIRED)
-find_package(rosidl_default_generators REQUIRED)
+find_package(pcl_apps_msgs REQUIRED)
 find_package(PCL REQUIRED)
 find_package(Boost REQUIRED system)
 
@@ -50,18 +49,6 @@ add_subdirectory(src/matching)
 # IO Module
 add_subdirectory(src/io)
 
-# export
-ament_export_dependencies(ament_cmake)
-ament_export_dependencies(rclcpp)
-ament_export_dependencies(rclcpp_components)
-ament_export_dependencies(pcl_conversions)
-ament_export_dependencies(tf2_ros)
-ament_export_dependencies(sensor_msgs)
-ament_export_dependencies(geometry_msgs)
-ament_export_dependencies(std_msgs)
-
-ament_export_include_directories(include)
-
 # Install header files
 install(
   DIRECTORY "include/"
@@ -79,5 +66,16 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 endif()
 
+# export
+ament_export_dependencies(ament_cmake)
+ament_export_dependencies(rclcpp)
+ament_export_dependencies(rclcpp_components)
+ament_export_dependencies(pcl_conversions)
+ament_export_dependencies(tf2_ros)
+ament_export_dependencies(sensor_msgs)
+ament_export_dependencies(geometry_msgs)
+ament_export_dependencies(pcl_apps_msgs)
 ament_export_dependencies(rosidl_default_runtime)
+ament_export_include_directories(include)
+
 ament_package()

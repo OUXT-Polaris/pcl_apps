@@ -17,10 +17,12 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
+find_package(builtin_interfaces REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/WritePcd.srv"
+  DEPENDENCIES builtin_interfaces
 )
 
 if(BUILD_TESTING)
@@ -35,4 +37,5 @@ if(BUILD_TESTING)
 endif()
 
 ament_export_dependencies(rosidl_default_runtime)
+ament_export_include_directories(include)
 ament_package()

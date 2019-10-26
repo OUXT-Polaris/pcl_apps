@@ -18,14 +18,9 @@
   <depend>std_msgs</depend>
   <depend>geometry_msgs</depend>
   <depend>sensor_msgs</depend>
+  <depend>pcl_apps_msgs</depend>
   <depend>libpcl-all-dev</depend>
   <depend>libboost-system-dev</depend>
-
-  <build_depend>builtin_interfaces</build_depend>
-  <buildtool_depend>rosidl_default_generators</buildtool_depend>
-  <exec_depend>builtin_interfaces</exec_depend>
-  <exec_depend>rosidl_default_runtime</exec_depend>
-  <member_of_group>rosidl_interface_packages</member_of_group>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
