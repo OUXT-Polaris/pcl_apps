@@ -2,10 +2,9 @@
 add_library(ndt_matching_component SHARED
   ndt_matching/ndt_matching_component.cpp
 )
+target_compile_definitions(ndt_matching_component PRIVATE "PCL_APPS_NDT_MATCHING_BUILDING_DLL")
 ament_target_dependencies(ndt_matching_component
   rclcpp rclcpp_components pcl_conversions sensor_msgs tf2_eigen)
-rclcpp_components_register_nodes(ndt_matching_component
-  "pcl_apps::NdtMatchingComponent")
 
 add_executable(ndt_matching_node
   ndt_matching/ndt_matching_node.cpp

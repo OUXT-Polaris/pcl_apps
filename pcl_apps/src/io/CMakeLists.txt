@@ -2,12 +2,11 @@
 add_library(pcd_writer_component SHARED
   pcd_writer/pcd_writer_component.cpp
 )
+target_compile_definitions(pcd_writer_component PRIVATE "PCL_APPS_PCD_WRITER_BUILDING_DLL")
 target_link_libraries(pcd_writer_component
   boost_system ${PCL_LIBRARIES})
 ament_target_dependencies(pcd_writer_component
   rclcpp rclcpp_components pcl_conversions sensor_msgs pcl_apps_msgs)
-rclcpp_components_register_nodes(pcd_writer_component 
-  "pcl_apps::PcdWriterComponent")
 
 add_executable(pcd_writer_node
   pcd_writer/pcd_writer_node.cpp)
@@ -20,13 +19,11 @@ ament_target_dependencies(pcd_writer_node
 add_library(pcd_loader_component SHARED
   pcd_loader/pcd_loader_component.cpp
 )
+target_compile_definitions(pcd_loader_component PRIVATE "PCL_APPS_PCD_LOADER_BUILDING_DLL")
 target_link_libraries(pcd_loader_component
   boost_system ${PCL_LIBRARIES})
 ament_target_dependencies(pcd_loader_component
   rclcpp rclcpp_components pcl_conversions sensor_msgs pcl_apps_msgs std_srvs)
-rclcpp_components_register_nodes(pcd_loader_component 
-  "pcl_apps::PcdWriterComponent")
-
 add_executable(pcd_loader_node
   pcd_loader/pcd_loader_node.cpp)
 target_link_libraries(pcd_loader_node 
