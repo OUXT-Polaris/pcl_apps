@@ -8,3 +8,4 @@ IO Components relates Input/Output features
    :caption: Modules
 
    pcd_writer
+   pcd_loader

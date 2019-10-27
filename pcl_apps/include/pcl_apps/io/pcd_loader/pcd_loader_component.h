@@ -41,6 +41,12 @@ extern "C" {
 
 // Headers in ROS2
 #include <rclcpp/rclcpp.hpp>
+#include <sensor_msgs/msg/point_cloud2.hpp>
+#include <pcl_conversions/pcl_conversions.h>
+
+// Headers in PCL
+#include <pcl/io/pcd_io.h>
+#include <pcl/point_types.h>
 
 namespace pcl_apps
 {
@@ -49,6 +55,8 @@ namespace pcl_apps
     public:
         PCL_APPS_PCD_LOADER_PUBLIC
         explicit PcdLoaderComponent(const rclcpp::NodeOptions & options);
+    private:
+        std::shared_ptr<rclcpp::Publisher<sensor_msgs::msg::PointCloud2> > pub_;
     };
 }
 
