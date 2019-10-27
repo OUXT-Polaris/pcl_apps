@@ -5,7 +5,7 @@ add_library(pcd_writer_component SHARED
 target_link_libraries(pcd_writer_component
   boost_system ${PCL_LIBRARIES})
 ament_target_dependencies(pcd_writer_component
-  rclcpp rclcpp_components pcl_conversions sensor_msgs pcl_apps_msgs std_srvs)
+  rclcpp rclcpp_components pcl_conversions sensor_msgs pcl_apps_msgs)
 rclcpp_components_register_nodes(pcd_writer_component 
   "pcl_apps::PcdWriterComponent")
 
@@ -14,11 +14,31 @@ add_executable(pcd_writer_node
 target_link_libraries(pcd_writer_node 
   pcd_writer_component ${PCL_LIBRARIES})
 ament_target_dependencies(pcd_writer_node
+  rclcpp rclcpp_components pcl_conversions sensor_msgs pcl_apps_msgs)
+
+# Pcd Loader Component/Node 
+add_library(pcd_loader_component SHARED
+  pcd_loader/pcd_loader_component.cpp
+)
+target_link_libraries(pcd_loader_component
+  boost_system ${PCL_LIBRARIES})
+ament_target_dependencies(pcd_loader_component
+  rclcpp rclcpp_components pcl_conversions sensor_msgs pcl_apps_msgs std_srvs)
+rclcpp_components_register_nodes(pcd_loader_component 
+  "pcl_apps::PcdWriterComponent")
+
+add_executable(pcd_loader_node
+  pcd_loader/pcd_loader_node.cpp)
+target_link_libraries(pcd_loader_node 
+  pcd_loader_component ${PCL_LIBRARIES})
+ament_target_dependencies(pcd_loader_node
   rclcpp rclcpp_components pcl_conversions sensor_msgs pcl_apps_msgs std_srvs)
 
 # install executables/libs
 install(TARGETS
   pcd_writer_component
   pcd_writer_node
+  pcd_loader_component
+  pcd_loader_node
   DESTINATION lib/pcl_apps
 )

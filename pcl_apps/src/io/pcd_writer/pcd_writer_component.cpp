@@ -64,3 +64,7 @@ namespace pcl_apps
         server_ = create_service<pcl_apps_msgs::srv::WritePcd>(service_name,write_pcd_callback);
     }
 }
+
+#include <rclcpp_components/register_node_macro.hpp>
+
+RCLCPP_COMPONENTS_REGISTER_NODE(pcl_apps::PcdWriterComponent)
