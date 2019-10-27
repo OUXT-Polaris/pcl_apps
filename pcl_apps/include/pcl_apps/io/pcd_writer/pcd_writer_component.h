@@ -59,9 +59,10 @@ namespace pcl_apps
   private:
     rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr sub_;
     std::string input_topic_;
-    pcl::PCLPointCloud2::Ptr cloud_ptr_;
     bool pointcloud_recieved_;
     bool save_every_pointcloud_;
+    rclcpp::Service<pcl_apps_msgs::srv::WritePcd>::SharedPtr server_;
+    pcl::PointCloud<pcl::PointXYZI> cloud_;
   };
 }
 
