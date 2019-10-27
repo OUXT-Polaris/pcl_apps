@@ -17,7 +17,14 @@ ament_target_dependencies(ndt_matching_node
 
 # install executables/libs
 install(TARGETS 
-  ndt_matching_component
   ndt_matching_node
   DESTINATION lib/pcl_apps
 )
+
+install(TARGETS
+  ndt_matching_component
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin)
+
+ament_export_libraries(ndt_matching_component)

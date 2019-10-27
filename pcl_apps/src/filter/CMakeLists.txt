@@ -53,11 +53,20 @@ ament_target_dependencies(voxelgrid_filter_node
 
 # install executables/libs
 install(TARGETS 
-  points_transform_component
   points_transform_node
-  points_concatenate_component
   points_concatenate_node
-  voxelgrid_filter_component
   voxelgrid_filter_node
   DESTINATION lib/pcl_apps
 )
+
+install(TARGETS
+  points_transform_component
+  points_concatenate_component
+  voxelgrid_filter_component
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin)
+
+ament_export_libraries(points_transform_component)
+ament_export_libraries(points_concatenate_component)
+ament_export_libraries(voxelgrid_filter_component)

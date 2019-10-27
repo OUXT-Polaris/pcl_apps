@@ -36,9 +36,17 @@ ament_target_dependencies(pcd_loader_node
 
 # install executables/libs
 install(TARGETS
-  pcd_writer_component
   pcd_writer_node
-  pcd_loader_component
   pcd_loader_node
   DESTINATION lib/pcl_apps
 )
+
+install(TARGETS
+  pcd_writer_component
+  pcd_loader_component
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin)
+
+ament_export_libraries(pcd_writer_component)
+ament_export_libraries(pcd_loader_component)
