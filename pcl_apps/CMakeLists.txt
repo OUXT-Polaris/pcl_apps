@@ -65,7 +65,7 @@ rclcpp_components_register_nodes(pcd_writer_component
   "pcl_apps::PcdWriterComponent")
 
 rclcpp_components_register_nodes(pcd_loader_component 
-  "pcl_apps::PcdWriterComponent")
+  "pcl_apps::PcdLoaderComponent")
 
 # Install header files
 install(
