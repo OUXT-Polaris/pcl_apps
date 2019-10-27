@@ -1,7 +1,7 @@
 VoexlGrid Filter
 ================
 
-.. image:: img/VoxelGridFilter.png
+.. image:: VoxelGridFilter.png
    :scale: 20%
 
 pcl_apps::VoexlGridFilterComponent has these topic interface.

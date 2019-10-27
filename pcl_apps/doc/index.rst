@@ -19,9 +19,8 @@ Welcome to pcl_apps's documentation!
 
 .. toctree::
    :maxdepth: 1
-   :caption: Components
+   :caption: Modules
 
-   modules/points_transform
-   modules/points_concatenate
-   modules/voxelgrid_filter
-   modules/ndt_matching
+   modules/filter/filter_components
+   modules/matching/matching_components
+   modules/io/io_components
