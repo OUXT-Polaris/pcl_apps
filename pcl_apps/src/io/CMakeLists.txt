@@ -23,13 +23,13 @@ target_compile_definitions(pcd_loader_component PRIVATE "PCL_APPS_PCD_LOADER_BUI
 target_link_libraries(pcd_loader_component
   boost_system ${PCL_LIBRARIES})
 ament_target_dependencies(pcd_loader_component
-  rclcpp rclcpp_components pcl_conversions sensor_msgs pcl_apps_msgs std_srvs)
+  rclcpp rclcpp_components pcl_conversions sensor_msgs pcl_apps_msgs)
 add_executable(pcd_loader_node
   pcd_loader/pcd_loader_node.cpp)
 target_link_libraries(pcd_loader_node 
   pcd_loader_component ${PCL_LIBRARIES})
 ament_target_dependencies(pcd_loader_node
-  rclcpp rclcpp_components pcl_conversions sensor_msgs pcl_apps_msgs std_srvs)
+  rclcpp rclcpp_components pcl_conversions sensor_msgs pcl_apps_msgs)
 
 # install executables/libs
 install(TARGETS

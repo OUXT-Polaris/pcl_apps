@@ -49,6 +49,9 @@ add_subdirectory(src/matching)
 # IO Module
 add_subdirectory(src/io)
 
+# Clustering Module
+add_subdirectory(src/clustering)
+
 rclcpp_components_register_nodes(points_concatenate_component 
   "pcl_apps::PointsConcatenateComponent")
 
@@ -69,6 +72,9 @@ rclcpp_components_register_nodes(pcd_loader_component
 
 rclcpp_components_register_nodes(radius_outlier_removal_component
   "pcl_apps::RadiusOutlierRemovalComponent")
+
+rclcpp_components_register_nodes(euclidean_clustering_component
+  "pcl_apps::EuclideanClusteringComponent")
 
 # Install header files
 install(

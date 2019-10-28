@@ -66,5 +66,4 @@ namespace pcl_apps
 }
 
 #include <rclcpp_components/register_node_macro.hpp>
-
 RCLCPP_COMPONENTS_REGISTER_NODE(pcl_apps::PcdWriterComponent)
