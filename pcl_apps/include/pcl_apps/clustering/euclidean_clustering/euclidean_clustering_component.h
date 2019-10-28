@@ -45,6 +45,14 @@ extern "C" {
 #include <sensor_msgs/msg/point_cloud2.hpp>
 #include <pcl_apps_msgs/msg/point_cloud_array.hpp>
 
+// Headers in PCL
+#include <pcl/features/normal_3d.h>
+#include <pcl/kdtree/kdtree.h>
+#include <pcl/sample_consensus/method_types.h>
+#include <pcl/sample_consensus/model_types.h>
+#include <pcl/segmentation/sac_segmentation.h>
+#include <pcl/segmentation/extract_clusters.h>
+
 namespace pcl_apps
 {
   class EuclideanClusteringComponent: public rclcpp::Node
@@ -54,6 +62,11 @@ namespace pcl_apps
     explicit EuclideanClusteringComponent(const rclcpp::NodeOptions & options);
   private:
     rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr sub_;
+    rclcpp::Publisher<pcl_apps_msgs::msg::PointCloudArray>::SharedPtr pub_;
+    std::string input_topic_;
+    double cluster_tolerance_;
+    int min_cluster_size_;
+    int max_cluster_size_;
   };
 }
 
