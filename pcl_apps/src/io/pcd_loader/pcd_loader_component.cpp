@@ -3,7 +3,7 @@
 namespace pcl_apps
 {
     PcdLoaderComponent::PcdLoaderComponent(const rclcpp::NodeOptions & options)
-    : Node("points_transform", options)
+    : Node("pcd_loader", options)
     {
         std::string file_path;
         declare_parameter("file_path","");

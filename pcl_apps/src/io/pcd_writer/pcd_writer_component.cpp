@@ -3,7 +3,7 @@
 namespace pcl_apps
 {
     PcdWriterComponent::PcdWriterComponent(const rclcpp::NodeOptions & options)
-    : Node("points_transform", options)
+    : Node("pcd_writer", options)
     {
         declare_parameter("input_topic",get_name() + std::string("/input"));
         get_parameter("input_topic",input_topic_);
