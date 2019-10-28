@@ -67,6 +67,9 @@ rclcpp_components_register_nodes(pcd_writer_component
 rclcpp_components_register_nodes(pcd_loader_component 
   "pcl_apps::PcdLoaderComponent")
 
+rclcpp_components_register_nodes(radius_outlier_removal_component
+  "pcl_apps::PcdLoaderComponent")
+
 # Install header files
 install(
   DIRECTORY "include/"
