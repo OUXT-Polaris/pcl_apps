@@ -10,3 +10,4 @@ PCL wrapper components for filtering point clouds.
    points_transform
    points_concatenate
    voxelgrid_filter
+   radius_outlier_removal
