@@ -48,11 +48,29 @@ voxelgrid_filter_component ${PCL_LIBRARIES})
 ament_target_dependencies(voxelgrid_filter_node
   rclcpp rclcpp_components pcl_conversions sensor_msgs)
 
+# Radius Outlier Removal Component/Node
+add_library(radius_outlier_removal_component SHARED
+  radius_outlier_removal/radius_outlier_removal_component.cpp
+)
+target_compile_definitions(radius_outlier_removal_component PRIVATE "PCL_APPS_RADIUS_OUTLIER_REMOVAL_BUILDING_DLL")
+ament_target_dependencies(radius_outlier_removal_component
+  rclcpp rclcpp_components pcl_conversions sensor_msgs)
+
+add_executable(radius_outlier_removal_node
+  radius_outlier_removal/radius_outlier_removal_node.cpp
+)
+target_link_libraries(radius_outlier_removal_node
+  radius_outlier_removal_component ${PCL_LIBRARIES}
+)
+ament_target_dependencies(radius_outlier_removal_node
+  rclcpp rclcpp_components pcl_conversions sensor_msgs)
+
 # install executables/libs
 install(TARGETS 
   points_transform_node
   points_concatenate_node
   voxelgrid_filter_node
+  radius_outlier_removal_node
   DESTINATION lib/pcl_apps
 )
 
@@ -60,6 +78,7 @@ install(TARGETS
   points_transform_component
   points_concatenate_component
   voxelgrid_filter_component
+  radius_outlier_removal_component
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin)
@@ -67,3 +86,4 @@ install(TARGETS
 ament_export_libraries(points_transform_component)
 ament_export_libraries(points_concatenate_component)
 ament_export_libraries(voxelgrid_filter_component)
+ament_export_libraries(radius_outlier_removal_component)
