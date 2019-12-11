@@ -14,16 +14,35 @@ ndt_matching_component ${PCL_LIBRARIES})
 ament_target_dependencies(ndt_matching_node
   rclcpp rclcpp_components pcl_conversions sensor_msgs tf2_eigen)
 
+# Ndt Matching Odometry Component/Node
+add_library(ndt_matching_odometry_component SHARED
+  ndt_matching/ndt_matching_odometry_component.cpp
+)
+target_compile_definitions(ndt_matching_odometry_component PRIVATE "PCL_APPS_NDT_MATCHING_ODOMETRY_BUILDING_DLL")
+ament_target_dependencies(ndt_matching_odometry_component
+  rclcpp rclcpp_components pcl_conversions sensor_msgs tf2_eigen)
+
+add_executable(ndt_matching_odometry_node
+  ndt_matching/ndt_matching_odometry_node.cpp
+)
+target_link_libraries(ndt_matching_odometry_node
+ndt_matching_component ${PCL_LIBRARIES})
+ament_target_dependencies(ndt_matching_odometry_node
+  rclcpp rclcpp_components pcl_conversions sensor_msgs tf2_eigen)
+
 # install executables/libs
 install(TARGETS 
   ndt_matching_node
+  ndt_matching_odometry_node
   DESTINATION lib/pcl_apps
 )
 
 install(TARGETS
   ndt_matching_component
+  ndt_matching_odometry_component
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin)
 
 ament_export_libraries(ndt_matching_component)
+ament_export_libraries(ndt_matching_odometry_component)

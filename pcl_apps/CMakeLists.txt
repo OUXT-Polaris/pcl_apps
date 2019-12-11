@@ -64,6 +64,9 @@ rclcpp_components_register_nodes(voxelgrid_filter_component
 rclcpp_components_register_nodes(ndt_matching_component
   "pcl_apps::NdtMatchingComponent")
 
+rclcpp_components_register_nodes(ndt_matching_odometry_component
+  "pcl_apps::NdtMatchingOdometryComponent")
+
 rclcpp_components_register_nodes(pcd_writer_component 
   "pcl_apps::PcdWriterComponent")
 
