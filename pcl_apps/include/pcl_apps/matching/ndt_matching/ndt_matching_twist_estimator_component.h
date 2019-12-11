@@ -66,6 +66,11 @@ namespace pcl_apps
     private:
         std::string input_cloud_topic_;
         rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr sub_input_cloud_;
+        boost::circular_buffer<pcl::PointCloud<pcl::PointXYZ>::Ptr> buffer_;
+        double transform_epsilon_;
+        double step_size_;
+        double resolution_;
+        int max_iterations_;
     };
 }
 
