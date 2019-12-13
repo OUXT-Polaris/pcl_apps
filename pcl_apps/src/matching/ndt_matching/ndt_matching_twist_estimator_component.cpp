@@ -88,7 +88,29 @@ namespace pcl_apps
             return *results;
         }
         );
+        // Setup Publisher
+        std::string output_topic_name = get_name() + std::string("/current_relative_pose");
+        current_twist_pub_ = 
+            create_publisher<geometry_msgs::msg::TwistStamped>(output_topic_name,10);
+        // Setup Subscriber
         buffer_ = boost::circular_buffer<pcl::PointCloud<pcl::PointXYZ>::Ptr>(2);
+        auto callback =
+        [this](const typename sensor_msgs::msg::PointCloud2::SharedPtr msg) -> void
+        {
+            pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud;
+            pcl::fromROSMsg(*msg,*input_cloud);
+            buffer_.push_back(input_cloud);
+            boost::optional<geometry_msgs::msg::TwistStamped> twist = estimateCurrentTwist();
+            if(twist)
+            {
+                current_twist_pub_->publish(twist.get());
+            }
+        };
+    }
+
+    boost::optional<geometry_msgs::msg::TwistStamped> NdtMatchingTwistEstimatorComponent::estimateCurrentTwist()
+    {
+        return boost::none;
     }
 }
 

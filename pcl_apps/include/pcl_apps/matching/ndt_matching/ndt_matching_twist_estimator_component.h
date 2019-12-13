@@ -43,7 +43,7 @@ extern "C" {
 #include <rclcpp/rclcpp.hpp>
 #include <pcl_conversions/pcl_conversions.h>
 #include <sensor_msgs/msg/point_cloud2.hpp>
-#include <geometry_msgs/msg/pose_stamped.hpp>
+#include <geometry_msgs/msg/twist_stamped.hpp>
 #include <geometry_msgs/msg/transform.hpp>
 #include <tf2/transform_datatypes.h>
 #include <tf2/LinearMath/Matrix3x3.h>
@@ -55,6 +55,7 @@ extern "C" {
 
 // Headers in Boost
 #include <boost/circular_buffer.hpp>
+#include <boost/optional.hpp>
 
 namespace pcl_apps
 {
@@ -66,11 +67,13 @@ namespace pcl_apps
     private:
         std::string input_cloud_topic_;
         rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr sub_input_cloud_;
+        rclcpp::Publisher<geometry_msgs::msg::TwistStamped>::SharedPtr current_twist_pub_;
         boost::circular_buffer<pcl::PointCloud<pcl::PointXYZ>::Ptr> buffer_;
         double transform_epsilon_;
         double step_size_;
         double resolution_;
         int max_iterations_;
+        boost::optional<geometry_msgs::msg::TwistStamped> estimateCurrentTwist();
     };
 }
 
