@@ -74,6 +74,7 @@ namespace pcl_apps
         double resolution_;
         int max_iterations_;
         boost::optional<geometry_msgs::msg::TwistStamped> estimateCurrentTwist();
+        pcl::NormalDistributionsTransform<pcl::PointXYZ, pcl::PointXYZ> ndt_;
     };
 }
 

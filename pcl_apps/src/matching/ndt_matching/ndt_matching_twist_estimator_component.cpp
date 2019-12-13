@@ -106,10 +106,21 @@ namespace pcl_apps
                 current_twist_pub_->publish(twist.get());
             }
         };
+        sub_input_cloud_ = create_subscription<sensor_msgs::msg::PointCloud2>(input_cloud_topic_, 10, callback);
     }
 
     boost::optional<geometry_msgs::msg::TwistStamped> NdtMatchingTwistEstimatorComponent::estimateCurrentTwist()
     {
+        if(buffer_.size() == 2)
+        {
+            ndt_.setTransformationEpsilon(transform_epsilon_);
+            ndt_.setStepSize(step_size_);
+            ndt_.setResolution(resolution_);
+            ndt_.setMaximumIterations(max_iterations_);
+            ndt_.setInputSource(buffer_[1]);
+            ndt_.setInputTarget(buffer_[0]);
+            geometry_msgs::msg::Transform transform;
+        }
         return boost::none;
     }
 }
