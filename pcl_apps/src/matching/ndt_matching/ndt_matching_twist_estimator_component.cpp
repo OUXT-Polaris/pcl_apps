@@ -120,6 +120,33 @@ namespace pcl_apps
             ndt_.setInputSource(buffer_[1]);
             ndt_.setInputTarget(buffer_[0]);
             geometry_msgs::msg::Transform transform;
+            transform.translation.x = 0.0;
+            transform.translation.y = 0.0;
+            transform.translation.z = 0.0;
+            transform.rotation.x = 0.0;
+            transform.rotation.y = 0.0;
+            transform.rotation.z = 0.0;
+            transform.rotation.w = 1.0;
+            Eigen::Matrix4f mat = tf2::transformToEigen(transform).matrix().cast<float>();
+            pcl::PointCloud<pcl::PointXYZ>::Ptr output_cloud(new pcl::PointCloud<pcl::PointXYZ>);
+            ndt_.align(*output_cloud, mat);
+            Eigen::Matrix4f final_transform = ndt_.getFinalTransformation();
+            tf2::Matrix3x3 rotation_mat;
+            rotation_mat.setValue(static_cast<double>(final_transform(0, 0)), static_cast<double>(final_transform(0, 1)),
+                static_cast<double>(final_transform(0, 2)), static_cast<double>(final_transform(1, 0)),
+                static_cast<double>(final_transform(1, 1)), static_cast<double>(final_transform(1, 2)), 
+                static_cast<double>(final_transform(2, 0)), static_cast<double>(final_transform(2, 1)), 
+                static_cast<double>(final_transform(2, 2)));
+            tf2::Quaternion quat;
+            rotation_mat.getRotation(quat);
+            geometry_msgs::msg::Pose diff_pose;
+            diff_pose.position.x = static_cast<double>(final_transform(0, 3));
+            diff_pose.position.y = static_cast<double>(final_transform(1, 3));
+            diff_pose.position.z = static_cast<double>(final_transform(2, 3));
+            diff_pose.orientation.x = quat.x();
+            diff_pose.orientation.y = quat.y();
+            diff_pose.orientation.z = quat.z();
+            diff_pose.orientation.w = quat.w();
         }
         return boost::none;
     }

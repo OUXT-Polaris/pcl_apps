@@ -172,6 +172,7 @@ namespace pcl_apps
         current_relative_pose_.pose.orientation.x = quat.x();
         current_relative_pose_.pose.orientation.y = quat.y();
         current_relative_pose_.pose.orientation.z = quat.z();
+        current_relative_pose_.pose.orientation.w = quat.w();
         return;
     }
 }
