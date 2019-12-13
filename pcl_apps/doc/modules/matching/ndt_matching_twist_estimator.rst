@@ -1,34 +1,26 @@
-NDT Matching
+NDT Matching Twist Estimator
 ================
 
-pcl_apps::NdtMatchingComponent has these topic interface.
+pcl_apps::NdtMatchingTwistEstimatorComponent has these topic interface.
 
 +-----------------------------------+---------------------------------+----------------------------------+
 | Input Topics                      | Type                            | Description                      |
 +===================================+=================================+==================================+
 | (param : ~/input_cloud_topic)     | sensor_msgs::msg::PointCloud2   | Input point cloud                |
 +-----------------------------------+---------------------------------+----------------------------------+
-| (param : ~/reference_cloud_topic) | sensor_msgs::msg::PointCloud2   | Reference point cloud            |
-+-----------------------------------+---------------------------------+----------------------------------+
-| (param : ~/initial_pose_topic)    | geometry_msgs::msg::PoseStamped | Initial pose of the ndt matching |
-+-----------------------------------+---------------------------------+----------------------------------+
 
-+-------------------------+---------------------------------+------------------------------------------------------------------+
-| Output Topics           | Type                            | Description                                                      |
-+=========================+=================================+==================================================================+
-| ~/current_relative_pose | geometry_msgs::msg::PoseStamped | Relative pose of the input_cloud in (param:~/reference_frame_id) |
-+-------------------------+---------------------------------+------------------------------------------------------------------+
++-------------------------+----------------------------------+----------------------------+
+| Output Topics           | Type                             | Description                |
++=========================+==================================+============================+
+| ~/current_twist         | geometry_msgs::msg::TwistStamped | Current tiwst of the robot |
++-------------------------+----------------------------------+----------------------------+
 
 +-----------------------------+----------+---------------------------------------+----------------+---------+
 | Parameter          　　     | Type     | Description                           | Default        | Dynamic |
 +=============================+==========+=======================================+================+=========+
-| ~/reference_frame_id        | String   | Frame ID of the reference input cloud | map            | False   |
-+-----------------------------+----------+---------------------------------------+----------------+---------+
-| ~/reference_cloud_topic     | String   | Topic name of the reference cloud     | ~/reference    | False   |
+| ~/input_frame_id            | String   | Frame ID of the input cloud           | map            | False   |
 +-----------------------------+----------+---------------------------------------+----------------+---------+
 | ~/input_cloud_topic         | String   | Topic name of the input cloud         | ~/input        | False   |
-+-----------------------------+----------+---------------------------------------+----------------+---------+
-| ~/initial_pose_topic        | String   | Initial pose topic                    | ~/initial_pose | False   |
 +-----------------------------+----------+---------------------------------------+----------------+---------+
 | ~/transform_epsilon         | Double   | Transform epsilon of the ndt matching | 1.0            | True    |
 +-----------------------------+----------+---------------------------------------+----------------+---------+
@@ -41,13 +33,12 @@ pcl_apps::NdtMatchingComponent has these topic interface.
 
 Description
 ----------------------------------------
-pcl_apps::NdtMatchingComponent subscribes input/reference point cloud and estimate relative pose between two point clouds.
+pcl_apps::NdtMatchingTwistEstimatorComponent subscribes input point cloud and estimate current twist
 
 Requirements
 ----------------------------------------
-1. frame_id of the reference_cloud must be same
-2. transform_epsilon,step_size,resolution must be over 0
-3. max_iterations must be over 1
+1. transform_epsilon,step_size,resolution must be over 0
+2. max_iterations must be over 1
 
 How to launch with single node
 ------------------------------
