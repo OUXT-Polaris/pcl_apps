@@ -95,7 +95,7 @@ namespace pcl_apps
         }
         );
         /* Setup Publisher */
-        std::string output_topic_name = get_name() + std::string("/current_relative_pose");
+        std::string output_topic_name = get_name() + std::string("/current_twist");
         current_relative_pose_pub_ = 
             create_publisher<geometry_msgs::msg::PoseStamped>(output_topic_name,10);
 
