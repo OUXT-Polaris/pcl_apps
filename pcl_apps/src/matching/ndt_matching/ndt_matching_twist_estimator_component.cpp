@@ -8,6 +8,8 @@ namespace pcl_apps
         /* Static Parameters */
         declare_parameter("input_cloud_topic",get_name() + std::string("/input"));
         get_parameter("input_cloud_topic",input_cloud_topic_);
+        declare_parameter("input_frame_id", "base_link");
+        get_parameter("input_frame_id",input_cloud_frame_id_);
         /* Dynamic Parameters */
         declare_parameter("transform_epsilon",1.0);
         get_parameter("transform_epsilon",transform_epsilon_);
@@ -94,9 +96,12 @@ namespace pcl_apps
             create_publisher<geometry_msgs::msg::TwistStamped>(output_topic_name,10);
         // Setup Subscriber
         buffer_ = boost::circular_buffer<pcl::PointCloud<pcl::PointXYZ>::Ptr>(2);
+        timestamps_ = boost::circular_buffer<rclcpp::Time>(2);
         auto callback =
         [this](const typename sensor_msgs::msg::PointCloud2::SharedPtr msg) -> void
         {
+            assert(input_cloud_frame_id_ == msg->header.frame_id);
+            timestamps_.push_back(msg->header.stamp);
             pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud;
             pcl::fromROSMsg(*msg,*input_cloud);
             buffer_.push_back(input_cloud);
@@ -111,6 +116,7 @@ namespace pcl_apps
 
     boost::optional<geometry_msgs::msg::TwistStamped> NdtMatchingTwistEstimatorComponent::estimateCurrentTwist()
     {
+        assert(timestamps_.size() == buffer_.size());
         if(buffer_.size() == 2)
         {
             ndt_.setTransformationEpsilon(transform_epsilon_);
@@ -139,14 +145,19 @@ namespace pcl_apps
                 static_cast<double>(final_transform(2, 2)));
             tf2::Quaternion quat;
             rotation_mat.getRotation(quat);
-            geometry_msgs::msg::Pose diff_pose;
-            diff_pose.position.x = static_cast<double>(final_transform(0, 3));
-            diff_pose.position.y = static_cast<double>(final_transform(1, 3));
-            diff_pose.position.z = static_cast<double>(final_transform(2, 3));
-            diff_pose.orientation.x = quat.x();
-            diff_pose.orientation.y = quat.y();
-            diff_pose.orientation.z = quat.z();
-            diff_pose.orientation.w = quat.w();
+            double diff_time = toSec(timestamps_[1]) - toSec(timestamps_[0]);
+            geometry_msgs::msg::TwistStamped twist;
+            twist.header.frame_id = input_cloud_frame_id_;
+            twist.header.stamp = timestamps_[1];
+            twist.twist.linear.x = static_cast<double>(final_transform(0, 3))/diff_time;
+            twist.twist.linear.y = static_cast<double>(final_transform(1, 3))/diff_time;
+            twist.twist.linear.z = static_cast<double>(final_transform(2, 3))/diff_time;
+            double roll,pitch,yaw;
+            tf2::Matrix3x3(quat).getRPY(roll, pitch, yaw);
+            twist.twist.angular.x = roll/diff_time;
+            twist.twist.angular.y = pitch/diff_time;
+            twist.twist.angular.z = yaw/diff_time;
+            return twist;
         }
         return boost::none;
     }
