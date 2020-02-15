@@ -5,7 +5,7 @@ namespace pcl_apps
     PointsTransformComponent::PointsTransformComponent(const rclcpp::NodeOptions & options)
     : Node("points_transform", options),
         ros_clock_(RCL_ROS_TIME), 
-        buffer_(std::make_shared<rclcpp::Clock>(ros_clock_)),
+        buffer_(get_clock()),
         listener_(buffer_)
     {
         declare_parameter("output_frame_id","");
