@@ -50,19 +50,20 @@ extern "C" {
 
 namespace pcl_apps
 {
-    class RadiusOutlierRemovalComponent: public rclcpp::Node
-    {
-    public:
-        PCL_APPS_RADIUS_OUTLIER_REMOVAL_PUBLIC
-        explicit RadiusOutlierRemovalComponent(const rclcpp::NodeOptions & options);
-    private:
-        std::string input_topic_;
-        rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr sub_;
-        rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr pub_;
-        pcl::RadiusOutlierRemoval<pcl::PointXYZI> filter_;
-        double search_radius_;
-        int min_neighbors_in_search_radius_;
-    };
+class RadiusOutlierRemovalComponent : public rclcpp::Node
+{
+public:
+  PCL_APPS_RADIUS_OUTLIER_REMOVAL_PUBLIC
+  explicit RadiusOutlierRemovalComponent(const rclcpp::NodeOptions & options);
+
+private:
+  std::string input_topic_;
+  rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr sub_;
+  rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr pub_;
+  pcl::RadiusOutlierRemoval<pcl::PointXYZI> filter_;
+  double search_radius_;
+  int min_neighbors_in_search_radius_;
+};
 }
 
 #endif  //PCL_APPS_RADIUS_OUTLIER_REMOVAL_COMPONENT

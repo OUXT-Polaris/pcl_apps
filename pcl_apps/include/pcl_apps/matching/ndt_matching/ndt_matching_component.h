@@ -55,31 +55,32 @@ extern "C" {
 
 namespace pcl_apps
 {
-    class NdtMatchingComponent: public rclcpp::Node
-    {
-    public:
-        PCL_APPS_NDT_MATCHING_PUBLIC
-        explicit NdtMatchingComponent(const rclcpp::NodeOptions & options);
-    private:
-        std::string reference_frame_id_;
-        std::string reference_cloud_topic_;
-        std::string input_cloud_topic_;
-        std::string initial_pose_topic_;
-        double transform_epsilon_;
-        double step_size_;
-        double resolution_;
-        int max_iterations_;
-        pcl::PointCloud<pcl::PointXYZ>::Ptr reference_cloud_;
-        bool reference_cloud_recieved_;
-        bool initial_pose_recieved_;
-        rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr sub_reference_cloud_;
-        rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr sub_input_cloud_;
-        rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr sub_initial_pose_;
-        rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr current_relative_pose_pub_;
-        void updateRelativePose(pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud,rclcpp::Time stamp);
-        pcl::NormalDistributionsTransform<pcl::PointXYZ, pcl::PointXYZ> ndt_;
-        geometry_msgs::msg::PoseStamped current_relative_pose_;
-    };
+class NdtMatchingComponent : public rclcpp::Node
+{
+public:
+  PCL_APPS_NDT_MATCHING_PUBLIC
+  explicit NdtMatchingComponent(const rclcpp::NodeOptions & options);
+
+private:
+  std::string reference_frame_id_;
+  std::string reference_cloud_topic_;
+  std::string input_cloud_topic_;
+  std::string initial_pose_topic_;
+  double transform_epsilon_;
+  double step_size_;
+  double resolution_;
+  int max_iterations_;
+  pcl::PointCloud<pcl::PointXYZ>::Ptr reference_cloud_;
+  bool reference_cloud_recieved_;
+  bool initial_pose_recieved_;
+  rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr sub_reference_cloud_;
+  rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr sub_input_cloud_;
+  rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr sub_initial_pose_;
+  rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr current_relative_pose_pub_;
+  void updateRelativePose(pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud, rclcpp::Time stamp);
+  pcl::NormalDistributionsTransform<pcl::PointXYZ, pcl::PointXYZ> ndt_;
+  geometry_msgs::msg::PoseStamped current_relative_pose_;
+};
 }
 
 #endif  //PCL_APPS_NDT_MATCHING_COMPONENT_H_INCLUDED

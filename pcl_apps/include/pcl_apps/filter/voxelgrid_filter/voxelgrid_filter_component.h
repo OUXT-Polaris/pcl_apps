@@ -49,18 +49,19 @@ extern "C" {
 
 namespace pcl_apps
 {
-    class VoxelgridFilterComponent: public rclcpp::Node
-    {
-    public:
-        PCL_APPS_VOEXLGRID_FILTER_PUBLIC
-        explicit VoxelgridFilterComponent(const rclcpp::NodeOptions & options);
-    private:
-        rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr sub_;
-        rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr pub_;
-        pcl::VoxelGrid<pcl::PCLPointCloud2> filter_;
-        double leaf_size_;
-        std::string input_topic_;
-    };
+class VoxelgridFilterComponent : public rclcpp::Node
+{
+public:
+  PCL_APPS_VOEXLGRID_FILTER_PUBLIC
+  explicit VoxelgridFilterComponent(const rclcpp::NodeOptions & options);
+
+private:
+  rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr sub_;
+  rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr pub_;
+  pcl::VoxelGrid<pcl::PCLPointCloud2> filter_;
+  double leaf_size_;
+  std::string input_topic_;
+};
 }
 
 #endif  //PCL_APPS_VOEXLGRID_FILTER_COMPONENT_COMPONENT_H_INCLUDED

@@ -51,19 +51,20 @@ extern "C" {
 
 namespace pcl_apps
 {
-  class PcdWriterComponent: public rclcpp::Node
-  {
-  public:
-    PCL_APPS_PCD_WRITER_PUBLIC
-    explicit PcdWriterComponent(const rclcpp::NodeOptions & options);
-  private:
-    rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr sub_;
-    std::string input_topic_;
-    bool pointcloud_recieved_;
-    bool save_every_pointcloud_;
-    rclcpp::Service<pcl_apps_msgs::srv::WritePcd>::SharedPtr server_;
-    pcl::PointCloud<pcl::PointXYZI> cloud_;
-  };
+class PcdWriterComponent : public rclcpp::Node
+{
+public:
+  PCL_APPS_PCD_WRITER_PUBLIC
+  explicit PcdWriterComponent(const rclcpp::NodeOptions & options);
+
+private:
+  rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr sub_;
+  std::string input_topic_;
+  bool pointcloud_recieved_;
+  bool save_every_pointcloud_;
+  rclcpp::Service<pcl_apps_msgs::srv::WritePcd>::SharedPtr server_;
+  pcl::PointCloud<pcl::PointXYZI> cloud_;
+};
 }
 
 #endif  //PCL_APPS_PCD_WRITER_COMPONENT_H_INCLUDED

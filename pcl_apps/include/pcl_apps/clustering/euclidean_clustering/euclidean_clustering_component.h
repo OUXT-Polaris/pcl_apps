@@ -55,19 +55,20 @@ extern "C" {
 
 namespace pcl_apps
 {
-  class EuclideanClusteringComponent: public rclcpp::Node
-  {
-  public:
-    PCL_APPS_EUCLIDEAN_CLUSTERING_PUBLIC
-    explicit EuclideanClusteringComponent(const rclcpp::NodeOptions & options);
-  private:
-    rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr sub_;
-    rclcpp::Publisher<pcl_apps_msgs::msg::PointCloudArray>::SharedPtr pub_;
-    std::string input_topic_;
-    double cluster_tolerance_;
-    int min_cluster_size_;
-    int max_cluster_size_;
-  };
+class EuclideanClusteringComponent : public rclcpp::Node
+{
+public:
+  PCL_APPS_EUCLIDEAN_CLUSTERING_PUBLIC
+  explicit EuclideanClusteringComponent(const rclcpp::NodeOptions & options);
+
+private:
+  rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr sub_;
+  rclcpp::Publisher<pcl_apps_msgs::msg::PointCloudArray>::SharedPtr pub_;
+  std::string input_topic_;
+  double cluster_tolerance_;
+  int min_cluster_size_;
+  int max_cluster_size_;
+};
 }
 
 #endif  //PCL_APPS_EUCLIDEAN_CLUSTERING_COMPONENT_H_INCLUDED

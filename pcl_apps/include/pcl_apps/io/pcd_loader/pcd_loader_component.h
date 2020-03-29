@@ -50,14 +50,15 @@ extern "C" {
 
 namespace pcl_apps
 {
-    class PcdLoaderComponent: public rclcpp::Node
-    {
-    public:
-        PCL_APPS_PCD_LOADER_PUBLIC
-        explicit PcdLoaderComponent(const rclcpp::NodeOptions & options);
-    private:
-        std::shared_ptr<rclcpp::Publisher<sensor_msgs::msg::PointCloud2> > pub_;
-    };
+class PcdLoaderComponent : public rclcpp::Node
+{
+public:
+  PCL_APPS_PCD_LOADER_PUBLIC
+  explicit PcdLoaderComponent(const rclcpp::NodeOptions & options);
+
+private:
+  std::shared_ptr<rclcpp::Publisher<sensor_msgs::msg::PointCloud2>> pub_;
+};
 }
 
 #endif  //PCL_APPS_PCD_LOADER_COMPONENT_H_INCLUDED

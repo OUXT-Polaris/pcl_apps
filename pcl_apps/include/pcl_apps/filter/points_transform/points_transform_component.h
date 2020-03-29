@@ -54,23 +54,25 @@ extern "C" {
 
 namespace pcl_apps
 {
-  class PointsTransformComponent: public rclcpp::Node
-  {
-  public:
-    PCL_APPS_POINTS_TRANSFORM_PUBLIC
-    explicit PointsTransformComponent(const rclcpp::NodeOptions & options);
-  private:
-    std::string output_frame_id_;
-    rclcpp::Clock ros_clock_;
-    tf2_ros::Buffer buffer_;
-    tf2_ros::TransformListener listener_;
-    rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr sub_;
-    rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr pub_;
-    void transformPointCloud (const Eigen::Matrix4f &transform, 
-        const sensor_msgs::msg::PointCloud2 &in,
-        sensor_msgs::msg::PointCloud2 &out);
-    std::string input_topic_;
-  };
+class PointsTransformComponent : public rclcpp::Node
+{
+public:
+  PCL_APPS_POINTS_TRANSFORM_PUBLIC
+  explicit PointsTransformComponent(const rclcpp::NodeOptions & options);
+
+private:
+  std::string output_frame_id_;
+  rclcpp::Clock ros_clock_;
+  tf2_ros::Buffer buffer_;
+  tf2_ros::TransformListener listener_;
+  rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr sub_;
+  rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr pub_;
+  void transformPointCloud(
+    const Eigen::Matrix4f & transform,
+    const sensor_msgs::msg::PointCloud2 & in,
+    sensor_msgs::msg::PointCloud2 & out);
+  std::string input_topic_;
+};
 }
 
 #endif  //PCL_APPS_POINTS_TRANSFORM_COMPONENT_H_INCLUDED
