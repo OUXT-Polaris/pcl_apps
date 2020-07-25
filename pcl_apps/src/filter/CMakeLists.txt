@@ -10,7 +10,7 @@ ament_target_dependencies(points_concatenate_component
 
 add_executable(points_concatenate_node
   points_concatenate/points_concatenate_node.cpp)
-target_link_libraries(points_concatenate_node 
+target_link_libraries(points_concatenate_node
   points_concatenate_component ${PCL_LIBRARIES})
 ament_target_dependencies(points_concatenate_node
   rclcpp rclcpp_components pcl_conversions sensor_msgs message_filters)
@@ -27,7 +27,7 @@ ament_target_dependencies(points_transform_component
 
 add_executable(points_transform_node
   points_transform/points_transform_node.cpp)
-target_link_libraries(points_transform_node 
+target_link_libraries(points_transform_node
   points_transform_component ${PCL_LIBRARIES})
 ament_target_dependencies(points_transform_node
   rclcpp rclcpp_components pcl_conversions tf2_ros sensor_msgs)
@@ -66,7 +66,7 @@ ament_target_dependencies(radius_outlier_removal_node
   rclcpp rclcpp_components pcl_conversions sensor_msgs)
 
 # install executables/libs
-install(TARGETS 
+install(TARGETS
   points_transform_node
   points_concatenate_node
   voxelgrid_filter_node

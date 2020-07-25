@@ -1,4 +1,26 @@
-#include <pcl_apps/matching/ndt_matching/ndt_matching_component.h>
+// Copyright (c) 2019 OUXT Polaris
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+#include <pcl_apps/matching/ndt_matching/ndt_matching_component.hpp>
+
+// Headers in ROS2
+#include <rclcpp_components/register_node_macro.hpp>
+
+// Headers in STL
+#include <string>
+#include <vector>
+#include <memory>
 
 namespace pcl_apps
 {
@@ -108,9 +130,6 @@ NdtMatchingComponent::NdtMatchingComponent(const rclcpp::NodeOptions & options)
       updateRelativePose(input_cloud, msg->header.stamp);
       current_relative_pose_pub_->publish(current_relative_pose_);
     };
-  //rmw_qos_profile_t qos;
-  //qos.depth = 1;
-  //qos.durability = RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL;
   sub_reference_cloud_ =
     create_subscription<sensor_msgs::msg::PointCloud2>(reference_cloud_topic_, 1,
       reference_cloud_callback);
@@ -159,7 +178,6 @@ void NdtMatchingComponent::updateRelativePose(
   current_relative_pose_.pose.orientation.z = quat.z();
   current_relative_pose_.pose.orientation.w = quat.w();
 }
-}
+}  // namespace pcl_apps
 
-#include <rclcpp_components/register_node_macro.hpp>
 RCLCPP_COMPONENTS_REGISTER_NODE(pcl_apps::NdtMatchingComponent)

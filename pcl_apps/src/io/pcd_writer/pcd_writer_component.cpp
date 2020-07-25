@@ -1,4 +1,26 @@
-#include <pcl_apps/io/pcd_writer/pcd_writer_component.h>
+// Copyright (c) 2019 OUXT Polaris
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+#include <pcl_apps/io/pcd_writer/pcd_writer_component.hpp>
+
+// Headers in ROS2
+#include <rclcpp_components/register_node_macro.hpp>
+
+// Headers in STL
+#include <string>
+#include <vector>
+#include <memory>
 
 namespace pcl_apps
 {
@@ -22,7 +44,7 @@ PcdWriterComponent::PcdWriterComponent(const rclcpp::NodeOptions & options)
     {
       (void)request_header;
       if (pointcloud_recieved_) {
-        int result;
+        int result = 0;
         if (request->format == request->ASCII) {
           result = pcl::io::savePCDFileASCII(request->path, cloud_);
         } else if (request->format == request->BINARY) {
@@ -50,7 +72,6 @@ PcdWriterComponent::PcdWriterComponent(const rclcpp::NodeOptions & options)
   std::string service_name = get_name() + std::string("/write_pcd");
   server_ = create_service<pcl_apps_msgs::srv::WritePcd>(service_name, write_pcd_callback);
 }
-}
+}  // namespace pcl_apps
 
-#include <rclcpp_components/register_node_macro.hpp>
 RCLCPP_COMPONENTS_REGISTER_NODE(pcl_apps::PcdWriterComponent)

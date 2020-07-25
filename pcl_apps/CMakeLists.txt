@@ -52,10 +52,10 @@ add_subdirectory(src/io)
 # Clustering Module
 add_subdirectory(src/clustering)
 
-rclcpp_components_register_nodes(points_concatenate_component 
+rclcpp_components_register_nodes(points_concatenate_component
   "pcl_apps::PointsConcatenateComponent")
 
-rclcpp_components_register_nodes(points_transform_component 
+rclcpp_components_register_nodes(points_transform_component
   "pcl_apps::PointsTransformComponent")
 
 rclcpp_components_register_nodes(voxelgrid_filter_component
@@ -67,10 +67,10 @@ rclcpp_components_register_nodes(ndt_matching_component
 rclcpp_components_register_nodes(ndt_matching_twist_estimator_component
   "pcl_apps::NdtMatchingTwistEstimatorComponent")
 
-rclcpp_components_register_nodes(pcd_writer_component 
+rclcpp_components_register_nodes(pcd_writer_component
   "pcl_apps::PcdWriterComponent")
 
-rclcpp_components_register_nodes(pcd_loader_component 
+rclcpp_components_register_nodes(pcd_loader_component
   "pcl_apps::PcdLoaderComponent")
 
 rclcpp_components_register_nodes(radius_outlier_removal_component

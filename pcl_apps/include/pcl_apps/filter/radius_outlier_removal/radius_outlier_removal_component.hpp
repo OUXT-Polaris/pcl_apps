@@ -1,5 +1,19 @@
-#ifndef PCL_APPS_RADIUS_OUTLIER_REMOVAL_COMPONENT
-#define PCL_APPS_RADIUS_OUTLIER_REMOVAL_COMPONENT
+// Copyright (c) 2019 OUXT Polaris
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+#ifndef PCL_APPS__FILTER__RADIUS_OUTLIER_REMOVAL__RADIUS_OUTLIER_REMOVAL_COMPONENT_HPP_
+#define PCL_APPS__FILTER__RADIUS_OUTLIER_REMOVAL__RADIUS_OUTLIER_REMOVAL_COMPONENT_HPP_
 
 #if __cplusplus
 extern "C" {
@@ -36,7 +50,7 @@ extern "C" {
 #endif
 
 #if __cplusplus
-} // extern "C"
+}  // extern "C"
 #endif
 
 // Headers in ROS2
@@ -47,6 +61,9 @@ extern "C" {
 // Headers in PCL
 #include <pcl/point_types.h>
 #include <pcl/filters/radius_outlier_removal.h>
+
+// Headers in STL
+#include <string>
 
 namespace pcl_apps
 {
@@ -64,6 +81,6 @@ private:
   double search_radius_;
   int min_neighbors_in_search_radius_;
 };
-}
+}  // namespace pcl_apps
 
-#endif  //PCL_APPS_RADIUS_OUTLIER_REMOVAL_COMPONENT
+#endif  // PCL_APPS__FILTER__RADIUS_OUTLIER_REMOVAL__RADIUS_OUTLIER_REMOVAL_COMPONENT_HPP_
