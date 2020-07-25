@@ -1,4 +1,25 @@
-#include <pcl_apps/filter/points_transform/points_transform_component.h>
+// Copyright (c) 2019 OUXT Polaris
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+#include <pcl_apps/filter/points_transform/points_transform_component.hpp>
+
+// Headers in ROS2
+#include <rclcpp_components/register_node_macro.hpp>
+
+// Headers in STL
+#include <string>
+#include <limits>
 
 namespace pcl_apps
 {
@@ -39,7 +60,7 @@ PointsTransformComponent::PointsTransformComponent(const rclcpp::NodeOptions & o
 
 void PointsTransformComponent::transformPointCloud(
   const Eigen::Matrix4f & transform,
-  const sensor_msgs::msg::PointCloud2 & in,
+  sensor_msgs::msg::PointCloud2 & in,
   sensor_msgs::msg::PointCloud2 & out)
 {
   // Get X-Y-Z indices
@@ -48,7 +69,8 @@ void PointsTransformComponent::transformPointCloud(
   int z_idx = pcl::getFieldIndex(in, "z");
 
   if (x_idx == -1 || y_idx == -1 || z_idx == -1) {
-    //ROS_ERROR ("Input dataset has no X-Y-Z coordinates! Cannot convert to Eigen format.");
+    RCLCPP_ERROR(
+      get_logger(), "Input dataset has no X-Y-Z coordinates! Cannot convert to Eigen format.");
     return;
   }
 
@@ -56,7 +78,8 @@ void PointsTransformComponent::transformPointCloud(
     in.fields[y_idx].datatype != sensor_msgs::msg::PointField::FLOAT32 ||
     in.fields[z_idx].datatype != sensor_msgs::msg::PointField::FLOAT32)
   {
-    //ROS_ERROR ("X-Y-Z coordinates not floats. Currently only floats are supported.");
+    RCLCPP_ERROR(get_logger(),
+      "X-Y-Z coordinates not floats. Currently only floats are supported.");
     return;
   }
 
@@ -82,13 +105,15 @@ void PointsTransformComponent::transformPointCloud(
     in.fields[z_idx].offset, 0);
 
   for (size_t i = 0; i < in.width * in.height; ++i) {
-    Eigen::Vector4f pt(*(float *)&in.data[xyz_offset[0]], *(float *)&in.data[xyz_offset[1]],
-      *(float *)&in.data[xyz_offset[2]], 1);
+    Eigen::Vector4f pt(*reinterpret_cast<float *>(&in.data[xyz_offset[0]]),
+      *reinterpret_cast<float *>(&in.data[xyz_offset[1]]),
+      *reinterpret_cast<float *>(&in.data[xyz_offset[2]]), 1);
     Eigen::Vector4f pt_out;
 
     bool max_range_point = false;
     int distance_ptr_offset = i * in.point_step + in.fields[dist_idx].offset;
-    float * distance_ptr = (dist_idx < 0 ? NULL : (float *)(&in.data[distance_ptr_offset]));
+    float * distance_ptr =
+      (dist_idx < 0 ? NULL : reinterpret_cast<float *>(&in.data[distance_ptr_offset]));
     if (!std::isfinite(pt[0]) || !std::isfinite(pt[1]) || !std::isfinite(pt[2])) {
       if (distance_ptr == NULL || !std::isfinite(*distance_ptr)) {        // Invalid point
         pt_out = pt;
@@ -96,7 +121,6 @@ void PointsTransformComponent::transformPointCloud(
         pt[0] = *distance_ptr;              // Replace x with the x value saved in distance
         pt_out = transform * pt;
         max_range_point = true;
-        //std::cout << pt[0]<<","<<pt[1]<<","<<pt[2]<<" => "<<pt_out[0]<<","<<pt_out[1]<<","<<pt_out[2]<<"\n";
       }
     } else {
       pt_out = transform * pt;
@@ -104,7 +128,7 @@ void PointsTransformComponent::transformPointCloud(
 
     if (max_range_point) {
       // Save x value in distance again
-      *(float *)(&out.data[distance_ptr_offset]) = pt_out[0];
+      *reinterpret_cast<float *>(&out.data[distance_ptr_offset]) = pt_out[0];
       pt_out[0] = std::numeric_limits<float>::quiet_NaN();
     }
 
@@ -120,7 +144,8 @@ void PointsTransformComponent::transformPointCloud(
   if (vp_idx != -1) {
     // Transform the viewpoint info too
     for (size_t i = 0; i < out.width * out.height; ++i) {
-      float * pstep = (float *)&out.data[i * out.point_step + out.fields[vp_idx].offset];
+      float * pstep =
+        reinterpret_cast<float *>(&out.data[i * out.point_step + out.fields[vp_idx].offset]);
       // Assume vp_x, vp_y, vp_z are consecutive
       Eigen::Vector4f vp_in(pstep[0], pstep[1], pstep[2], 1);
       Eigen::Vector4f vp_out = transform * vp_in;
@@ -131,7 +156,6 @@ void PointsTransformComponent::transformPointCloud(
     }
   }
 }
-}
+}  // namespace pcl_apps
 
-#include <rclcpp_components/register_node_macro.hpp>
 RCLCPP_COMPONENTS_REGISTER_NODE(pcl_apps::PointsTransformComponent)

@@ -10,7 +10,7 @@ ament_target_dependencies(euclidean_clustering_component
 
 add_executable(euclidean_clustering_node
   euclidean_clustering/euclidean_clustering_node.cpp)
-target_link_libraries(euclidean_clustering_node 
+target_link_libraries(euclidean_clustering_node
   euclidean_clustering_component ${PCL_LIBRARIES})
 ament_target_dependencies(euclidean_clustering_node
   rclcpp rclcpp_components pcl_conversions sensor_msgs pcl_apps_msgs)

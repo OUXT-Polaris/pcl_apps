@@ -31,7 +31,7 @@ ament_target_dependencies(ndt_matching_twist_estimator_node
   rclcpp rclcpp_components pcl_conversions sensor_msgs tf2_eigen)
 
 # install executables/libs
-install(TARGETS 
+install(TARGETS
   ndt_matching_node
   ndt_matching_twist_estimator_node
   DESTINATION lib/pcl_apps
