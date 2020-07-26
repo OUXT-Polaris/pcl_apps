@@ -35,8 +35,8 @@ PcdLoaderComponent::PcdLoaderComponent(const rclcpp::NodeOptions & options)
   if (result == 0) {
     sensor_msgs::msg::PointCloud2 msg;
     pcl_conversions::fromPCL(cloud, msg);
-    pub_ = create_publisher<sensor_msgs::msg::PointCloud2>(output_topic, rclcpp::QoS(
-          10).transient_local());
+    pub_ = create_publisher<sensor_msgs::msg::PointCloud2>(
+      output_topic, rclcpp::QoS(10).transient_local());
     pub_->publish(msg);
   } else {
     RCLCPP_ERROR(get_logger(), "Failed to load ", file_path);

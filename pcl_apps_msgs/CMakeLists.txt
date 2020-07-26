@@ -27,6 +27,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/BoundingBox.msg"
   "msg/BoundingBoxArray.msg"
   "msg/PointCloudArray.msg"
+  "msg/PolygonArray.msg"
   "srv/WritePcd.srv"
   DEPENDENCIES builtin_interfaces std_msgs sensor_msgs geometry_msgs
 )

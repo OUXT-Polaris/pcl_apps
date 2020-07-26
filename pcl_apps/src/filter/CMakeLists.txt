@@ -65,12 +65,31 @@ target_link_libraries(radius_outlier_removal_node
 ament_target_dependencies(radius_outlier_removal_node
   rclcpp rclcpp_components pcl_conversions sensor_msgs)
 
+# Crop Hull Filter Component/Node
+add_library(crop_hull_filter_component SHARED
+  crop_hull_filter/crop_hull_filter_component.cpp
+)
+target_compile_definitions(crop_hull_filter_component PRIVATE "PCL_APPS_CROP_HULL_FILTER_BUILDING_DLL")
+ament_target_dependencies(crop_hull_filter_component
+  rclcpp rclcpp_components pcl_conversions sensor_msgs pcl_apps_msgs message_filters)
+
+add_executable(crop_hull_filter_node
+crop_hull_filter/crop_hull_filter_component.cpp
+  crop_hull_filter/crop_hull_filter_node.cpp
+)
+target_link_libraries(crop_hull_filter_node
+  ${PCL_LIBRARIES}
+)
+ament_target_dependencies(crop_hull_filter_node
+  rclcpp rclcpp_components pcl_conversions sensor_msgs pcl_apps_msgs message_filters)
+
 # install executables/libs
 install(TARGETS
   points_transform_node
   points_concatenate_node
   voxelgrid_filter_node
   radius_outlier_removal_node
+  crop_hull_filter_node
   DESTINATION lib/pcl_apps
 )
 
@@ -79,6 +98,7 @@ install(TARGETS
   points_concatenate_component
   voxelgrid_filter_component
   radius_outlier_removal_component
+  crop_hull_filter_component
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin)
@@ -87,3 +107,4 @@ ament_export_libraries(points_transform_component)
 ament_export_libraries(points_concatenate_component)
 ament_export_libraries(voxelgrid_filter_component)
 ament_export_libraries(radius_outlier_removal_component)
+ament_export_libraries(crop_hull_filter_component)

@@ -19,9 +19,9 @@
 #include <rclcpp_components/register_node_macro.hpp>
 
 // Headers in STL
+#include <memory>
 #include <string>
 #include <vector>
-#include <memory>
 
 namespace pcl_apps
 {
@@ -35,8 +35,8 @@ RadiusOutlierRemovalComponent::RadiusOutlierRemovalComponent(const rclcpp::NodeO
   declare_parameter("min_neighbors_in_search_radius", 1);
   get_parameter("min_neighbors_in_search_radius", min_neighbors_in_search_radius_);
   set_on_parameters_set_callback(
-    [this](const std::vector<rclcpp::Parameter> params) -> rcl_interfaces::msg::SetParametersResult
-    {
+    [this](
+      const std::vector<rclcpp::Parameter> params) -> rcl_interfaces::msg::SetParametersResult {
       auto results = std::make_shared<rcl_interfaces::msg::SetParametersResult>();
       for (auto param : params) {
         if (param.get_name() == "search_radius") {
@@ -65,23 +65,20 @@ RadiusOutlierRemovalComponent::RadiusOutlierRemovalComponent(const rclcpp::NodeO
         results->reason = "";
       }
       return *results;
-    }
-  );
+    });
   std::string output_topic_name = get_name() + std::string("/output");
   pub_ = create_publisher<sensor_msgs::msg::PointCloud2>(output_topic_name, 10);
-  auto callback =
-    [this](const typename sensor_msgs::msg::PointCloud2::SharedPtr msg) -> void
-    {
-      pcl::PointCloud<pcl::PointXYZI>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZI>);
-      pcl::fromROSMsg(*msg, *cloud);
-      filter_.setInputCloud(cloud);
-      filter_.setRadiusSearch(search_radius_);
-      filter_.setMinNeighborsInRadius(min_neighbors_in_search_radius_);
-      pcl::PointCloud<pcl::PointXYZI>::Ptr cloud_filtered(new pcl::PointCloud<pcl::PointXYZI>);
-      filter_.filter(*cloud_filtered);
-      pcl::toROSMsg(*cloud_filtered, *msg);
-      pub_->publish(*msg);
-    };
+  auto callback = [this](const typename sensor_msgs::msg::PointCloud2::SharedPtr msg) -> void {
+    pcl::PointCloud<pcl::PointXYZI>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZI>);
+    pcl::fromROSMsg(*msg, *cloud);
+    filter_.setInputCloud(cloud);
+    filter_.setRadiusSearch(search_radius_);
+    filter_.setMinNeighborsInRadius(min_neighbors_in_search_radius_);
+    pcl::PointCloud<pcl::PointXYZI>::Ptr cloud_filtered(new pcl::PointCloud<pcl::PointXYZI>);
+    filter_.filter(*cloud_filtered);
+    pcl::toROSMsg(*cloud_filtered, *msg);
+    pub_->publish(*msg);
+  };
   sub_ = create_subscription<sensor_msgs::msg::PointCloud2>(input_topic_, 10, callback);
 }
 }  // namespace pcl_apps

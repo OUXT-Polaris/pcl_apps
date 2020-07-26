@@ -76,6 +76,9 @@ rclcpp_components_register_nodes(pcd_loader_component
 rclcpp_components_register_nodes(radius_outlier_removal_component
   "pcl_apps::RadiusOutlierRemovalComponent")
 
+rclcpp_components_register_nodes(crop_hull_filter_component
+  "pcl_apps::CropHullFilterComponent")
+
 rclcpp_components_register_nodes(euclidean_clustering_component
   "pcl_apps::EuclideanClusteringComponent")
 
