@@ -74,8 +74,8 @@ namespace pcl_apps
 typedef sensor_msgs::msg::PointCloud2 PointCloud2;
 typedef message_filters::Subscriber<PointCloud2> PointCloudSubsciber;
 typedef message_filters::sync_policies::ApproximateTime<
-  PointCloud2, PointCloud2, PointCloud2, PointCloud2, PointCloud2, PointCloud2, PointCloud2,
-  PointCloud2>
+    PointCloud2, PointCloud2, PointCloud2, PointCloud2, PointCloud2, PointCloud2, PointCloud2,
+    PointCloud2>
   SyncPolicy;
 
 class PointsConcatenateComponent : public rclcpp::Node

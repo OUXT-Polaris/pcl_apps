@@ -37,6 +37,8 @@ add_library(voxelgrid_filter_component SHARED
   voxelgrid_filter/voxelgrid_filter_component.cpp
 )
 target_compile_definitions(voxelgrid_filter_component PRIVATE "PCL_APPS_VOXELGRID_FILTER_BUILDING_DLL")
+target_link_libraries(voxelgrid_filter_component
+  ${PCL_LIBRARIES})
 ament_target_dependencies(voxelgrid_filter_component
   rclcpp rclcpp_components pcl_conversions sensor_msgs)
 
@@ -44,7 +46,7 @@ add_executable(voxelgrid_filter_node
   voxelgrid_filter/voxelgrid_filter_node.cpp
 )
 target_link_libraries(voxelgrid_filter_node
-voxelgrid_filter_component ${PCL_LIBRARIES})
+  voxelgrid_filter_component ${PCL_LIBRARIES})
 ament_target_dependencies(voxelgrid_filter_node
   rclcpp rclcpp_components pcl_conversions sensor_msgs)
 
@@ -53,6 +55,9 @@ add_library(radius_outlier_removal_component SHARED
   radius_outlier_removal/radius_outlier_removal_component.cpp
 )
 target_compile_definitions(radius_outlier_removal_component PRIVATE "PCL_APPS_RADIUS_OUTLIER_REMOVAL_BUILDING_DLL")
+target_link_libraries(radius_outlier_removal_component
+  ${PCL_LIBRARIES}
+)
 ament_target_dependencies(radius_outlier_removal_component
   rclcpp rclcpp_components pcl_conversions sensor_msgs)
 
@@ -70,14 +75,17 @@ add_library(crop_hull_filter_component SHARED
   crop_hull_filter/crop_hull_filter_component.cpp
 )
 target_compile_definitions(crop_hull_filter_component PRIVATE "PCL_APPS_CROP_HULL_FILTER_BUILDING_DLL")
+target_link_libraries(crop_hull_filter_component
+  ${PCL_LIBRARIES}
+)
 ament_target_dependencies(crop_hull_filter_component
   rclcpp rclcpp_components pcl_conversions sensor_msgs pcl_apps_msgs message_filters)
 
 add_executable(crop_hull_filter_node
-crop_hull_filter/crop_hull_filter_component.cpp
   crop_hull_filter/crop_hull_filter_node.cpp
 )
 target_link_libraries(crop_hull_filter_node
+  crop_hull_filter_component
   ${PCL_LIBRARIES}
 )
 ament_target_dependencies(crop_hull_filter_node

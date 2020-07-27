@@ -69,16 +69,16 @@ RadiusOutlierRemovalComponent::RadiusOutlierRemovalComponent(const rclcpp::NodeO
   std::string output_topic_name = get_name() + std::string("/output");
   pub_ = create_publisher<sensor_msgs::msg::PointCloud2>(output_topic_name, 10);
   auto callback = [this](const typename sensor_msgs::msg::PointCloud2::SharedPtr msg) -> void {
-    pcl::PointCloud<pcl::PointXYZI>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZI>);
-    pcl::fromROSMsg(*msg, *cloud);
-    filter_.setInputCloud(cloud);
-    filter_.setRadiusSearch(search_radius_);
-    filter_.setMinNeighborsInRadius(min_neighbors_in_search_radius_);
-    pcl::PointCloud<pcl::PointXYZI>::Ptr cloud_filtered(new pcl::PointCloud<pcl::PointXYZI>);
-    filter_.filter(*cloud_filtered);
-    pcl::toROSMsg(*cloud_filtered, *msg);
-    pub_->publish(*msg);
-  };
+      pcl::PointCloud<pcl::PointXYZI>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZI>);
+      pcl::fromROSMsg(*msg, *cloud);
+      filter_.setInputCloud(cloud);
+      filter_.setRadiusSearch(search_radius_);
+      filter_.setMinNeighborsInRadius(min_neighbors_in_search_radius_);
+      pcl::PointCloud<pcl::PointXYZI>::Ptr cloud_filtered(new pcl::PointCloud<pcl::PointXYZI>);
+      filter_.filter(*cloud_filtered);
+      pcl::toROSMsg(*cloud_filtered, *msg);
+      pub_->publish(*msg);
+    };
   sub_ = create_subscription<sensor_msgs::msg::PointCloud2>(input_topic_, 10, callback);
 }
 }  // namespace pcl_apps

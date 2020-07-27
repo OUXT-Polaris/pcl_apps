@@ -23,6 +23,7 @@
 
 // Headers in STL
 #include <memory>
+#include <vector>
 
 namespace pcl_apps
 {
@@ -35,10 +36,10 @@ CropHullFilterComponent::CropHullFilterComponent(const rclcpp::NodeOptions & opt
   pointcloud_sub_ =
     std::shared_ptr<PointCloudSubscriber>(new PointCloudSubscriber(this, "~/points"));
   sync_ = std::make_shared<message_filters::TimeSynchronizer<
-    sensor_msgs::msg::PointCloud2, pcl_apps_msgs::msg::PolygonArray>>(
+        sensor_msgs::msg::PointCloud2, pcl_apps_msgs::msg::PolygonArray>>(
     *pointcloud_sub_, *polygon_sub_, 10);
   sync_->registerCallback(std::bind(
-    &CropHullFilterComponent::callback, this, std::placeholders::_1, std::placeholders::_2));
+      &CropHullFilterComponent::callback, this, std::placeholders::_1, std::placeholders::_2));
 }
 
 void CropHullFilterComponent::callback(
@@ -56,7 +57,8 @@ void CropHullFilterComponent::callback(
     boost::shared_ptr<pcl::PointCloud<pcl::PointXYZI>> hull_cloud;
     boost::shared_ptr<pcl::PointCloud<pcl::PointXYZI>> hull_points;
     for (auto point_itr = poly_itr->points.begin(); point_itr != poly_itr->points.end();
-         point_itr++) {
+      point_itr++)
+    {
       pcl::PointXYZI p;
       p.x = point_itr->x;
       p.y = point_itr->y;

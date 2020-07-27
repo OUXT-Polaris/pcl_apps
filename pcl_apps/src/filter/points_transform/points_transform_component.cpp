@@ -34,22 +34,22 @@ PointsTransformComponent::PointsTransformComponent(const rclcpp::NodeOptions & o
   std::string output_topic_name = get_name() + std::string("/output");
   pub_ = create_publisher<sensor_msgs::msg::PointCloud2>(output_topic_name, 10);
   auto callback = [this](const typename sensor_msgs::msg::PointCloud2::SharedPtr msg) -> void {
-    if (msg->header.frame_id == output_frame_id_) {
-      pub_->publish(*msg);
-    } else {
-      tf2::TimePoint time_point = tf2::TimePoint(
-        std::chrono::seconds(msg->header.stamp.sec) +
-        std::chrono::nanoseconds(msg->header.stamp.nanosec));
-      geometry_msgs::msg::TransformStamped transform_stamped = buffer_.lookupTransform(
-        msg->header.frame_id, output_frame_id_, time_point, tf2::durationFromSec(1.0));
-      Eigen::Matrix4f mat =
-        tf2::transformToEigen(transform_stamped.transform).matrix().cast<float>();
-      pcl::PointCloud<pcl::PointXYZI> pc_out;
-      sensor_msgs::msg::PointCloud2 output_msg;
-      transformPointCloud(mat, *msg, output_msg);
-      pub_->publish(output_msg);
-    }
-  };
+      if (msg->header.frame_id == output_frame_id_) {
+        pub_->publish(*msg);
+      } else {
+        tf2::TimePoint time_point = tf2::TimePoint(
+          std::chrono::seconds(msg->header.stamp.sec) +
+          std::chrono::nanoseconds(msg->header.stamp.nanosec));
+        geometry_msgs::msg::TransformStamped transform_stamped = buffer_.lookupTransform(
+          msg->header.frame_id, output_frame_id_, time_point, tf2::durationFromSec(1.0));
+        Eigen::Matrix4f mat =
+          tf2::transformToEigen(transform_stamped.transform).matrix().cast<float>();
+        pcl::PointCloud<pcl::PointXYZI> pc_out;
+        sensor_msgs::msg::PointCloud2 output_msg;
+        transformPointCloud(mat, *msg, output_msg);
+        pub_->publish(output_msg);
+      }
+    };
   declare_parameter("input_topic", get_name() + std::string("/input"));
   get_parameter("input_topic", input_topic_);
   sub_ = create_subscription<sensor_msgs::msg::PointCloud2>(input_topic_, 10, callback);
@@ -73,7 +73,8 @@ void PointsTransformComponent::transformPointCloud(
   if (
     in.fields[x_idx].datatype != sensor_msgs::msg::PointField::FLOAT32 ||
     in.fields[y_idx].datatype != sensor_msgs::msg::PointField::FLOAT32 ||
-    in.fields[z_idx].datatype != sensor_msgs::msg::PointField::FLOAT32) {
+    in.fields[z_idx].datatype != sensor_msgs::msg::PointField::FLOAT32)
+  {
     RCLCPP_ERROR(
       get_logger(), "X-Y-Z coordinates not floats. Currently only floats are supported.");
     return;

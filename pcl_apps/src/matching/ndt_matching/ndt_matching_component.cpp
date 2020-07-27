@@ -108,23 +108,23 @@ NdtMatchingComponent::NdtMatchingComponent(const rclcpp::NodeOptions & options)
 
   auto reference_cloud_callback =
     [this](const typename sensor_msgs::msg::PointCloud2::SharedPtr msg) -> void {
-    initial_pose_recieved_ = false;
-    assert(msg->header.frame_id == reference_frame_id_);
-    reference_cloud_recieved_ = true;
-    pcl::fromROSMsg(*msg, *reference_cloud_);
-  };
+      initial_pose_recieved_ = false;
+      assert(msg->header.frame_id == reference_frame_id_);
+      reference_cloud_recieved_ = true;
+      pcl::fromROSMsg(*msg, *reference_cloud_);
+    };
   auto initial_pose_callback =
     [this](const typename geometry_msgs::msg::PoseStamped::SharedPtr msg) -> void {
-    initial_pose_recieved_ = true;
-    assert(msg->header.frame_id == reference_frame_id_);
-    current_relative_pose_ = *msg;
-  };
+      initial_pose_recieved_ = true;
+      assert(msg->header.frame_id == reference_frame_id_);
+      current_relative_pose_ = *msg;
+    };
   auto callback = [this](const typename sensor_msgs::msg::PointCloud2::SharedPtr msg) -> void {
-    pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud;
-    pcl::fromROSMsg(*msg, *input_cloud);
-    updateRelativePose(input_cloud, msg->header.stamp);
-    current_relative_pose_pub_->publish(current_relative_pose_);
-  };
+      pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud;
+      pcl::fromROSMsg(*msg, *input_cloud);
+      updateRelativePose(input_cloud, msg->header.stamp);
+      current_relative_pose_pub_->publish(current_relative_pose_);
+    };
   sub_reference_cloud_ = create_subscription<sensor_msgs::msg::PointCloud2>(
     reference_cloud_topic_, 1, reference_cloud_callback);
   sub_input_cloud_ =
