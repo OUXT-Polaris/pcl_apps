@@ -18,9 +18,9 @@
 #include <rclcpp_components/register_node_macro.hpp>
 
 // Headers in STL
+#include <memory>
 #include <string>
 #include <vector>
-#include <memory>
 
 namespace pcl_apps
 {
@@ -36,8 +36,8 @@ EuclideanClusteringComponent::EuclideanClusteringComponent(const rclcpp::NodeOpt
   declare_parameter("max_cluster_size", 10000);
   get_parameter("max_cluster_size", max_cluster_size_);
   set_on_parameters_set_callback(
-    [this](const std::vector<rclcpp::Parameter> params) -> rcl_interfaces::msg::SetParametersResult
-    {
+    [this](
+      const std::vector<rclcpp::Parameter> params) -> rcl_interfaces::msg::SetParametersResult {
       auto results = std::make_shared<rcl_interfaces::msg::SetParametersResult>();
       for (auto param : params) {
         if (param.get_name() == "cluster_tolerance") {
@@ -76,13 +76,10 @@ EuclideanClusteringComponent::EuclideanClusteringComponent(const rclcpp::NodeOpt
         results->reason = "";
       }
       return *results;
-    }
-  );
+    });
   std::string output_topic_name = get_name() + std::string("/output");
   pub_ = create_publisher<pcl_apps_msgs::msg::PointCloudArray>(output_topic_name, 10);
-  auto callback =
-    [this](const typename sensor_msgs::msg::PointCloud2::SharedPtr msg) -> void
-    {
+  auto callback = [this](const typename sensor_msgs::msg::PointCloud2::SharedPtr msg) -> void {
       pcl_apps_msgs::msg::PointCloudArray clusters;
       clusters.header = msg->header;
       pcl::PointCloud<pcl::PointXYZI>::Ptr cloud;

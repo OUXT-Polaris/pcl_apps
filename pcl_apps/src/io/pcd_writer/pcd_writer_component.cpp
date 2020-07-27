@@ -18,9 +18,9 @@
 #include <rclcpp_components/register_node_macro.hpp>
 
 // Headers in STL
+#include <memory>
 #include <string>
 #include <vector>
-#include <memory>
 
 namespace pcl_apps
 {
@@ -30,18 +30,16 @@ PcdWriterComponent::PcdWriterComponent(const rclcpp::NodeOptions & options)
   declare_parameter("input_topic", get_name() + std::string("/input"));
   get_parameter("input_topic", input_topic_);
   pointcloud_recieved_ = false;
-  auto callback =
-    [this](const typename sensor_msgs::msg::PointCloud2::SharedPtr msg) -> void
-    {
+  auto callback = [this](const typename sensor_msgs::msg::PointCloud2::SharedPtr msg) -> void {
       pcl::fromROSMsg(*msg, cloud_);
       pointcloud_recieved_ = true;
     };
   sub_ = create_subscription<sensor_msgs::msg::PointCloud2>(input_topic_, 10, callback);
   auto write_pcd_callback =
-    [this](const std::shared_ptr<rmw_request_id_t> request_header,
-      const std::shared_ptr<pcl_apps_msgs::srv::WritePcd::Request> request,
-      const std::shared_ptr<pcl_apps_msgs::srv::WritePcd::Response> response) -> void
-    {
+    [this](
+    const std::shared_ptr<rmw_request_id_t> request_header,
+    const std::shared_ptr<pcl_apps_msgs::srv::WritePcd::Request> request,
+    const std::shared_ptr<pcl_apps_msgs::srv::WritePcd::Response> response) -> void {
       (void)request_header;
       if (pointcloud_recieved_) {
         int result = 0;

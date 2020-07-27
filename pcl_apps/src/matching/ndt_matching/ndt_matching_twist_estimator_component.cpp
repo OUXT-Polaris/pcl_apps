@@ -18,9 +18,9 @@
 #include <rclcpp_components/register_node_macro.hpp>
 
 // Headers in STL
+#include <memory>
 #include <string>
 #include <vector>
-#include <memory>
 
 namespace pcl_apps
 {
@@ -43,8 +43,8 @@ NdtMatchingTwistEstimatorComponent::NdtMatchingTwistEstimatorComponent(
   declare_parameter("max_iterations", 35);
   get_parameter("max_iterations", max_iterations_);
   set_on_parameters_set_callback(
-    [this](const std::vector<rclcpp::Parameter> params) -> rcl_interfaces::msg::SetParametersResult
-    {
+    [this](
+      const std::vector<rclcpp::Parameter> params) -> rcl_interfaces::msg::SetParametersResult {
       auto results = std::make_shared<rcl_interfaces::msg::SetParametersResult>();
       for (auto param : params) {
         if (param.get_name() == "transform_epsilon") {
@@ -93,18 +93,14 @@ NdtMatchingTwistEstimatorComponent::NdtMatchingTwistEstimatorComponent(
         results->reason = "";
       }
       return *results;
-    }
-  );
+    });
   // Setup Publisher
   std::string output_topic_name = get_name() + std::string("/current_relative_pose");
-  current_twist_pub_ =
-    create_publisher<geometry_msgs::msg::TwistStamped>(output_topic_name, 10);
+  current_twist_pub_ = create_publisher<geometry_msgs::msg::TwistStamped>(output_topic_name, 10);
   // Setup Subscriber
   buffer_ = boost::circular_buffer<pcl::PointCloud<pcl::PointXYZ>::Ptr>(2);
   timestamps_ = boost::circular_buffer<rclcpp::Time>(2);
-  auto callback =
-    [this](const typename sensor_msgs::msg::PointCloud2::SharedPtr msg) -> void
-    {
+  auto callback = [this](const typename sensor_msgs::msg::PointCloud2::SharedPtr msg) -> void {
       assert(input_cloud_frame_id_ == msg->header.frame_id);
       timestamps_.push_back(msg->header.stamp);
       pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud;
@@ -115,12 +111,12 @@ NdtMatchingTwistEstimatorComponent::NdtMatchingTwistEstimatorComponent(
         current_twist_pub_->publish(twist.get());
       }
     };
-  sub_input_cloud_ = create_subscription<sensor_msgs::msg::PointCloud2>(input_cloud_topic_, 10,
-      callback);
+  sub_input_cloud_ =
+    create_subscription<sensor_msgs::msg::PointCloud2>(input_cloud_topic_, 10, callback);
 }
 
-boost::optional<geometry_msgs::msg::TwistStamped> NdtMatchingTwistEstimatorComponent::
-estimateCurrentTwist()
+boost::optional<geometry_msgs::msg::TwistStamped>
+NdtMatchingTwistEstimatorComponent::estimateCurrentTwist()
 {
   assert(timestamps_.size() == buffer_.size());
   if (buffer_.size() == 2) {
@@ -143,8 +139,8 @@ estimateCurrentTwist()
     ndt_.align(*output_cloud, mat);
     Eigen::Matrix4f final_transform = ndt_.getFinalTransformation();
     tf2::Matrix3x3 rotation_mat;
-    rotation_mat.setValue(static_cast<double>(final_transform(0, 0)),
-      static_cast<double>(final_transform(0, 1)),
+    rotation_mat.setValue(
+      static_cast<double>(final_transform(0, 0)), static_cast<double>(final_transform(0, 1)),
       static_cast<double>(final_transform(0, 2)), static_cast<double>(final_transform(1, 0)),
       static_cast<double>(final_transform(1, 1)), static_cast<double>(final_transform(1, 2)),
       static_cast<double>(final_transform(2, 0)), static_cast<double>(final_transform(2, 1)),

@@ -18,8 +18,8 @@
 #include <rclcpp_components/register_node_macro.hpp>
 
 // Headers in STL
-#include <string>
 #include <memory>
+#include <string>
 
 namespace pcl_apps
 {
@@ -33,8 +33,8 @@ PointsConcatenateComponent::PointsConcatenateComponent(const rclcpp::NodeOptions
   pub_ = create_publisher<sensor_msgs::msg::PointCloud2>(output_topic_name, 10);
   sync_.reset(new message_filters::Synchronizer<SyncPolicy>(10));
   for (int i = 0; i < num_input_; i++) {
-    declare_parameter("input_topic/" + std::to_string(i),
-      get_name() + std::string("/input") + std::to_string(i));
+    declare_parameter(
+      "input_topic/" + std::to_string(i), get_name() + std::string("/input") + std::to_string(i));
     get_parameter("input_topic/" + std::to_string(i), input_topics_[i]);
     boost::shared_ptr<PointCloudSubsciber> sub_ptr =
       boost::make_shared<PointCloudSubsciber>(this, input_topics_[i]);
@@ -42,32 +42,33 @@ PointsConcatenateComponent::PointsConcatenateComponent(const rclcpp::NodeOptions
   }
   switch (num_input_) {
     case 2:
-      sync_->connectInput(*sub_ptrs_[0], *sub_ptrs_[1],
-        nf_, nf_, nf_, nf_, nf_, nf_);
+      sync_->connectInput(*sub_ptrs_[0], *sub_ptrs_[1], nf_, nf_, nf_, nf_, nf_, nf_);
       break;
     case 3:
-      sync_->connectInput(*sub_ptrs_[0], *sub_ptrs_[1],
-        *sub_ptrs_[2], nf_, nf_, nf_, nf_, nf_);
+      sync_->connectInput(*sub_ptrs_[0], *sub_ptrs_[1], *sub_ptrs_[2], nf_, nf_, nf_, nf_, nf_);
       break;
     case 4:
-      sync_->connectInput(*sub_ptrs_[0], *sub_ptrs_[1],
-        *sub_ptrs_[2], *sub_ptrs_[3], nf_, nf_, nf_, nf_);
+      sync_->connectInput(
+        *sub_ptrs_[0], *sub_ptrs_[1], *sub_ptrs_[2], *sub_ptrs_[3], nf_, nf_, nf_, nf_);
       break;
     case 5:
-      sync_->connectInput(*sub_ptrs_[0], *sub_ptrs_[1],
-        *sub_ptrs_[2], *sub_ptrs_[3], *sub_ptrs_[4], nf_, nf_, nf_);
+      sync_->connectInput(
+        *sub_ptrs_[0], *sub_ptrs_[1], *sub_ptrs_[2], *sub_ptrs_[3], *sub_ptrs_[4], nf_, nf_, nf_);
       break;
     case 6:
-      sync_->connectInput(*sub_ptrs_[0], *sub_ptrs_[1],
-        *sub_ptrs_[2], *sub_ptrs_[3], *sub_ptrs_[4], *sub_ptrs_[5], nf_, nf_);
+      sync_->connectInput(
+        *sub_ptrs_[0], *sub_ptrs_[1], *sub_ptrs_[2], *sub_ptrs_[3], *sub_ptrs_[4], *sub_ptrs_[5],
+        nf_, nf_);
       break;
     case 7:
-      sync_->connectInput(*sub_ptrs_[0], *sub_ptrs_[1],
-        *sub_ptrs_[2], *sub_ptrs_[3], *sub_ptrs_[4], *sub_ptrs_[5], *sub_ptrs_[6], nf_);
+      sync_->connectInput(
+        *sub_ptrs_[0], *sub_ptrs_[1], *sub_ptrs_[2], *sub_ptrs_[3], *sub_ptrs_[4], *sub_ptrs_[5],
+        *sub_ptrs_[6], nf_);
       break;
     case 8:
-      sync_->connectInput(*sub_ptrs_[0], *sub_ptrs_[1],
-        *sub_ptrs_[2], *sub_ptrs_[3], *sub_ptrs_[4], *sub_ptrs_[5], *sub_ptrs_[6], *sub_ptrs_[7]);
+      sync_->connectInput(
+        *sub_ptrs_[0], *sub_ptrs_[1], *sub_ptrs_[2], *sub_ptrs_[3], *sub_ptrs_[4], *sub_ptrs_[5],
+        *sub_ptrs_[6], *sub_ptrs_[7]);
       break;
   }
 }
@@ -81,8 +82,7 @@ void PointsConcatenateComponent::input(
   assert(num_input_ >= 2 && num_input_ <= 8);
   pcl::PCLPointCloud2 output_cloud;
   switch (num_input_) {
-    case 2:
-      {
+    case 2: {
         assert(in0->header.frame_id == in1->header.frame_id);
         pcl::PCLPointCloud2 pc0;
         pcl_conversions::toPCL(*in0, pc0);
@@ -91,8 +91,7 @@ void PointsConcatenateComponent::input(
         pcl::concatenateFields(pc0, pc1, output_cloud);
         break;
       }
-    case 3:
-      {
+    case 3: {
         assert(in0->header.frame_id == in1->header.frame_id);
         assert(in1->header.frame_id == in2->header.frame_id);
         pcl::PCLPointCloud2 pc0;
@@ -105,8 +104,7 @@ void PointsConcatenateComponent::input(
         pcl::concatenateFields(output_cloud, pc2, output_cloud);
         break;
       }
-    case 4:
-      {
+    case 4: {
         assert(in0->header.frame_id == in1->header.frame_id);
         assert(in1->header.frame_id == in2->header.frame_id);
         assert(in2->header.frame_id == in3->header.frame_id);
@@ -123,8 +121,7 @@ void PointsConcatenateComponent::input(
         pcl::concatenateFields(output_cloud, pc3, output_cloud);
         break;
       }
-    case 5:
-      {
+    case 5: {
         assert(in0->header.frame_id == in1->header.frame_id);
         assert(in1->header.frame_id == in2->header.frame_id);
         assert(in2->header.frame_id == in3->header.frame_id);
@@ -145,8 +142,7 @@ void PointsConcatenateComponent::input(
         pcl::concatenateFields(output_cloud, pc4, output_cloud);
         break;
       }
-    case 6:
-      {
+    case 6: {
         assert(in0->header.frame_id == in1->header.frame_id);
         assert(in1->header.frame_id == in2->header.frame_id);
         assert(in2->header.frame_id == in3->header.frame_id);
@@ -171,8 +167,7 @@ void PointsConcatenateComponent::input(
         pcl::concatenateFields(output_cloud, pc5, output_cloud);
         break;
       }
-    case 7:
-      {
+    case 7: {
         assert(in0->header.frame_id == in1->header.frame_id);
         assert(in1->header.frame_id == in2->header.frame_id);
         assert(in2->header.frame_id == in3->header.frame_id);
@@ -201,8 +196,7 @@ void PointsConcatenateComponent::input(
         pcl::concatenateFields(output_cloud, pc6, output_cloud);
         break;
       }
-    case 8:
-      {
+    case 8: {
         assert(in0->header.frame_id == in1->header.frame_id);
         assert(in1->header.frame_id == in2->header.frame_id);
         assert(in2->header.frame_id == in3->header.frame_id);

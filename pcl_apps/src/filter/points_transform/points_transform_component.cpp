@@ -18,8 +18,8 @@
 #include <rclcpp_components/register_node_macro.hpp>
 
 // Headers in STL
-#include <string>
 #include <limits>
+#include <string>
 
 namespace pcl_apps
 {
@@ -33,18 +33,15 @@ PointsTransformComponent::PointsTransformComponent(const rclcpp::NodeOptions & o
   get_parameter("output_frame_id", output_frame_id_);
   std::string output_topic_name = get_name() + std::string("/output");
   pub_ = create_publisher<sensor_msgs::msg::PointCloud2>(output_topic_name, 10);
-  auto callback =
-    [this](const typename sensor_msgs::msg::PointCloud2::SharedPtr msg) -> void
-    {
+  auto callback = [this](const typename sensor_msgs::msg::PointCloud2::SharedPtr msg) -> void {
       if (msg->header.frame_id == output_frame_id_) {
         pub_->publish(*msg);
       } else {
         tf2::TimePoint time_point = tf2::TimePoint(
           std::chrono::seconds(msg->header.stamp.sec) +
           std::chrono::nanoseconds(msg->header.stamp.nanosec));
-        geometry_msgs::msg::TransformStamped transform_stamped =
-          buffer_.lookupTransform(msg->header.frame_id, output_frame_id_,
-            time_point, tf2::durationFromSec(1.0));
+        geometry_msgs::msg::TransformStamped transform_stamped = buffer_.lookupTransform(
+          msg->header.frame_id, output_frame_id_, time_point, tf2::durationFromSec(1.0));
         Eigen::Matrix4f mat =
           tf2::transformToEigen(transform_stamped.transform).matrix().cast<float>();
         pcl::PointCloud<pcl::PointXYZI> pc_out;
@@ -59,8 +56,7 @@ PointsTransformComponent::PointsTransformComponent(const rclcpp::NodeOptions & o
 }
 
 void PointsTransformComponent::transformPointCloud(
-  const Eigen::Matrix4f & transform,
-  sensor_msgs::msg::PointCloud2 & in,
+  const Eigen::Matrix4f & transform, sensor_msgs::msg::PointCloud2 & in,
   sensor_msgs::msg::PointCloud2 & out)
 {
   // Get X-Y-Z indices
@@ -74,12 +70,13 @@ void PointsTransformComponent::transformPointCloud(
     return;
   }
 
-  if (in.fields[x_idx].datatype != sensor_msgs::msg::PointField::FLOAT32 ||
+  if (
+    in.fields[x_idx].datatype != sensor_msgs::msg::PointField::FLOAT32 ||
     in.fields[y_idx].datatype != sensor_msgs::msg::PointField::FLOAT32 ||
     in.fields[z_idx].datatype != sensor_msgs::msg::PointField::FLOAT32)
   {
-    RCLCPP_ERROR(get_logger(),
-      "X-Y-Z coordinates not floats. Currently only floats are supported.");
+    RCLCPP_ERROR(
+      get_logger(), "X-Y-Z coordinates not floats. Currently only floats are supported.");
     return;
   }
 
@@ -101,11 +98,12 @@ void PointsTransformComponent::transformPointCloud(
     memcpy(&out.data[0], &in.data[0], in.data.size());
   }
 
-  Eigen::Array4i xyz_offset(in.fields[x_idx].offset, in.fields[y_idx].offset,
-    in.fields[z_idx].offset, 0);
+  Eigen::Array4i xyz_offset(
+    in.fields[x_idx].offset, in.fields[y_idx].offset, in.fields[z_idx].offset, 0);
 
   for (size_t i = 0; i < in.width * in.height; ++i) {
-    Eigen::Vector4f pt(*reinterpret_cast<float *>(&in.data[xyz_offset[0]]),
+    Eigen::Vector4f pt(
+      *reinterpret_cast<float *>(&in.data[xyz_offset[0]]),
       *reinterpret_cast<float *>(&in.data[xyz_offset[1]]),
       *reinterpret_cast<float *>(&in.data[xyz_offset[2]]), 1);
     Eigen::Vector4f pt_out;
@@ -115,10 +113,10 @@ void PointsTransformComponent::transformPointCloud(
     float * distance_ptr =
       (dist_idx < 0 ? NULL : reinterpret_cast<float *>(&in.data[distance_ptr_offset]));
     if (!std::isfinite(pt[0]) || !std::isfinite(pt[1]) || !std::isfinite(pt[2])) {
-      if (distance_ptr == NULL || !std::isfinite(*distance_ptr)) {        // Invalid point
+      if (distance_ptr == NULL || !std::isfinite(*distance_ptr)) {  // Invalid point
         pt_out = pt;
-      } else {        // max range point
-        pt[0] = *distance_ptr;              // Replace x with the x value saved in distance
+      } else {                  // max range point
+        pt[0] = *distance_ptr;  // Replace x with the x value saved in distance
         pt_out = transform * pt;
         max_range_point = true;
       }
