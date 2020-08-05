@@ -71,6 +71,7 @@ private:
   double min_x_, min_y_, min_z_;
   bool keep_organized_, negative_;
   rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr pub_;
+  rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr sub_;
 };
 }  // namespace pcl_apps
 
