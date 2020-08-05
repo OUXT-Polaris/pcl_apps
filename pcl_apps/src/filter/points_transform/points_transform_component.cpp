@@ -31,7 +31,9 @@ PointsTransformComponent::PointsTransformComponent(const rclcpp::NodeOptions & o
 {
   declare_parameter("output_frame_id", "");
   get_parameter("output_frame_id", output_frame_id_);
-  std::string output_topic_name = get_name() + std::string("/output");
+  std::string output_topic_name;
+  declare_parameter("output_topic", get_name() + std::string("/output"));
+  get_parameter("output_topic", output_topic_name);
   pub_ = create_publisher<sensor_msgs::msg::PointCloud2>(output_topic_name, 10);
   auto callback = [this](const typename sensor_msgs::msg::PointCloud2::SharedPtr msg) -> void {
       if (msg->header.frame_id == output_frame_id_) {
