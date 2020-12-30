@@ -31,7 +31,7 @@ VoxelgridFilterComponent::VoxelgridFilterComponent(const rclcpp::NodeOptions & o
   get_parameter("leaf_size", leaf_size_);
   declare_parameter("input_topic", get_name() + std::string("/input"));
   get_parameter("input_topic", input_topic_);
-  set_on_parameters_set_callback(
+  param_handler_ptr_ = add_on_set_parameters_callback(
     [this](
       const std::vector<rclcpp::Parameter> params) -> rcl_interfaces::msg::SetParametersResult {
       auto results = std::make_shared<rcl_interfaces::msg::SetParametersResult>();

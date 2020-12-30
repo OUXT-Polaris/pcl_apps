@@ -45,7 +45,7 @@ NdtMatchingComponent::NdtMatchingComponent(const rclcpp::NodeOptions & options)
   get_parameter("resolution", resolution_);
   declare_parameter("max_iterations", 35);
   get_parameter("max_iterations", max_iterations_);
-  set_on_parameters_set_callback(
+  param_handler_ptr_ = add_on_set_parameters_callback(
     [this](
       const std::vector<rclcpp::Parameter> params) -> rcl_interfaces::msg::SetParametersResult {
       auto results = std::make_shared<rcl_interfaces::msg::SetParametersResult>();

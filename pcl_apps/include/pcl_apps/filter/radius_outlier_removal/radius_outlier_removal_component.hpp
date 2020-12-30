@@ -80,6 +80,7 @@ private:
   pcl::RadiusOutlierRemoval<pcl::PointXYZI> filter_;
   double search_radius_;
   int min_neighbors_in_search_radius_;
+  rclcpp::Node::OnSetParametersCallbackHandle::SharedPtr param_handler_ptr_;
 };
 }  // namespace pcl_apps
 

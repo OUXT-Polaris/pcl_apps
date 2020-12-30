@@ -78,6 +78,7 @@ private:
   pcl::VoxelGrid<pcl::PCLPointCloud2> filter_;
   double leaf_size_;
   std::string input_topic_;
+  rclcpp::Node::OnSetParametersCallbackHandle::SharedPtr param_handler_ptr_;
 };
 }  // namespace pcl_apps
 

@@ -34,7 +34,7 @@ RadiusOutlierRemovalComponent::RadiusOutlierRemovalComponent(const rclcpp::NodeO
   get_parameter("search_radius", search_radius_);
   declare_parameter("min_neighbors_in_search_radius", 1);
   get_parameter("min_neighbors_in_search_radius", min_neighbors_in_search_radius_);
-  set_on_parameters_set_callback(
+  param_handler_ptr_ = add_on_set_parameters_callback(
     [this](
       const std::vector<rclcpp::Parameter> params) -> rcl_interfaces::msg::SetParametersResult {
       auto results = std::make_shared<rcl_interfaces::msg::SetParametersResult>();

@@ -110,6 +110,7 @@ private:
     ret = nsecs * std::pow(static_cast<double>(10.0), -9);
     return ret;
   }
+  rclcpp::node_interfaces::OnSetParametersCallbackHandle::SharedPtr param_handler_ptr_;
 };
 }  // namespace pcl_apps
 
