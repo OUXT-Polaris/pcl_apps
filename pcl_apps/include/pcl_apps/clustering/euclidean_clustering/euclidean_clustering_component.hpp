@@ -85,6 +85,7 @@ private:
   double cluster_tolerance_;
   int min_cluster_size_;
   int max_cluster_size_;
+  rclcpp::node_interfaces::OnSetParametersCallbackHandle::SharedPtr param_handler_ptr_;
 };
 }  // namespace pcl_apps
 

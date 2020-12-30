@@ -35,7 +35,7 @@ EuclideanClusteringComponent::EuclideanClusteringComponent(const rclcpp::NodeOpt
   get_parameter("min_cluster_size", min_cluster_size_);
   declare_parameter("max_cluster_size", 10000);
   get_parameter("max_cluster_size", max_cluster_size_);
-  set_on_parameters_set_callback(
+  param_handler_ptr_ = add_on_set_parameters_callback(
     [this](
       const std::vector<rclcpp::Parameter> params) -> rcl_interfaces::msg::SetParametersResult {
       auto results = std::make_shared<rcl_interfaces::msg::SetParametersResult>();

@@ -38,7 +38,8 @@ CropHullFilterComponent::CropHullFilterComponent(const rclcpp::NodeOptions & opt
   sync_ = std::make_shared<message_filters::TimeSynchronizer<
         sensor_msgs::msg::PointCloud2, pcl_apps_msgs::msg::PolygonArray>>(
     *pointcloud_sub_, *polygon_sub_, 10);
-  sync_->registerCallback(std::bind(
+  sync_->registerCallback(
+    std::bind(
       &CropHullFilterComponent::callback, this, std::placeholders::_1, std::placeholders::_2));
 }
 
