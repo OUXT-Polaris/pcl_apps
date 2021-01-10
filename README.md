@@ -8,4 +8,4 @@ All of the modules are made by ROS2 components.
 Documentation is [here](https://pcl-apps.readthedocs.io/en/latest/).
  
 [![Read the Docs](https://readthedocs.org/projects/pcl-apps/badge/?version=latest)](https://pcl-apps.readthedocs.io/en/latest/)
-[![CircleCI](https://circleci.com/gh/OUXT-Polaris/pcl_apps.svg?style=svg)](https://circleci.com/gh/OUXT-Polaris/pcl_apps)
+![ROS2-Foxy](https://github.com/OUXT-Polaris/pcl_apps/workflows/ROS2-Foxy/badge.svg)
