@@ -2,8 +2,8 @@
 Changelog for package pcl_apps_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.1 (2021-01-10)
+------------------
 * Merge pull request `#11 <https://github.com/OUXT-Polaris/pcl_apps/issues/11>`_ from OUXT-Polaris/feature/crop_hull_filter
   add crop_hull filter and apply clang_format
 * add crop_hull filter and apply clang_format

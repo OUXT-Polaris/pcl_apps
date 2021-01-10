@@ -2,8 +2,8 @@
 Changelog for package pcl_apps
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.1 (2021-01-10)
+------------------
 * Merge pull request `#15 <https://github.com/OUXT-Polaris/pcl_apps/issues/15>`_ from OUXT-Polaris/fix/remove_deprecated_functions
   remove warnings from deprecated functions
 * apply reformat
