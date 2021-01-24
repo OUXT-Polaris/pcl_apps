@@ -14,7 +14,7 @@
 
 #include <pcl_apps/filter/points_transform/points_transform_component.hpp>
 
-#include <pcl/common/transforms.h>
+#include <tf2_sensor_msgs/tf2_sensor_msgs.h>
 
 // Headers in ROS2
 #include <rclcpp_components/register_node_macro.hpp>
@@ -46,32 +46,15 @@ PointsTransformComponent::PointsTransformComponent(const rclcpp::NodeOptions & o
           std::chrono::nanoseconds(msg->header.stamp.nanosec));
         geometry_msgs::msg::TransformStamped transform_stamped = buffer_.lookupTransform(
           output_frame_id_, msg->header.frame_id, time_point, tf2::durationFromSec(1.0));
-        pcl::PointCloud<pcl::PointXYZI> pc_out;
         sensor_msgs::msg::PointCloud2 output_msg;
-        transformPointCloud(
-          transform_stamped.transform.translation,
-          transform_stamped.transform.rotation, *msg, output_msg);
+        sensor_msgs::msg::PointCloud2 input_msg = *msg;
+        tf2::doTransform(input_msg, output_msg, transform_stamped);
         pub_->publish(output_msg);
       }
     };
   declare_parameter("input_topic", get_name() + std::string("/input"));
   get_parameter("input_topic", input_topic_);
   sub_ = create_subscription<sensor_msgs::msg::PointCloud2>(input_topic_, 10, callback);
-}
-
-void PointsTransformComponent::transformPointCloud(
-  geometry_msgs::msg::Vector3 offset, geometry_msgs::msg::Quaternion orientation,
-  sensor_msgs::msg::PointCloud2 & in,
-  sensor_msgs::msg::PointCloud2 & out)
-{
-  pcl::PointCloud<pcl::PointXYZI>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZI>);
-  pcl::PointCloud<pcl::PointXYZI>::Ptr transformed_cloud(new pcl::PointCloud<pcl::PointXYZI>);
-  pcl::fromROSMsg(in, *cloud);
-  Eigen::Vector3f offset_eigen(offset.x, offset.y, offset.z);
-  Eigen::Quaternionf orientation_eigen(orientation.w, orientation.x,
-    orientation.y, orientation.z);
-  pcl::transformPointCloud(*cloud, *transformed_cloud, offset_eigen, orientation_eigen);
-  pcl::toROSMsg(*transformed_cloud, out);
 }
 }  // namespace pcl_apps
 
