@@ -21,7 +21,6 @@
   <depend>pcl_apps_msgs</depend>
   <depend>libpcl-all-dev</depend>
   <depend>libboost-system-dev</depend>
-  <depend>quaternion_operation</depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
