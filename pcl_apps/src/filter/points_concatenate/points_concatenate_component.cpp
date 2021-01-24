@@ -34,8 +34,8 @@ PointsConcatenateComponent::PointsConcatenateComponent(const rclcpp::NodeOptions
   sync_.reset(new message_filters::Synchronizer<SyncPolicy>(10));
   for (int i = 0; i < num_input_; i++) {
     declare_parameter(
-      "input_topic/" + std::to_string(i), get_name() + std::string("/input") + std::to_string(i));
-    get_parameter("input_topic/" + std::to_string(i), input_topics_[i]);
+      "input_topic" + std::to_string(i), get_name() + std::string("/input") + std::to_string(i));
+    get_parameter("input_topic" + std::to_string(i), input_topics_[i]);
     boost::shared_ptr<PointCloudSubsciber> sub_ptr =
       boost::make_shared<PointCloudSubsciber>(this, input_topics_[i]);
     sub_ptrs_[i] = sub_ptr;
