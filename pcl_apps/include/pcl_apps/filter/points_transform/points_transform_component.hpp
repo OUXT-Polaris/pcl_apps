@@ -85,7 +85,8 @@ private:
   rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr sub_;
   rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr pub_;
   void transformPointCloud(
-    const Eigen::Matrix4f & transform, sensor_msgs::msg::PointCloud2 & in,
+    geometry_msgs::msg::Vector3 offset, geometry_msgs::msg::Quaternion orientation,
+    sensor_msgs::msg::PointCloud2 & in,
     sensor_msgs::msg::PointCloud2 & out);
   std::string input_topic_;
 };

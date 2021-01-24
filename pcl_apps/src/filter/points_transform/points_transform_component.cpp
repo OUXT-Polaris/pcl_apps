@@ -46,11 +46,11 @@ PointsTransformComponent::PointsTransformComponent(const rclcpp::NodeOptions & o
           std::chrono::nanoseconds(msg->header.stamp.nanosec));
         geometry_msgs::msg::TransformStamped transform_stamped = buffer_.lookupTransform(
           output_frame_id_, msg->header.frame_id, time_point, tf2::durationFromSec(1.0));
-        Eigen::Matrix4f mat =
-          tf2::transformToEigen(transform_stamped.transform).matrix().cast<float>();
         pcl::PointCloud<pcl::PointXYZI> pc_out;
         sensor_msgs::msg::PointCloud2 output_msg;
-        transformPointCloud(mat, *msg, output_msg);
+        transformPointCloud(
+          transform_stamped.transform.translation,
+          transform_stamped.transform.rotation, *msg, output_msg);
         pub_->publish(output_msg);
       }
     };
@@ -60,13 +60,17 @@ PointsTransformComponent::PointsTransformComponent(const rclcpp::NodeOptions & o
 }
 
 void PointsTransformComponent::transformPointCloud(
-  const Eigen::Matrix4f & transform, sensor_msgs::msg::PointCloud2 & in,
+  geometry_msgs::msg::Vector3 offset, geometry_msgs::msg::Quaternion orientation,
+  sensor_msgs::msg::PointCloud2 & in,
   sensor_msgs::msg::PointCloud2 & out)
 {
   pcl::PointCloud<pcl::PointXYZI>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZI>);
   pcl::PointCloud<pcl::PointXYZI>::Ptr transformed_cloud(new pcl::PointCloud<pcl::PointXYZI>);
   pcl::fromROSMsg(in, *cloud);
-  pcl::transformPointCloud(*cloud, *transformed_cloud, transform);
+  Eigen::Vector3f offset_eigen(offset.x, offset.y, offset.z);
+  Eigen::Quaternionf orientation_eigen(orientation.w, orientation.x,
+    orientation.y, orientation.z);
+  pcl::transformPointCloud(*cloud, *transformed_cloud, offset_eigen, orientation_eigen);
   pcl::toROSMsg(*transformed_cloud, out);
 }
 }  // namespace pcl_apps
