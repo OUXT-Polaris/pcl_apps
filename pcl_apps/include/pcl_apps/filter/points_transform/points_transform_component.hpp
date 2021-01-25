@@ -84,9 +84,6 @@ private:
   tf2_ros::TransformListener listener_;
   rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr sub_;
   rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr pub_;
-  void transformPointCloud(
-    const Eigen::Matrix4f & transform, sensor_msgs::msg::PointCloud2 & in,
-    sensor_msgs::msg::PointCloud2 & out);
   std::string input_topic_;
 };
 }  // namespace pcl_apps
