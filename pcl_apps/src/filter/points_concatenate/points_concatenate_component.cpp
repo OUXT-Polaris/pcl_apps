@@ -40,7 +40,7 @@ PointsConcatenateComponent::PointsConcatenateComponent(const rclcpp::NodeOptions
       std::shared_ptr<Sync2T>(
       new Sync2T(
         this, {input_topics_[0], input_topics_[1]},
-        std::chrono::milliseconds{100}, std::chrono::milliseconds{30}));
+        std::chrono::milliseconds{100}, std::chrono::milliseconds{100}));
     auto func2 = std::bind(
       &PointsConcatenateComponent::callback2, this,
       std::placeholders::_1,
@@ -51,7 +51,7 @@ PointsConcatenateComponent::PointsConcatenateComponent(const rclcpp::NodeOptions
       std::shared_ptr<Sync3T>(
       new Sync3T(
         this, {input_topics_[0], input_topics_[1], input_topics_[2]},
-        std::chrono::milliseconds{100}, std::chrono::milliseconds{30}));
+        std::chrono::milliseconds{100}, std::chrono::milliseconds{100}));
     auto func3 = std::bind(
       &PointsConcatenateComponent::callback3, this,
       std::placeholders::_1,
@@ -63,7 +63,7 @@ PointsConcatenateComponent::PointsConcatenateComponent(const rclcpp::NodeOptions
       std::shared_ptr<Sync4T>(
       new Sync4T(
         this, {input_topics_[0], input_topics_[1], input_topics_[2], input_topics_[3]},
-        std::chrono::milliseconds{100}, std::chrono::milliseconds{30}));
+        std::chrono::milliseconds{100}, std::chrono::milliseconds{100}));
     auto func4 = std::bind(
       &PointsConcatenateComponent::callback4, this,
       std::placeholders::_1,
