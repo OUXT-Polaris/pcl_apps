@@ -55,10 +55,31 @@ extern "C" {
 
 #include <rclcpp/rclcpp.hpp>
 
+#include <sensor_msgs/msg/point_cloud2.hpp>
+#include <sensor_msgs/msg/laser_scan.hpp>
+
 namespace pcl_apps
 {
-class PointCloudToLaserScanComponent
+class PointCloudToLaserScanComponent : public rclcpp::Node
 {
+public:
+  PCL_APPS_POINT_CLOUD_TO_LASERSCAN_PUBLIC
+  explicit PointCloudToLaserScanComponent(const rclcpp::NodeOptions & options);
+
+private:
+  void callback(const sensor_msgs::msg::PointCloud2::SharedPtr msg);
+  rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr sub_;
+  rclcpp::Publisher<sensor_msgs::msg::LaserScan>::SharedPtr pub_;
+  double min_height_;
+  double max_height_;
+  double angle_min_;
+  double angle_max_;
+  double angle_increment_;
+  double scan_time_;
+  double range_min_;
+  double range_max_;
+  double inf_epsilon_;
+  bool use_inf_;
 };
 }  // namespace pcl_apps
 
