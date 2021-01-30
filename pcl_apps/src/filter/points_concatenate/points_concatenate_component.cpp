@@ -82,13 +82,13 @@ void PointsConcatenateComponent::callback2(
     const PointCloud2Ptr pc = in0.get();
     pcl::PointCloud<pcl::PointXYZI>::Ptr pc_cloud(new pcl::PointCloud<pcl::PointXYZI>);
     pcl::fromROSMsg(*pc, *pc_cloud);
-    pcl::concatenateFields(*pc_cloud, *cloud, *cloud);
+    *cloud = *pc_cloud + *cloud;
   }
   if (in1) {
     const PointCloud2Ptr pc = in1.get();
     pcl::PointCloud<pcl::PointXYZI>::Ptr pc_cloud(new pcl::PointCloud<pcl::PointXYZI>);
     pcl::fromROSMsg(*pc, *pc_cloud);
-    pcl::concatenateFields(*pc_cloud, *cloud, *cloud);
+    *cloud = *pc_cloud + *cloud;
   }
   sensor_msgs::msg::PointCloud2 output_cloud_msg;
   pcl::toROSMsg(*cloud, output_cloud_msg);
@@ -103,19 +103,19 @@ void PointsConcatenateComponent::callback3(
     const PointCloud2Ptr pc = in0.get();
     pcl::PointCloud<pcl::PointXYZI>::Ptr pc_cloud(new pcl::PointCloud<pcl::PointXYZI>);
     pcl::fromROSMsg(*pc, *pc_cloud);
-    pcl::concatenateFields(*pc_cloud, *cloud, *cloud);
+    *cloud = *pc_cloud + *cloud;
   }
   if (in1) {
     const PointCloud2Ptr pc = in1.get();
     pcl::PointCloud<pcl::PointXYZI>::Ptr pc_cloud(new pcl::PointCloud<pcl::PointXYZI>);
     pcl::fromROSMsg(*pc, *pc_cloud);
-    pcl::concatenateFields(*pc_cloud, *cloud, *cloud);
+    *cloud = *pc_cloud + *cloud;
   }
   if (in2) {
     const PointCloud2Ptr pc = in2.get();
     pcl::PointCloud<pcl::PointXYZI>::Ptr pc_cloud(new pcl::PointCloud<pcl::PointXYZI>);
     pcl::fromROSMsg(*pc, *pc_cloud);
-    pcl::concatenateFields(*pc_cloud, *cloud, *cloud);
+    *cloud = *pc_cloud + *cloud;
   }
   sensor_msgs::msg::PointCloud2 output_cloud_msg;
   pcl::toROSMsg(*cloud, output_cloud_msg);
@@ -131,25 +131,25 @@ void PointsConcatenateComponent::callback4(
     const PointCloud2Ptr pc = in0.get();
     pcl::PointCloud<pcl::PointXYZI>::Ptr pc_cloud(new pcl::PointCloud<pcl::PointXYZI>);
     pcl::fromROSMsg(*pc, *pc_cloud);
-    pcl::concatenateFields(*pc_cloud, *cloud, *cloud);
+    *cloud = *pc_cloud + *cloud;
   }
   if (in1) {
     const PointCloud2Ptr pc = in1.get();
     pcl::PointCloud<pcl::PointXYZI>::Ptr pc_cloud(new pcl::PointCloud<pcl::PointXYZI>);
     pcl::fromROSMsg(*pc, *pc_cloud);
-    pcl::concatenateFields(*pc_cloud, *cloud, *cloud);
+    *cloud = *pc_cloud + *cloud;
   }
   if (in2) {
     const PointCloud2Ptr pc = in2.get();
     pcl::PointCloud<pcl::PointXYZI>::Ptr pc_cloud(new pcl::PointCloud<pcl::PointXYZI>);
     pcl::fromROSMsg(*pc, *pc_cloud);
-    pcl::concatenateFields(*pc_cloud, *cloud, *cloud);
+    *cloud = *pc_cloud + *cloud;
   }
   if (in3) {
     const PointCloud2Ptr pc = in3.get();
     pcl::PointCloud<pcl::PointXYZI>::Ptr pc_cloud(new pcl::PointCloud<pcl::PointXYZI>);
     pcl::fromROSMsg(*pc, *pc_cloud);
-    pcl::concatenateFields(*pc_cloud, *cloud, *cloud);
+    *cloud = *pc_cloud + *cloud;
   }
   sensor_msgs::msg::PointCloud2 output_cloud_msg;
   pcl::toROSMsg(*cloud, output_cloud_msg);
