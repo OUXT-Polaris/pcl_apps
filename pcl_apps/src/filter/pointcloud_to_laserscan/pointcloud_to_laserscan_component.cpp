@@ -41,7 +41,7 @@ PointCloudToLaserScanComponent::PointCloudToLaserScanComponent(const rclcpp::Nod
   range_min_ = this->declare_parameter("range_min", 0.0);
   range_max_ = this->declare_parameter("range_max", std::numeric_limits<double>::max());
   inf_epsilon_ = this->declare_parameter("inf_epsilon", 1.0);
-  use_inf_ = this->declare_parameter("use_inf", true);
+  use_inf_ = this->declare_parameter("use_inf", false);
 }
 
 void PointCloudToLaserScanComponent::callback(const sensor_msgs::msg::PointCloud2::SharedPtr msg)
