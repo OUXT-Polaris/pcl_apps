@@ -77,48 +77,48 @@ PointsConcatenateComponent::PointsConcatenateComponent(const rclcpp::NodeOptions
 void PointsConcatenateComponent::callback2(
   CallbackT in0, CallbackT in1)
 {
-  pcl::PCLPointCloud2 cloud;
+  pcl::PointCloud<pcl::PointXYZI>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZI>);
   if (in0) {
     const PointCloud2Ptr pc = in0.get();
-    pcl::PCLPointCloud2 pc_cloud;
-    pcl_conversions::toPCL(*pc, pc_cloud);
-    pcl::concatenateFields(pc_cloud, cloud, cloud);
+    pcl::PointCloud<pcl::PointXYZI>::Ptr pc_cloud(new pcl::PointCloud<pcl::PointXYZI>);
+    pcl::fromROSMsg(*pc, *pc_cloud);
+    pcl::concatenateFields(*pc_cloud, *cloud, *cloud);
   }
   if (in1) {
     const PointCloud2Ptr pc = in1.get();
-    pcl::PCLPointCloud2 pc_cloud;
-    pcl_conversions::toPCL(*pc, pc_cloud);
-    pcl::concatenateFields(pc_cloud, cloud, cloud);
+    pcl::PointCloud<pcl::PointXYZI>::Ptr pc_cloud(new pcl::PointCloud<pcl::PointXYZI>);
+    pcl::fromROSMsg(*pc, *pc_cloud);
+    pcl::concatenateFields(*pc_cloud, *cloud, *cloud);
   }
   sensor_msgs::msg::PointCloud2 output_cloud_msg;
-  pcl_conversions::fromPCL(cloud, output_cloud_msg);
+  pcl::toROSMsg(*cloud, output_cloud_msg);
   pub_->publish(output_cloud_msg);
 }
 
 void PointsConcatenateComponent::callback3(
   CallbackT in0, CallbackT in1, CallbackT in2)
 {
-  pcl::PCLPointCloud2 cloud;
+  pcl::PointCloud<pcl::PointXYZI>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZI>);
   if (in0) {
     const PointCloud2Ptr pc = in0.get();
-    pcl::PCLPointCloud2 pc_cloud;
-    pcl_conversions::toPCL(*pc, pc_cloud);
-    pcl::concatenateFields(pc_cloud, cloud, cloud);
+    pcl::PointCloud<pcl::PointXYZI>::Ptr pc_cloud(new pcl::PointCloud<pcl::PointXYZI>);
+    pcl::fromROSMsg(*pc, *pc_cloud);
+    pcl::concatenateFields(*pc_cloud, *cloud, *cloud);
   }
   if (in1) {
     const PointCloud2Ptr pc = in1.get();
-    pcl::PCLPointCloud2 pc_cloud;
-    pcl_conversions::toPCL(*pc, pc_cloud);
-    pcl::concatenateFields(pc_cloud, cloud, cloud);
+    pcl::PointCloud<pcl::PointXYZI>::Ptr pc_cloud(new pcl::PointCloud<pcl::PointXYZI>);
+    pcl::fromROSMsg(*pc, *pc_cloud);
+    pcl::concatenateFields(*pc_cloud, *cloud, *cloud);
   }
   if (in2) {
     const PointCloud2Ptr pc = in2.get();
-    pcl::PCLPointCloud2 pc_cloud;
-    pcl_conversions::toPCL(*pc, pc_cloud);
-    pcl::concatenateFields(pc_cloud, cloud, cloud);
+    pcl::PointCloud<pcl::PointXYZI>::Ptr pc_cloud(new pcl::PointCloud<pcl::PointXYZI>);
+    pcl::fromROSMsg(*pc, *pc_cloud);
+    pcl::concatenateFields(*pc_cloud, *cloud, *cloud);
   }
   sensor_msgs::msg::PointCloud2 output_cloud_msg;
-  pcl_conversions::fromPCL(cloud, output_cloud_msg);
+  pcl::toROSMsg(*cloud, output_cloud_msg);
   pub_->publish(output_cloud_msg);
 }
 
@@ -126,33 +126,33 @@ void PointsConcatenateComponent::callback4(
   CallbackT in0, CallbackT in1, CallbackT in2,
   CallbackT in3)
 {
-  pcl::PCLPointCloud2 cloud;
+  pcl::PointCloud<pcl::PointXYZI>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZI>);
   if (in0) {
     const PointCloud2Ptr pc = in0.get();
-    pcl::PCLPointCloud2 pc_cloud;
-    pcl_conversions::toPCL(*pc, pc_cloud);
-    pcl::concatenateFields(pc_cloud, cloud, cloud);
+    pcl::PointCloud<pcl::PointXYZI>::Ptr pc_cloud(new pcl::PointCloud<pcl::PointXYZI>);
+    pcl::fromROSMsg(*pc, *pc_cloud);
+    pcl::concatenateFields(*pc_cloud, *cloud, *cloud);
   }
   if (in1) {
     const PointCloud2Ptr pc = in1.get();
-    pcl::PCLPointCloud2 pc_cloud;
-    pcl_conversions::toPCL(*pc, pc_cloud);
-    pcl::concatenateFields(pc_cloud, cloud, cloud);
+    pcl::PointCloud<pcl::PointXYZI>::Ptr pc_cloud(new pcl::PointCloud<pcl::PointXYZI>);
+    pcl::fromROSMsg(*pc, *pc_cloud);
+    pcl::concatenateFields(*pc_cloud, *cloud, *cloud);
   }
   if (in2) {
     const PointCloud2Ptr pc = in2.get();
-    pcl::PCLPointCloud2 pc_cloud;
-    pcl_conversions::toPCL(*pc, pc_cloud);
-    pcl::concatenateFields(pc_cloud, cloud, cloud);
+    pcl::PointCloud<pcl::PointXYZI>::Ptr pc_cloud(new pcl::PointCloud<pcl::PointXYZI>);
+    pcl::fromROSMsg(*pc, *pc_cloud);
+    pcl::concatenateFields(*pc_cloud, *cloud, *cloud);
   }
   if (in3) {
     const PointCloud2Ptr pc = in3.get();
-    pcl::PCLPointCloud2 pc_cloud;
-    pcl_conversions::toPCL(*pc, pc_cloud);
-    pcl::concatenateFields(pc_cloud, cloud, cloud);
+    pcl::PointCloud<pcl::PointXYZI>::Ptr pc_cloud(new pcl::PointCloud<pcl::PointXYZI>);
+    pcl::fromROSMsg(*pc, *pc_cloud);
+    pcl::concatenateFields(*pc_cloud, *cloud, *cloud);
   }
   sensor_msgs::msg::PointCloud2 output_cloud_msg;
-  pcl_conversions::fromPCL(cloud, output_cloud_msg);
+  pcl::toROSMsg(*cloud, output_cloud_msg);
   pub_->publish(output_cloud_msg);
 }
 }  // namespace pcl_apps
