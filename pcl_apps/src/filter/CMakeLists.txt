@@ -112,6 +112,26 @@ target_link_libraries(crop_box_filter_node
 ament_target_dependencies(crop_box_filter_node
   rclcpp rclcpp_components pcl_conversions sensor_msgs pcl_apps_msgs)
 
+# Point Cloud To Laser Scan Component/Node
+add_library(pointcloud_to_laserscan_component SHARED
+  pointcloud_to_laserscan/pointcloud_to_laserscan_component.cpp
+)
+target_compile_definitions(pointcloud_to_laserscan_component PRIVATE "PCL_APPS_POINTCLOUD_TO_LASERSCAN_PUBLIC")
+target_link_libraries(pointcloud_to_laserscan_component
+  ${PCL_LIBRARIES}
+)
+ament_target_dependencies(pointcloud_to_laserscan_component
+  rclcpp rclcpp_components pcl_conversions sensor_msgs)
+add_executable(pointcloud_to_laserscan_node
+  pointcloud_to_laserscan/pointcloud_to_laserscan_node.cpp
+)
+target_link_libraries(pointcloud_to_laserscan_node
+  pointcloud_to_laserscan_component
+  ${PCL_LIBRARIES}
+)
+ament_target_dependencies(pointcloud_to_laserscan_node
+  rclcpp rclcpp_components pcl_conversions sensor_msgs pcl_apps_msgs)
+
 # install executables/libs
 install(TARGETS
   points_transform_node
@@ -120,6 +140,7 @@ install(TARGETS
   radius_outlier_removal_node
   crop_hull_filter_node
   crop_box_filter_node
+  pointcloud_to_laserscan_node
   DESTINATION lib/pcl_apps
 )
 
@@ -130,6 +151,7 @@ install(TARGETS
   radius_outlier_removal_component
   crop_hull_filter_component
   crop_box_filter_component
+  pointcloud_to_laserscan_component
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin)
