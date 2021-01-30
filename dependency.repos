@@ -1,1 +1,5 @@
 repositories:
+  message_synchronizer:
+    type: git
+    url: https://github.com/OUXT-Polaris/message_synchronizer.git
+    version: master
