@@ -17,6 +17,7 @@
   <depend>tf2_eigen</depend>
   <depend>std_msgs</depend>
   <depend>geometry_msgs</depend>
+  <depend>message_synchronizer</depend>
   <depend>sensor_msgs</depend>
   <depend>pcl_apps_msgs</depend>
   <depend>libpcl-all-dev</depend>

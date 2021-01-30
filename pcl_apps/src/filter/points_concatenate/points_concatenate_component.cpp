@@ -20,7 +20,6 @@
 // Headers in STL
 #include <memory>
 #include <string>
-
 namespace pcl_apps
 {
 PointsConcatenateComponent::PointsConcatenateComponent(const rclcpp::NodeOptions & options)
@@ -28,9 +27,57 @@ PointsConcatenateComponent::PointsConcatenateComponent(const rclcpp::NodeOptions
 {
   declare_parameter("num_input", 2);
   get_parameter("num_input", num_input_);
-  assert(num_input_ >= 2 && num_input_ <= 8);
+  assert(num_input_ >= 2 && num_input_ <= 4);
   std::string output_topic_name = get_name() + std::string("/output");
   pub_ = create_publisher<sensor_msgs::msg::PointCloud2>(output_topic_name, 10);
+  for (int i = 0; i < num_input_; i++) {
+    declare_parameter(
+      "input_topic" + std::to_string(i), get_name() + std::string("/input") + std::to_string(i));
+    get_parameter("input_topic" + std::to_string(i), input_topics_[i]);
+  }
+  switch (num_input_) {
+    case 2:
+      sync2_ =
+        std::shared_ptr<Sync2T>(
+        new Sync2T(
+          this, {input_topics_[0], input_topics_[1]},
+          std::chrono::milliseconds{100}, std::chrono::milliseconds{30}));
+      auto func = std::bind(
+        &PointsConcatenateComponent::callback2, this,
+        std::placeholders::_1,
+        std::placeholders::_2);
+      sync2_->registerCallback(func);
+      break;
+    case 3:
+      sync3_ =
+        std::shared_ptr<Sync3T>(
+        new Sync3T(
+          this, {input_topics_[0], input_topics_[1], input_topics_[2]},
+          std::chrono::milliseconds{100}, std::chrono::milliseconds{30}));
+      auto func = std::bind(
+        &PointsConcatenateComponent::callback3, this,
+        std::placeholders::_1,
+        std::placeholders::_2,
+        std::placeholders::_3);
+      sync3_->registerCallback(func);
+      break;
+    case 4:
+      sync4_ =
+        std::shared_ptr<Sync4T>(
+        new Sync4T(
+          this, {input_topics_[0], input_topics_[1], input_topics_[2], input_topics_[3]},
+          std::chrono::milliseconds{100}, std::chrono::milliseconds{30}));
+      auto func = std::bind(
+        &PointsConcatenateComponent::callback4, this,
+        std::placeholders::_1,
+        std::placeholders::_2,
+        std::placeholders::_3,
+        std::placeholders::_4);
+      sync4_->registerCallback(func);
+      break;
+  }
+
+  /*
   sync_.reset(new message_filters::Synchronizer<SyncPolicy>(10));
   for (int i = 0; i < num_input_; i++) {
     declare_parameter(
@@ -71,8 +118,29 @@ PointsConcatenateComponent::PointsConcatenateComponent(const rclcpp::NodeOptions
         *sub_ptrs_[6], *sub_ptrs_[7]);
       break;
   }
+  */
 }
 
+void PointsConcatenateComponent::callback2(
+  CallbackT in0, CallbackT in1)
+{
+
+}
+
+void PointsConcatenateComponent::callback3(
+  CallbackT in0, CallbackT in1, CallbackT in2)
+{
+
+}
+
+void PointsConcatenateComponent::callback4(
+  CallbackT in0, CallbackT in1, CallbackT in2,
+  CallbackT in3)
+{
+
+}
+
+/*
 void PointsConcatenateComponent::input(
   const PointCloud2::SharedPtr & in0, const PointCloud2::SharedPtr & in1,
   const PointCloud2::SharedPtr & in2, const PointCloud2::SharedPtr & in3,
@@ -234,6 +302,7 @@ void PointsConcatenateComponent::input(
   pcl_conversions::fromPCL(output_cloud, output_cloud_msg);
   pub_->publish(output_cloud_msg);
 }
+*/
 }  // namespace pcl_apps
 
 RCLCPP_COMPONENTS_REGISTER_NODE(pcl_apps::PointsConcatenateComponent)
