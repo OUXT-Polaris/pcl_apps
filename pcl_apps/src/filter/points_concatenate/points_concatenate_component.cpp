@@ -98,179 +98,63 @@ void PointsConcatenateComponent::callback2(
 void PointsConcatenateComponent::callback3(
   CallbackT in0, CallbackT in1, CallbackT in2)
 {
-
+  pcl::PCLPointCloud2 cloud;
+  if (in0) {
+    const PointCloud2Ptr pc = in0.get();
+    pcl::PCLPointCloud2 pc_cloud;
+    pcl_conversions::toPCL(*pc, pc_cloud);
+    pcl::concatenateFields(pc_cloud, cloud, cloud);
+  }
+  if (in1) {
+    const PointCloud2Ptr pc = in1.get();
+    pcl::PCLPointCloud2 pc_cloud;
+    pcl_conversions::toPCL(*pc, pc_cloud);
+    pcl::concatenateFields(pc_cloud, cloud, cloud);
+  }
+  if (in2) {
+    const PointCloud2Ptr pc = in2.get();
+    pcl::PCLPointCloud2 pc_cloud;
+    pcl_conversions::toPCL(*pc, pc_cloud);
+    pcl::concatenateFields(pc_cloud, cloud, cloud);
+  }
+  sensor_msgs::msg::PointCloud2 output_cloud_msg;
+  pcl_conversions::fromPCL(cloud, output_cloud_msg);
+  pub_->publish(output_cloud_msg);
 }
 
 void PointsConcatenateComponent::callback4(
   CallbackT in0, CallbackT in1, CallbackT in2,
   CallbackT in3)
 {
-
-}
-
-/*
-void PointsConcatenateComponent::input(
-  const PointCloud2::SharedPtr & in0, const PointCloud2::SharedPtr & in1,
-  const PointCloud2::SharedPtr & in2, const PointCloud2::SharedPtr & in3,
-  const PointCloud2::SharedPtr & in4, const PointCloud2::SharedPtr & in5,
-  const PointCloud2::SharedPtr & in6, const PointCloud2::SharedPtr & in7)
-{
-  assert(num_input_ >= 2 && num_input_ <= 8);
-  pcl::PCLPointCloud2 output_cloud;
-  switch (num_input_) {
-    case 2: {
-        assert(in0->header.frame_id == in1->header.frame_id);
-        pcl::PCLPointCloud2 pc0;
-        pcl_conversions::toPCL(*in0, pc0);
-        pcl::PCLPointCloud2 pc1;
-        pcl_conversions::toPCL(*in1, pc1);
-        pcl::concatenateFields(pc0, pc1, output_cloud);
-        break;
-      }
-    case 3: {
-        assert(in0->header.frame_id == in1->header.frame_id);
-        assert(in1->header.frame_id == in2->header.frame_id);
-        pcl::PCLPointCloud2 pc0;
-        pcl_conversions::toPCL(*in0, pc0);
-        pcl::PCLPointCloud2 pc1;
-        pcl_conversions::toPCL(*in1, pc1);
-        pcl::PCLPointCloud2 pc2;
-        pcl_conversions::toPCL(*in2, pc2);
-        pcl::concatenateFields(pc0, pc1, output_cloud);
-        pcl::concatenateFields(output_cloud, pc2, output_cloud);
-        break;
-      }
-    case 4: {
-        assert(in0->header.frame_id == in1->header.frame_id);
-        assert(in1->header.frame_id == in2->header.frame_id);
-        assert(in2->header.frame_id == in3->header.frame_id);
-        pcl::PCLPointCloud2 pc0;
-        pcl_conversions::toPCL(*in0, pc0);
-        pcl::PCLPointCloud2 pc1;
-        pcl_conversions::toPCL(*in1, pc1);
-        pcl::PCLPointCloud2 pc2;
-        pcl_conversions::toPCL(*in2, pc2);
-        pcl::PCLPointCloud2 pc3;
-        pcl_conversions::toPCL(*in3, pc3);
-        pcl::concatenateFields(pc0, pc1, output_cloud);
-        pcl::concatenateFields(output_cloud, pc2, output_cloud);
-        pcl::concatenateFields(output_cloud, pc3, output_cloud);
-        break;
-      }
-    case 5: {
-        assert(in0->header.frame_id == in1->header.frame_id);
-        assert(in1->header.frame_id == in2->header.frame_id);
-        assert(in2->header.frame_id == in3->header.frame_id);
-        assert(in3->header.frame_id == in4->header.frame_id);
-        pcl::PCLPointCloud2 pc0;
-        pcl_conversions::toPCL(*in0, pc0);
-        pcl::PCLPointCloud2 pc1;
-        pcl_conversions::toPCL(*in1, pc1);
-        pcl::PCLPointCloud2 pc2;
-        pcl_conversions::toPCL(*in2, pc2);
-        pcl::PCLPointCloud2 pc3;
-        pcl_conversions::toPCL(*in3, pc3);
-        pcl::PCLPointCloud2 pc4;
-        pcl_conversions::toPCL(*in4, pc4);
-        pcl::concatenateFields(pc0, pc1, output_cloud);
-        pcl::concatenateFields(output_cloud, pc2, output_cloud);
-        pcl::concatenateFields(output_cloud, pc3, output_cloud);
-        pcl::concatenateFields(output_cloud, pc4, output_cloud);
-        break;
-      }
-    case 6: {
-        assert(in0->header.frame_id == in1->header.frame_id);
-        assert(in1->header.frame_id == in2->header.frame_id);
-        assert(in2->header.frame_id == in3->header.frame_id);
-        assert(in3->header.frame_id == in4->header.frame_id);
-        assert(in4->header.frame_id == in5->header.frame_id);
-        pcl::PCLPointCloud2 pc0;
-        pcl_conversions::toPCL(*in0, pc0);
-        pcl::PCLPointCloud2 pc1;
-        pcl_conversions::toPCL(*in1, pc1);
-        pcl::PCLPointCloud2 pc2;
-        pcl_conversions::toPCL(*in2, pc2);
-        pcl::PCLPointCloud2 pc3;
-        pcl_conversions::toPCL(*in3, pc3);
-        pcl::PCLPointCloud2 pc4;
-        pcl_conversions::toPCL(*in4, pc4);
-        pcl::PCLPointCloud2 pc5;
-        pcl_conversions::toPCL(*in5, pc5);
-        pcl::concatenateFields(pc0, pc1, output_cloud);
-        pcl::concatenateFields(output_cloud, pc2, output_cloud);
-        pcl::concatenateFields(output_cloud, pc3, output_cloud);
-        pcl::concatenateFields(output_cloud, pc4, output_cloud);
-        pcl::concatenateFields(output_cloud, pc5, output_cloud);
-        break;
-      }
-    case 7: {
-        assert(in0->header.frame_id == in1->header.frame_id);
-        assert(in1->header.frame_id == in2->header.frame_id);
-        assert(in2->header.frame_id == in3->header.frame_id);
-        assert(in3->header.frame_id == in4->header.frame_id);
-        assert(in4->header.frame_id == in5->header.frame_id);
-        assert(in5->header.frame_id == in6->header.frame_id);
-        pcl::PCLPointCloud2 pc0;
-        pcl_conversions::toPCL(*in0, pc0);
-        pcl::PCLPointCloud2 pc1;
-        pcl_conversions::toPCL(*in1, pc1);
-        pcl::PCLPointCloud2 pc2;
-        pcl_conversions::toPCL(*in2, pc2);
-        pcl::PCLPointCloud2 pc3;
-        pcl_conversions::toPCL(*in3, pc3);
-        pcl::PCLPointCloud2 pc4;
-        pcl_conversions::toPCL(*in4, pc4);
-        pcl::PCLPointCloud2 pc5;
-        pcl_conversions::toPCL(*in5, pc5);
-        pcl::PCLPointCloud2 pc6;
-        pcl_conversions::toPCL(*in6, pc6);
-        pcl::concatenateFields(pc0, pc1, output_cloud);
-        pcl::concatenateFields(output_cloud, pc2, output_cloud);
-        pcl::concatenateFields(output_cloud, pc3, output_cloud);
-        pcl::concatenateFields(output_cloud, pc4, output_cloud);
-        pcl::concatenateFields(output_cloud, pc5, output_cloud);
-        pcl::concatenateFields(output_cloud, pc6, output_cloud);
-        break;
-      }
-    case 8: {
-        assert(in0->header.frame_id == in1->header.frame_id);
-        assert(in1->header.frame_id == in2->header.frame_id);
-        assert(in2->header.frame_id == in3->header.frame_id);
-        assert(in3->header.frame_id == in4->header.frame_id);
-        assert(in4->header.frame_id == in5->header.frame_id);
-        assert(in5->header.frame_id == in6->header.frame_id);
-        assert(in6->header.frame_id == in7->header.frame_id);
-        pcl::PCLPointCloud2 pc0;
-        pcl_conversions::toPCL(*in0, pc0);
-        pcl::PCLPointCloud2 pc1;
-        pcl_conversions::toPCL(*in1, pc1);
-        pcl::PCLPointCloud2 pc2;
-        pcl_conversions::toPCL(*in2, pc2);
-        pcl::PCLPointCloud2 pc3;
-        pcl_conversions::toPCL(*in3, pc3);
-        pcl::PCLPointCloud2 pc4;
-        pcl_conversions::toPCL(*in4, pc4);
-        pcl::PCLPointCloud2 pc5;
-        pcl_conversions::toPCL(*in5, pc5);
-        pcl::PCLPointCloud2 pc6;
-        pcl_conversions::toPCL(*in6, pc6);
-        pcl::PCLPointCloud2 pc7;
-        pcl_conversions::toPCL(*in7, pc7);
-        pcl::concatenateFields(pc0, pc1, output_cloud);
-        pcl::concatenateFields(output_cloud, pc2, output_cloud);
-        pcl::concatenateFields(output_cloud, pc3, output_cloud);
-        pcl::concatenateFields(output_cloud, pc4, output_cloud);
-        pcl::concatenateFields(output_cloud, pc5, output_cloud);
-        pcl::concatenateFields(output_cloud, pc6, output_cloud);
-        pcl::concatenateFields(output_cloud, pc7, output_cloud);
-        break;
-      }
+  pcl::PCLPointCloud2 cloud;
+  if (in0) {
+    const PointCloud2Ptr pc = in0.get();
+    pcl::PCLPointCloud2 pc_cloud;
+    pcl_conversions::toPCL(*pc, pc_cloud);
+    pcl::concatenateFields(pc_cloud, cloud, cloud);
+  }
+  if (in1) {
+    const PointCloud2Ptr pc = in1.get();
+    pcl::PCLPointCloud2 pc_cloud;
+    pcl_conversions::toPCL(*pc, pc_cloud);
+    pcl::concatenateFields(pc_cloud, cloud, cloud);
+  }
+  if (in2) {
+    const PointCloud2Ptr pc = in2.get();
+    pcl::PCLPointCloud2 pc_cloud;
+    pcl_conversions::toPCL(*pc, pc_cloud);
+    pcl::concatenateFields(pc_cloud, cloud, cloud);
+  }
+  if (in3) {
+    const PointCloud2Ptr pc = in3.get();
+    pcl::PCLPointCloud2 pc_cloud;
+    pcl_conversions::toPCL(*pc, pc_cloud);
+    pcl::concatenateFields(pc_cloud, cloud, cloud);
   }
   sensor_msgs::msg::PointCloud2 output_cloud_msg;
-  pcl_conversions::fromPCL(output_cloud, output_cloud_msg);
+  pcl_conversions::fromPCL(cloud, output_cloud_msg);
   pub_->publish(output_cloud_msg);
 }
-*/
 }  // namespace pcl_apps
 
 RCLCPP_COMPONENTS_REGISTER_NODE(pcl_apps::PointsConcatenateComponent)
