@@ -92,6 +92,7 @@ void PointsConcatenateComponent::callback2(
   }
   sensor_msgs::msg::PointCloud2 output_cloud_msg;
   pcl::toROSMsg(*cloud, output_cloud_msg);
+  output_cloud_msg.header.stamp = sync2_->getPollTimestamp();
   pub_->publish(output_cloud_msg);
 }
 
@@ -119,6 +120,7 @@ void PointsConcatenateComponent::callback3(
   }
   sensor_msgs::msg::PointCloud2 output_cloud_msg;
   pcl::toROSMsg(*cloud, output_cloud_msg);
+  output_cloud_msg.header.stamp = sync2_->getPollTimestamp();
   pub_->publish(output_cloud_msg);
 }
 
@@ -153,6 +155,7 @@ void PointsConcatenateComponent::callback4(
   }
   sensor_msgs::msg::PointCloud2 output_cloud_msg;
   pcl::toROSMsg(*cloud, output_cloud_msg);
+  output_cloud_msg.header.stamp = sync2_->getPollTimestamp();
   pub_->publish(output_cloud_msg);
 }
 }  // namespace pcl_apps
