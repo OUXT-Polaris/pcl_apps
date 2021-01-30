@@ -20,6 +20,8 @@
 
 #include <sensor_msgs/point_cloud2_iterator.hpp>
 
+#include <limits>
+
 namespace pcl_apps
 {
 PointCloudToLaserScanComponent::PointCloudToLaserScanComponent(const rclcpp::NodeOptions & options)
