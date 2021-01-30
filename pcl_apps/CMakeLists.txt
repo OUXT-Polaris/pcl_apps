@@ -86,6 +86,9 @@ rclcpp_components_register_nodes(crop_box_filter_component
 rclcpp_components_register_nodes(euclidean_clustering_component
   "pcl_apps::EuclideanClusteringComponent")
 
+rclcpp_components_register_nodes(pointcloud_to_laserscan_component
+  "pcl_apps::PointCloudToLaserScanComponent")
+
 # Install header files
 install(
   DIRECTORY "include/"
