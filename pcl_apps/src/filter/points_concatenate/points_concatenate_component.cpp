@@ -35,96 +35,64 @@ PointsConcatenateComponent::PointsConcatenateComponent(const rclcpp::NodeOptions
       "input_topic" + std::to_string(i), get_name() + std::string("/input") + std::to_string(i));
     get_parameter("input_topic" + std::to_string(i), input_topics_[i]);
   }
-  switch (num_input_) {
-    case 2:
-      sync2_ =
-        std::shared_ptr<Sync2T>(
-        new Sync2T(
-          this, {input_topics_[0], input_topics_[1]},
-          std::chrono::milliseconds{100}, std::chrono::milliseconds{30}));
-      auto func = std::bind(
-        &PointsConcatenateComponent::callback2, this,
-        std::placeholders::_1,
-        std::placeholders::_2);
-      sync2_->registerCallback(func);
-      break;
-    case 3:
-      sync3_ =
-        std::shared_ptr<Sync3T>(
-        new Sync3T(
-          this, {input_topics_[0], input_topics_[1], input_topics_[2]},
-          std::chrono::milliseconds{100}, std::chrono::milliseconds{30}));
-      auto func = std::bind(
-        &PointsConcatenateComponent::callback3, this,
-        std::placeholders::_1,
-        std::placeholders::_2,
-        std::placeholders::_3);
-      sync3_->registerCallback(func);
-      break;
-    case 4:
-      sync4_ =
-        std::shared_ptr<Sync4T>(
-        new Sync4T(
-          this, {input_topics_[0], input_topics_[1], input_topics_[2], input_topics_[3]},
-          std::chrono::milliseconds{100}, std::chrono::milliseconds{30}));
-      auto func = std::bind(
-        &PointsConcatenateComponent::callback4, this,
-        std::placeholders::_1,
-        std::placeholders::_2,
-        std::placeholders::_3,
-        std::placeholders::_4);
-      sync4_->registerCallback(func);
-      break;
+  if (num_input_ == 2) {
+    sync2_ =
+      std::shared_ptr<Sync2T>(
+      new Sync2T(
+        this, {input_topics_[0], input_topics_[1]},
+        std::chrono::milliseconds{100}, std::chrono::milliseconds{30}));
+    auto func2 = std::bind(
+      &PointsConcatenateComponent::callback2, this,
+      std::placeholders::_1,
+      std::placeholders::_2);
+    sync2_->registerCallback(func2);
+  } else if (num_input_ == 3) {
+    sync3_ =
+      std::shared_ptr<Sync3T>(
+      new Sync3T(
+        this, {input_topics_[0], input_topics_[1], input_topics_[2]},
+        std::chrono::milliseconds{100}, std::chrono::milliseconds{30}));
+    auto func3 = std::bind(
+      &PointsConcatenateComponent::callback3, this,
+      std::placeholders::_1,
+      std::placeholders::_2,
+      std::placeholders::_3);
+    sync3_->registerCallback(func3);
+  } else if (num_input_ == 4) {
+    sync4_ =
+      std::shared_ptr<Sync4T>(
+      new Sync4T(
+        this, {input_topics_[0], input_topics_[1], input_topics_[2], input_topics_[3]},
+        std::chrono::milliseconds{100}, std::chrono::milliseconds{30}));
+    auto func4 = std::bind(
+      &PointsConcatenateComponent::callback4, this,
+      std::placeholders::_1,
+      std::placeholders::_2,
+      std::placeholders::_3,
+      std::placeholders::_4);
+    sync4_->registerCallback(func4);
   }
-
-  /*
-  sync_.reset(new message_filters::Synchronizer<SyncPolicy>(10));
-  for (int i = 0; i < num_input_; i++) {
-    declare_parameter(
-      "input_topic" + std::to_string(i), get_name() + std::string("/input") + std::to_string(i));
-    get_parameter("input_topic" + std::to_string(i), input_topics_[i]);
-    boost::shared_ptr<PointCloudSubsciber> sub_ptr =
-      boost::make_shared<PointCloudSubsciber>(this, input_topics_[i]);
-    sub_ptrs_[i] = sub_ptr;
-  }
-  switch (num_input_) {
-    case 2:
-      sync_->connectInput(*sub_ptrs_[0], *sub_ptrs_[1], nf_, nf_, nf_, nf_, nf_, nf_);
-      break;
-    case 3:
-      sync_->connectInput(*sub_ptrs_[0], *sub_ptrs_[1], *sub_ptrs_[2], nf_, nf_, nf_, nf_, nf_);
-      break;
-    case 4:
-      sync_->connectInput(
-        *sub_ptrs_[0], *sub_ptrs_[1], *sub_ptrs_[2], *sub_ptrs_[3], nf_, nf_, nf_, nf_);
-      break;
-    case 5:
-      sync_->connectInput(
-        *sub_ptrs_[0], *sub_ptrs_[1], *sub_ptrs_[2], *sub_ptrs_[3], *sub_ptrs_[4], nf_, nf_, nf_);
-      break;
-    case 6:
-      sync_->connectInput(
-        *sub_ptrs_[0], *sub_ptrs_[1], *sub_ptrs_[2], *sub_ptrs_[3], *sub_ptrs_[4], *sub_ptrs_[5],
-        nf_, nf_);
-      break;
-    case 7:
-      sync_->connectInput(
-        *sub_ptrs_[0], *sub_ptrs_[1], *sub_ptrs_[2], *sub_ptrs_[3], *sub_ptrs_[4], *sub_ptrs_[5],
-        *sub_ptrs_[6], nf_);
-      break;
-    case 8:
-      sync_->connectInput(
-        *sub_ptrs_[0], *sub_ptrs_[1], *sub_ptrs_[2], *sub_ptrs_[3], *sub_ptrs_[4], *sub_ptrs_[5],
-        *sub_ptrs_[6], *sub_ptrs_[7]);
-      break;
-  }
-  */
 }
 
 void PointsConcatenateComponent::callback2(
   CallbackT in0, CallbackT in1)
 {
-
+  pcl::PCLPointCloud2 cloud;
+  if (in0) {
+    const PointCloud2Ptr pc = in0.get();
+    pcl::PCLPointCloud2 pc_cloud;
+    pcl_conversions::toPCL(*pc, pc_cloud);
+    pcl::concatenateFields(pc_cloud, cloud, cloud);
+  }
+  if (in1) {
+    const PointCloud2Ptr pc = in1.get();
+    pcl::PCLPointCloud2 pc_cloud;
+    pcl_conversions::toPCL(*pc, pc_cloud);
+    pcl::concatenateFields(pc_cloud, cloud, cloud);
+  }
+  sensor_msgs::msg::PointCloud2 output_cloud_msg;
+  pcl_conversions::fromPCL(cloud, output_cloud_msg);
+  pub_->publish(output_cloud_msg);
 }
 
 void PointsConcatenateComponent::callback3(
