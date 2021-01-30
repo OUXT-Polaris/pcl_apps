@@ -66,17 +66,10 @@ extern "C" {
 // Headers in STL
 #include <array>
 #include <string>
+#include <memory>
 
 namespace pcl_apps
 {
-/*
-typedef sensor_msgs::msg::PointCloud2 PointCloud2;
-typedef message_filters::Subscriber<PointCloud2> PointCloudSubsciber;
-typedef message_filters::sync_policies::ApproximateTime<
-    PointCloud2, PointCloud2, PointCloud2, PointCloud2, PointCloud2, PointCloud2, PointCloud2,
-    PointCloud2>
-  SyncPolicy;
-*/
 typedef sensor_msgs::msg::PointCloud2 PointCloud2;
 typedef std::shared_ptr<PointCloud2> PointCloud2Ptr;
 typedef const boost::optional<const PointCloud2Ptr> & CallbackT;
