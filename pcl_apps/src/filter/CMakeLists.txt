@@ -6,14 +6,14 @@ target_compile_definitions(points_concatenate_component PRIVATE "PCL_APPS_POINTS
 target_link_libraries(points_concatenate_component
   boost_system ${PCL_LIBRARIES})
 ament_target_dependencies(points_concatenate_component
-  rclcpp rclcpp_components pcl_conversions sensor_msgs message_filters)
+  rclcpp rclcpp_components pcl_conversions sensor_msgs message_synchronizer)
 
 add_executable(points_concatenate_node
   points_concatenate/points_concatenate_node.cpp)
 target_link_libraries(points_concatenate_node
   points_concatenate_component ${PCL_LIBRARIES})
 ament_target_dependencies(points_concatenate_node
-  rclcpp rclcpp_components pcl_conversions sensor_msgs message_filters)
+  rclcpp rclcpp_components pcl_conversions sensor_msgs message_synchronizer)
 
 # Points Transform Component/Node
 add_library(points_transform_component SHARED
