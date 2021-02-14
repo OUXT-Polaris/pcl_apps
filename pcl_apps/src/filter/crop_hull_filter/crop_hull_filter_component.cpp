@@ -55,8 +55,10 @@ void CropHullFilterComponent::callback(
   for (auto poly_itr = polygon->polygon.begin(); poly_itr != polygon->polygon.end(); poly_itr++) {
     pcl::ConvexHull<pcl::PointXYZI> convex_hull;
     std::vector<pcl::Vertices> convex_hull_polygons;
-    boost::shared_ptr<pcl::PointCloud<pcl::PointXYZI>> hull_cloud;
-    boost::shared_ptr<pcl::PointCloud<pcl::PointXYZI>> hull_points;
+    boost::shared_ptr<pcl::PointCloud<pcl::PointXYZI>> hull_cloud(
+      new pcl::PointCloud<pcl::PointXYZI>());
+    boost::shared_ptr<pcl::PointCloud<pcl::PointXYZI>> hull_points(
+      new pcl::PointCloud<pcl::PointXYZI>());
     for (auto point_itr = poly_itr->points.begin(); point_itr != poly_itr->points.end();
       point_itr++)
     {
