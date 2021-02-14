@@ -31,10 +31,10 @@ CropHullFilterComponent::CropHullFilterComponent(const rclcpp::NodeOptions & opt
 : Node("crop_hull_filter_node", options)
 {
   pointcloud_pub_ =
-    this->create_publisher<pcl_apps_msgs::msg::PointCloudArray>("~/points_array", 1);
-  polygon_sub_ = std::shared_ptr<PolygonSubscriber>(new PolygonSubscriber(this, "~/polygon"));
+    this->create_publisher<pcl_apps_msgs::msg::PointCloudArray>("points_array", 1);
+  polygon_sub_ = std::shared_ptr<PolygonSubscriber>(new PolygonSubscriber(this, "polygon"));
   pointcloud_sub_ =
-    std::shared_ptr<PointCloudSubscriber>(new PointCloudSubscriber(this, "~/points"));
+    std::shared_ptr<PointCloudSubscriber>(new PointCloudSubscriber(this, "points"));
   sync_ = std::make_shared<message_filters::TimeSynchronizer<
         sensor_msgs::msg::PointCloud2, pcl_apps_msgs::msg::PolygonArray>>(
     *pointcloud_sub_, *polygon_sub_, 10);
