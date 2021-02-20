@@ -25,8 +25,9 @@ int main(int argc, char * argv[])
 {
   rclcpp::init(argc, argv);
   rclcpp::NodeOptions options;
-  // auto component = std::make_shared<pcl_apps::NdtMatchingComponent>(options);
-  // rclcpp::spin(component);
+  auto component = std::make_shared<pcl_apps::PointcloudProjectionComponent>(
+    "pointcloud_projection", options);
+  rclcpp::spin(component);
   rclcpp::shutdown();
   return 0;
 }

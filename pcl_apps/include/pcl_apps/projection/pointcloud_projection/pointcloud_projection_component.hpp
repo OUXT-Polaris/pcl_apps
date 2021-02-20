@@ -53,4 +53,35 @@ extern "C" {
 }  // extern "C"
 #endif
 
+#include <rclcpp/rclcpp.hpp>
+#include <message_synchronizer/message_synchronizer.hpp>
+
+#include <vision_msgs/msg/detection2_d_array.hpp>
+#include <sensor_msgs/msg/camera_info.hpp>
+#include <pcl_apps_msgs/msg/point_cloud_array.hpp>
+
+#include <memory>
+
+namespace pcl_apps
+{
+typedef message_synchronizer::MessageSynchronizer2<
+    sensor_msgs::msg::CameraInfo,
+    pcl_apps_msgs::msg::PointCloudArray> CameraInfoAndPoints;
+typedef const boost::optional<const sensor_msgs::msg::CameraInfo> & CameraInfoCallbackT;
+typedef const boost::optional<const pcl_apps_msgs::msg::PointCloudArray> & PointCloudsCallbackT;
+
+class PointcloudProjectionComponent : public rclcpp::Node
+{
+public:
+  explicit PointcloudProjectionComponent(
+    const std::string & name,
+    const rclcpp::NodeOptions & options);
+
+private:
+  rclcpp::Publisher<vision_msgs::msg::Detection2DArray>::SharedPtr detection_pub_;
+  std::shared_ptr<CameraInfoAndPoints> sync_;
+  void callback(CameraInfoCallbackT camera_info, PointCloudsCallbackT point_clouds);
+};
+}  // namespace pcl_apps
+
 #endif  // PCL_APPS__PROJECTION__POINTCLOUD_PROJECTION__POINTCLOUD_PROJECTION_COMPONENT_HPP_

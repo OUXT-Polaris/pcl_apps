@@ -13,3 +13,32 @@
 // limitations under the License.
 
 #include <pcl_apps/projection/pointcloud_projection/pointcloud_projection_component.hpp>
+
+namespace pcl_apps
+{
+PointcloudProjectionComponent::PointcloudProjectionComponent(
+  const std::string & name,
+  const rclcpp::NodeOptions & options)
+: Node(name, options)
+{
+  std::string camera_info_topic;
+  declare_parameter("camera_info_topic", "/camera_info");
+  get_parameter("camera_info_topic", camera_info_topic);
+  std::string pointcloud_array_topic;
+  declare_parameter("pointcloud_array_topic", "/pointcloud_array");
+  get_parameter("pointcloud_array_topic", pointcloud_array_topic);
+  sync_ =
+    std::shared_ptr<CameraInfoAndPoints>(
+    new CameraInfoAndPoints(
+      this,
+      {camera_info_topic, pointcloud_array_topic},
+      std::chrono::milliseconds{100},
+      std::chrono::milliseconds{100}));
+}
+
+void PointcloudProjectionComponent::callback(
+  CameraInfoCallbackT camera_info,
+  PointCloudsCallbackT point_clouds)
+{
+}
+}  // namespace pcl_apps
