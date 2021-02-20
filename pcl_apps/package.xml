@@ -22,6 +22,8 @@
   <depend>pcl_apps_msgs</depend>
   <depend>libpcl-all-dev</depend>
   <depend>libboost-system-dev</depend>
+  <depend>vision_msgs</depend>
+  <depend>image_geometry</depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

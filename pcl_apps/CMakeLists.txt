@@ -27,6 +27,8 @@ find_package(geometry_msgs REQUIRED)
 find_package(message_filters REQUIRED)
 find_package(message_synchronizer REQUIRED)
 find_package(pcl_apps_msgs REQUIRED)
+find_package(vision_msgs REQUIRED)
+find_package(image_geometry REQUIRED)
 find_package(PCL REQUIRED)
 find_package(Boost REQUIRED system)
 
@@ -52,6 +54,9 @@ add_subdirectory(src/io)
 
 # Clustering Module
 add_subdirectory(src/clustering)
+
+# Projection Module
+add_subdirectory(src/projection)
 
 rclcpp_components_register_nodes(points_concatenate_component
   "pcl_apps::PointsConcatenateComponent")

@@ -12,7 +12,7 @@ add_executable(ndt_matching_node
   ndt_matching/ndt_matching_node.cpp
 )
 target_link_libraries(ndt_matching_node
-ndt_matching_component ${PCL_LIBRARIES})
+  ndt_matching_component ${PCL_LIBRARIES})
 ament_target_dependencies(ndt_matching_node
   rclcpp rclcpp_components pcl_conversions sensor_msgs tf2_eigen)
 
