@@ -2,16 +2,16 @@
 add_library(pointcloud_projection_component SHARED
 pointcloud_projection/pointcloud_projection_component.cpp
 )
-#target_compile_definitions(pointcloud_projection_component "PCL_APPS_POINTCLOUD_PROJECTION_BUILDING_DLL")
+target_compile_definitions(pointcloud_projection_component PRIVATE "PCL_APPS_POINTCLOUD_PROJECTION_BUILDING_DLL")
 ament_target_dependencies(pointcloud_projection_component
-  rclcpp rclcpp_components pcl_conversions sensor_msgs vision_msgs image_geometry)
+  rclcpp rclcpp_components pcl_conversions sensor_msgs vision_msgs image_geometry message_synchronizer)
 target_link_libraries(pointcloud_projection_component ${PCL_LIBRARIES})
 
 add_executable(pointcloud_projection_node
   pointcloud_projection/pointcloud_projection_node.cpp
 )
 ament_target_dependencies(pointcloud_projection_node
-  rclcpp rclcpp_components pcl_conversions sensor_msgs vision_msgs image_geometry)
+  rclcpp rclcpp_components pcl_conversions sensor_msgs vision_msgs image_geometry message_synchronizer)
 target_link_libraries(pointcloud_projection_node
   pointcloud_projection_component)
 
