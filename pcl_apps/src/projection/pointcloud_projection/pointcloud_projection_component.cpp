@@ -30,6 +30,7 @@ PointcloudProjectionComponent::PointcloudProjectionComponent(
   const rclcpp::NodeOptions & options)
 : Node(name, options), buffer_(get_clock()), listener_(buffer_)
 {
+  detection_pub_ = this->create_publisher<vision_msgs::msg::Detection2DArray>("detections", 1);
   std::string camera_info_topic;
   declare_parameter("camera_info_topic", "/camera_info");
   get_parameter("camera_info_topic", camera_info_topic);
@@ -102,5 +103,6 @@ void PointcloudProjectionComponent::callback(
       detection_array.detections.emplace_back(detection);
     }
   }
+  detection_pub_->publish(detection_array);
 }
 }  // namespace pcl_apps
