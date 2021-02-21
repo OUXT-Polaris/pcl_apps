@@ -26,6 +26,9 @@
 #include <boost/geometry/geometries/polygon.hpp>
 #include <boost/geometry/geometries/box.hpp>
 
+#include <memory>
+#include <string>
+
 namespace pcl_apps
 {
 PointCloudProjectionComponent::PointCloudProjectionComponent(

@@ -63,6 +63,7 @@ extern "C" {
 #include <tf2_ros/transform_broadcaster.h>
 #include <tf2_ros/transform_listener.h>
 
+#include <string>
 #include <memory>
 
 namespace pcl_apps
