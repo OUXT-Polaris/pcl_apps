@@ -73,10 +73,10 @@ typedef message_synchronizer::MessageSynchronizer2<
 typedef const boost::optional<const sensor_msgs::msg::CameraInfo> & CameraInfoCallbackT;
 typedef const boost::optional<const pcl_apps_msgs::msg::PointCloudArray> & PointCloudsCallbackT;
 
-class PointcloudProjectionComponent : public rclcpp::Node
+class PointCloudProjectionComponent : public rclcpp::Node
 {
 public:
-  explicit PointcloudProjectionComponent(
+  explicit PointCloudProjectionComponent(
     const std::string & name,
     const rclcpp::NodeOptions & options);
 

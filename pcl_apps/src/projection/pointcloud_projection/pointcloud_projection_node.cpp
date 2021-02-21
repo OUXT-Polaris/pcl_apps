@@ -25,7 +25,7 @@ int main(int argc, char * argv[])
 {
   rclcpp::init(argc, argv);
   rclcpp::NodeOptions options;
-  auto component = std::make_shared<pcl_apps::PointcloudProjectionComponent>(
+  auto component = std::make_shared<pcl_apps::PointCloudProjectionComponent>(
     "pointcloud_projection", options);
   rclcpp::spin(component);
   rclcpp::shutdown();

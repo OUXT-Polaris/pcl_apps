@@ -95,6 +95,9 @@ rclcpp_components_register_nodes(euclidean_clustering_component
 rclcpp_components_register_nodes(pointcloud_to_laserscan_component
   "pcl_apps::PointCloudToLaserScanComponent")
 
+rclcpp_components_register_nodes(pointcloud_projection_component
+  "pcl_apps::PointCloudProjectionComponent")
+
 # Install header files
 install(
   DIRECTORY "include/"

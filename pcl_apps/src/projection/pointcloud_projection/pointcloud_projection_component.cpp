@@ -12,6 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Headers in ROS2
+#include <rclcpp_components/register_node_macro.hpp>
+
 #include <pcl_apps/projection/pointcloud_projection/pointcloud_projection_component.hpp>
 
 #include <pcl_conversions/pcl_conversions.h>
@@ -25,7 +28,7 @@
 
 namespace pcl_apps
 {
-PointcloudProjectionComponent::PointcloudProjectionComponent(
+PointCloudProjectionComponent::PointCloudProjectionComponent(
   const std::string & name,
   const rclcpp::NodeOptions & options)
 : Node(name, options), buffer_(get_clock()), listener_(buffer_)
@@ -46,7 +49,7 @@ PointcloudProjectionComponent::PointcloudProjectionComponent(
       std::chrono::milliseconds{100}));
 }
 
-void PointcloudProjectionComponent::callback(
+void PointCloudProjectionComponent::callback(
   CameraInfoCallbackT camera_info,
   PointCloudsCallbackT point_clouds)
 {
@@ -106,3 +109,5 @@ void PointcloudProjectionComponent::callback(
   detection_pub_->publish(detection_array);
 }
 }  // namespace pcl_apps
+
+RCLCPP_COMPONENTS_REGISTER_NODE(pcl_apps::PointCloudProjectionComponent)
