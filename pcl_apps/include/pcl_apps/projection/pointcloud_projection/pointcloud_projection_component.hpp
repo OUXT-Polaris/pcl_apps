@@ -79,6 +79,8 @@ public:
   explicit PointCloudProjectionComponent(
     const std::string & name,
     const rclcpp::NodeOptions & options);
+  explicit PointCloudProjectionComponent(
+    const rclcpp::NodeOptions & options);
 
 private:
   rclcpp::Publisher<vision_msgs::msg::Detection2DArray>::SharedPtr detection_pub_;

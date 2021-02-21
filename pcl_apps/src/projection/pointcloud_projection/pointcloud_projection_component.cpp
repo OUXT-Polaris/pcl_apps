@@ -29,6 +29,26 @@
 namespace pcl_apps
 {
 PointCloudProjectionComponent::PointCloudProjectionComponent(
+  const rclcpp::NodeOptions & options)
+: Node("pointcloud_projection_component", options), buffer_(get_clock()), listener_(buffer_)
+{
+  detection_pub_ = this->create_publisher<vision_msgs::msg::Detection2DArray>("detections", 1);
+  std::string camera_info_topic;
+  declare_parameter("camera_info_topic", "/camera_info");
+  get_parameter("camera_info_topic", camera_info_topic);
+  std::string pointcloud_array_topic;
+  declare_parameter("pointcloud_array_topic", "/pointcloud_array");
+  get_parameter("pointcloud_array_topic", pointcloud_array_topic);
+  sync_ =
+    std::shared_ptr<CameraInfoAndPoints>(
+    new CameraInfoAndPoints(
+      this,
+      {camera_info_topic, pointcloud_array_topic},
+      std::chrono::milliseconds{100},
+      std::chrono::milliseconds{100}));
+}
+
+PointCloudProjectionComponent::PointCloudProjectionComponent(
   const std::string & name,
   const rclcpp::NodeOptions & options)
 : Node(name, options), buffer_(get_clock()), listener_(buffer_)
