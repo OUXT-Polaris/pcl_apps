@@ -13,6 +13,7 @@
 // limitations under the License.
 
 // Headers in ROS2
+#include <rclcpp/rclcpp.hpp>
 #include <rclcpp_components/register_node_macro.hpp>
 
 #include <pcl_apps/projection/pointcloud_projection/pointcloud_projection_component.hpp>

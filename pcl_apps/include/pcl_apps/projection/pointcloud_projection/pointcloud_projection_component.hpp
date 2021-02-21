@@ -77,9 +77,11 @@ typedef const boost::optional<const pcl_apps_msgs::msg::PointCloudArray> & Point
 class PointCloudProjectionComponent : public rclcpp::Node
 {
 public:
+  PCL_APPS_POINTCLOUD_PROJECTION_PUBLIC
   explicit PointCloudProjectionComponent(
     const std::string & name,
     const rclcpp::NodeOptions & options);
+  PCL_APPS_POINTCLOUD_PROJECTION_PUBLIC
   explicit PointCloudProjectionComponent(
     const rclcpp::NodeOptions & options);
 
