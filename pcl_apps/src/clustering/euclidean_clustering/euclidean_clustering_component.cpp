@@ -82,7 +82,7 @@ EuclideanClusteringComponent::EuclideanClusteringComponent(const rclcpp::NodeOpt
   auto callback = [this](const typename sensor_msgs::msg::PointCloud2::SharedPtr msg) -> void {
       pcl_apps_msgs::msg::PointCloudArray clusters;
       clusters.header = msg->header;
-      pcl::PointCloud<pcl::PointXYZI>::Ptr cloud;
+      pcl::PointCloud<pcl::PointXYZI>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZI>());
       pcl::fromROSMsg(*msg, *cloud);
       std::vector<pcl::PointIndices> cluster_indices;
       pcl::EuclideanClusterExtraction<pcl::PointXYZI> clustering;
