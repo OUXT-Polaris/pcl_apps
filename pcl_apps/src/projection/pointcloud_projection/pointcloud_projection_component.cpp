@@ -50,6 +50,11 @@ PointCloudProjectionComponent::PointCloudProjectionComponent(
       {camera_info_topic, pointcloud_array_topic},
       std::chrono::milliseconds{100},
       std::chrono::milliseconds{100}));
+  const auto func = std::bind(
+    &PointCloudProjectionComponent::callback,
+    this, std::placeholders::_1,
+    std::placeholders::_2);
+  sync_->registerCallback(func);
 }
 
 PointCloudProjectionComponent::PointCloudProjectionComponent(
@@ -57,7 +62,7 @@ PointCloudProjectionComponent::PointCloudProjectionComponent(
   const rclcpp::NodeOptions & options)
 : Node(name, options), buffer_(get_clock()), listener_(buffer_)
 {
-  detection_pub_ = this->create_publisher<vision_msgs::msg::Detection2DArray>("detections", 1);
+  detection_pub_ = this->create_publisher<vision_msgs::msg::Detection2DArray>("projected_bbox", 1);
   std::string camera_info_topic;
   declare_parameter("camera_info_topic", "/camera_info");
   get_parameter("camera_info_topic", camera_info_topic);
@@ -85,9 +90,9 @@ void PointCloudProjectionComponent::callback(
   geometry_msgs::msg::TransformStamped transform_stamped;
   try {
     transform_stamped = buffer_.lookupTransform(
-      camera_info->header.frame_id,
-      point_clouds->header.frame_id,
-      point_clouds->header.stamp,
+      camera_info.get()->header.frame_id,
+      point_clouds.get()->header.frame_id,
+      point_clouds.get()->header.stamp,
       tf2::durationFromSec(1.0));
   } catch (tf2::ExtrapolationException & ex) {
     RCLCPP_ERROR(get_logger(), ex.what());
@@ -96,9 +101,9 @@ void PointCloudProjectionComponent::callback(
   typedef boost::geometry::model::d2::point_xy<double> point;
   typedef boost::geometry::model::polygon<point> polygon_type;
   typedef boost::geometry::model::box<point> box;
-  box camera_bbox(point(0, 0), point(camera_info->width, camera_info->height));
+  box camera_bbox(point(0, 0), point(camera_info.get()->width, camera_info.get()->height));
   vision_msgs::msg::Detection2DArray detection_array;
-  for (const auto point_cloud : point_clouds->cloud) {
+  for (const auto point_cloud : point_clouds.get()->cloud) {
     polygon_type poly;
     typedef boost::geometry::ring_type<polygon_type>::type ring_type;
     ring_type & ring = boost::geometry::exterior_ring(poly);
@@ -120,8 +125,8 @@ void PointCloudProjectionComponent::callback(
     box out;
     if (boost::geometry::intersection(camera_bbox, bx, out)) {
       vision_msgs::msg::Detection2D detection;
-      detection.header.frame_id = camera_info->header.frame_id;
-      detection.header.stamp = point_clouds->header.stamp;
+      detection.header.frame_id = camera_info.get()->header.frame_id;
+      detection.header.stamp = point_clouds.get()->header.stamp;
       detection.is_tracking = false;
       detection.bbox.center.x = (out.max_corner().x() + out.min_corner().x()) * 0.5;
       detection.bbox.center.y = (out.max_corner().y() + out.min_corner().y()) * 0.5;
