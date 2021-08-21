@@ -33,7 +33,7 @@ jobs:
       uses: OUXT-Polaris/ros-integration-test-action@0.0.9
       with:
         base_image: hakuturu583/robotx_scenario_test
-        tag: master
+        tag: release_build
         rosdistro: foxy
         test_command: ros2 launch navi_sim with_planner.launch.py
         check_result_command: ros2 run navi_sim check_result
@@ -51,8 +51,8 @@ jobs:
       if: ${{ github.event.label.name == 'clean_build' }}
       uses: OUXT-Polaris/ros-integration-test-action@0.0.9
       with:
-        base_image: ros/foxy
-        tag: master
+        base_image: ros
+        tag: foxy
         rosdistro: foxy
         test_command: ros2 launch navi_sim with_planner.launch.py
         check_result_command: ros2 run navi_sim check_result
