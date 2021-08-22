@@ -35,13 +35,14 @@ jobs:
         base_image: hakuturu583/robotx_scenario_test
         tag: release_build
         rosdistro: foxy
-        test_command: ros2 launch navi_sim with_planner.launch.py record:=True && mv go_straight.yaml /artifacts
+        test_command: ros2 launch navi_sim with_planner.launch.py record:=True rosbag_directory:=/artifacts/rosbag
         check_result_command: ros2 run navi_sim check_result
         artifact_name: scenario_test_result
         repos_artifact_name: packages
         repos_filename: packages.repos
         lcov_artifacts_name: lcov
         colcon_args: --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release
+        with_lcov: false
       env:
         ACTIONS_RUNTIME_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
         ACTIONS_RUNTIME_URL: ${{ env.ACTIONS_RUNTIME_URL }}
@@ -55,13 +56,14 @@ jobs:
         base_image: ros
         tag: foxy
         rosdistro: foxy
-        test_command: ros2 launch navi_sim with_planner.launch.py record:=True && mv go_straight.yaml /artifacts
+        test_command: ros2 launch navi_sim with_planner.launch.py record:=True rosbag_directory:=/artifacts/rosbag
         check_result_command: ros2 run navi_sim check_result
         artifact_name: scenario_test_result
         repos_artifact_name: packages
         repos_filename: packages.repos
         lcov_artifacts_name: lcov
         colcon_args: --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release
+        with_lcov: false
       env:
         ACTIONS_RUNTIME_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
         ACTIONS_RUNTIME_URL: ${{ env.ACTIONS_RUNTIME_URL }}
