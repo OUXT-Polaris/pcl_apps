@@ -1,4 +1,4 @@
-name: Scenario Test
+name: ScenarioTest
 
 on:
   schedule:
@@ -41,6 +41,7 @@ jobs:
         repos_artifact_name: packages
         repos_filename: packages.repos
         lcov_artifacts_name: lcov
+        colcon_args: --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release
       env:
         ACTIONS_RUNTIME_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
         ACTIONS_RUNTIME_URL: ${{ env.ACTIONS_RUNTIME_URL }}
@@ -60,6 +61,7 @@ jobs:
         repos_artifact_name: packages
         repos_filename: packages.repos
         lcov_artifacts_name: lcov
+        colcon_args: --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release
       env:
         ACTIONS_RUNTIME_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
         ACTIONS_RUNTIME_URL: ${{ env.ACTIONS_RUNTIME_URL }}
