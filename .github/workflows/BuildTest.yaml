@@ -1,0 +1,82 @@
+name: BuildTest
+
+on:
+  schedule:
+    - cron: 0 0 * * *
+  push:
+  workflow_dispatch:
+
+jobs:
+  build_and_test:
+    name: Build
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+      matrix:
+        rosdistro : [foxy,galactic]
+    steps:
+      - uses: actions/checkout@v2-beta
+      - name: Check dependency-${{ matrix.rosdistro }}.repos existence
+        id: check_rosdistro_repos_files
+        uses: andstor/file-existence-action@v1
+        with:
+          files: dependency-${{ matrix.rosdistro }}.repos
+          allow_failure: false
+      - name: Check dependency.repos existence
+        id: check_repos_files
+        uses: andstor/file-existence-action@v1
+        with:
+          files: dependency.repos
+          allow_failure: false
+      - name: Setup ROS2 ${{ matrix.rosdistro }} environment
+        uses: ros-tooling/setup-ros@v0.2
+        with:
+          required-ros-distributions: ${{ matrix.rosdistro }}
+      - name: Copy repository
+        run: |
+            mkdir -p ~/ros2_ws/src
+            cp -rf . ~/ros2_ws/src
+      - name: Run ros-tooling/action-ros-ci@v0.2 with dependency-${{ matrix.rosdistro }}.repos
+        uses: ros-tooling/action-ros-ci@v0.2
+        if: steps.check_rosdistro_repos_files.outputs.files_exists == 'true'
+        with:
+          target-ros2-distro: ${{ matrix.rosdistro }}
+          colcon-defaults: |
+            {
+              "build": {
+                "mixin": ["coverage-gcc"]
+              }
+            }
+          # If possible, pin the repository in the workflow to a specific commit to avoid
+          # changes in colcon-mixin-repository from breaking your tests.
+          colcon-mixin-repository: https://raw.githubusercontent.com/colcon/colcon-mixin-repository/1ddb69bedfd1f04c2f000e95452f7c24a4d6176b/index.yaml
+          vcs-repo-file-url: dependency-${{ matrix.rosdistro }}.repos
+      - name: Run ros-tooling/action-ros-ci@v0.2 with dependency.repos
+        uses: ros-tooling/action-ros-ci@v0.2
+        if: steps.check_rosdistro_repos_files.outputs.files_exists == 'false' && steps.check_repos_files.outputs.files_exists == 'true'
+        with:
+          target-ros2-distro: ${{ matrix.rosdistro }}
+          colcon-defaults: |
+            {
+              "build": {
+                "mixin": ["coverage-gcc"]
+              }
+            }
+          # If possible, pin the repository in the workflow to a specific commit to avoid
+          # changes in colcon-mixin-repository from breaking your tests.
+          colcon-mixin-repository: https://raw.githubusercontent.com/colcon/colcon-mixin-repository/1ddb69bedfd1f04c2f000e95452f7c24a4d6176b/index.yaml
+          vcs-repo-file-url: dependency.repos
+      - name: Run ros-tooling/action-ros-ci@v0.2 without repos
+        uses: ros-tooling/action-ros-ci@v0.2
+        if: steps.check_rosdistro_repos_files.outputs.files_exists == 'false' && steps.check_repos_files.outputs.files_exists == 'false'
+        with:
+          target-ros2-distro: ${{ matrix.rosdistro }}
+          colcon-defaults: |
+            {
+              "build": {
+                "mixin": ["coverage-gcc"]
+              }
+            }
+          # If possible, pin the repository in the workflow to a specific commit to avoid
+          # changes in colcon-mixin-repository from breaking your tests.
+          colcon-mixin-repository: https://raw.githubusercontent.com/colcon/colcon-mixin-repository/1ddb69bedfd1f04c2f000e95452f7c24a4d6176b/index.yaml

@@ -57,10 +57,11 @@ extern "C" {
 #include <message_filters/sync_policies/exact_time.h>
 #include <message_filters/time_synchronizer.h>
 #include <pcl/filters/crop_hull.h>
+
+#include <memory>
 #include <pcl_apps_msgs/msg/point_cloud_array.hpp>
 #include <pcl_apps_msgs/msg/polygon_array.hpp>
 #include <rclcpp/rclcpp.hpp>
-#include <memory>
 
 namespace pcl_apps
 {
@@ -75,8 +76,8 @@ public:
 private:
   rclcpp::Publisher<pcl_apps_msgs::msg::PointCloudArray>::SharedPtr pointcloud_pub_;
   std::shared_ptr<message_filters::TimeSynchronizer<
-      sensor_msgs::msg::PointCloud2, pcl_apps_msgs::msg::PolygonArray>>
-  sync_;
+    sensor_msgs::msg::PointCloud2, pcl_apps_msgs::msg::PolygonArray>>
+    sync_;
   void callback(
     const sensor_msgs::msg::PointCloud2::ConstSharedPtr point_cloud,
     const pcl_apps_msgs::msg::PolygonArray::ConstSharedPtr polygon);
