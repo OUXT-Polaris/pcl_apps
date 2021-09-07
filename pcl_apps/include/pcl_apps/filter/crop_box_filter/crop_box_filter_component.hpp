@@ -53,9 +53,9 @@ extern "C" {
 }  // extern "C"
 #endif
 
+#include <memory>
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/point_cloud2.hpp>
-#include <memory>
 
 namespace pcl_apps
 {

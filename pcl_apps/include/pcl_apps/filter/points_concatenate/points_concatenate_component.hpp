@@ -54,8 +54,9 @@ extern "C" {
 #endif
 
 // Headers in ROS2
-#include <message_synchronizer/message_synchronizer.hpp>
 #include <pcl_conversions/pcl_conversions.h>
+
+#include <message_synchronizer/message_synchronizer.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/point_cloud2.hpp>
 
@@ -65,28 +66,21 @@ extern "C" {
 
 // Headers in STL
 #include <array>
-#include <string>
 #include <memory>
+#include <string>
 
 namespace pcl_apps
 {
 typedef sensor_msgs::msg::PointCloud2 PointCloud2;
 typedef std::shared_ptr<PointCloud2> PointCloud2Ptr;
 typedef const boost::optional<const PointCloud2Ptr> & CallbackT;
-typedef message_synchronizer::MessageSynchronizer2<
-    PointCloud2,
-    PointCloud2> Sync2T;
+typedef message_synchronizer::MessageSynchronizer2<PointCloud2, PointCloud2> Sync2T;
 typedef std::shared_ptr<Sync2T> Sync2PtrT;
-typedef message_synchronizer::MessageSynchronizer3<
-    PointCloud2,
-    PointCloud2,
-    PointCloud2> Sync3T;
+typedef message_synchronizer::MessageSynchronizer3<PointCloud2, PointCloud2, PointCloud2> Sync3T;
 typedef std::shared_ptr<Sync3T> Sync3PtrT;
 typedef message_synchronizer::MessageSynchronizer4<
-    PointCloud2,
-    PointCloud2,
-    PointCloud2,
-    PointCloud2> Sync4T;
+  PointCloud2, PointCloud2, PointCloud2, PointCloud2>
+  Sync4T;
 typedef std::shared_ptr<Sync4T> Sync4PtrT;
 
 class PointsConcatenateComponent : public rclcpp::Node

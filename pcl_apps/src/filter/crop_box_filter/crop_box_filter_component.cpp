@@ -44,8 +44,7 @@ CropBoxFilterComponent::CropBoxFilterComponent(const rclcpp::NodeOptions & optio
   get_parameter("negative", negative_);
   pub_ = create_publisher<sensor_msgs::msg::PointCloud2>("~/points_filtered", 1);
   sub_ = create_subscription<sensor_msgs::msg::PointCloud2>(
-    "~/points", 1,
-    std::bind(&CropBoxFilterComponent::pointsCallback, this, std::placeholders::_1));
+    "~/points", 1, std::bind(&CropBoxFilterComponent::pointsCallback, this, std::placeholders::_1));
 }
 
 void CropBoxFilterComponent::pointsCallback(const sensor_msgs::msg::PointCloud2::SharedPtr msg)
