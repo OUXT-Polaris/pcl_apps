@@ -35,7 +35,7 @@ jobs:
       - name: Search packages in this repository
         id: list_packages
         run: |
-          echo ::set-output name=package_list::$(colcon list --names-only)
+          echo ::set-output name=package_list::$(colcon list --names-only | sed -e ':loop; N; $!b loop; s/\n/ /g')
       - name: Show target packages
         run: |
           echo "Target packages: ${{ steps.list_packages.outputs.package_list }}"
@@ -47,6 +47,7 @@ jobs:
         uses: ros-tooling/action-ros-ci@v0.2
         if: steps.check_rosdistro_repos_files.outputs.files_exists == 'true'
         with:
+          package-name: ${{ steps.list_packages.outputs.package_list }}
           target-ros2-distro: ${{ matrix.rosdistro }}
           colcon-defaults: |
             {
@@ -62,6 +63,7 @@ jobs:
         uses: ros-tooling/action-ros-ci@v0.2
         if: steps.check_rosdistro_repos_files.outputs.files_exists == 'false' && steps.check_repos_files.outputs.files_exists == 'true'
         with:
+          package-name: ${{ steps.list_packages.outputs.package_list }}
           target-ros2-distro: ${{ matrix.rosdistro }}
           colcon-defaults: |
             {
@@ -77,6 +79,7 @@ jobs:
         uses: ros-tooling/action-ros-ci@v0.2
         if: steps.check_rosdistro_repos_files.outputs.files_exists == 'false' && steps.check_repos_files.outputs.files_exists == 'false'
         with:
+          package-name: ${{ steps.list_packages.outputs.package_list }}
           target-ros2-distro: ${{ matrix.rosdistro }}
           colcon-defaults: |
             {
