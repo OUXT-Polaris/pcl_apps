@@ -1,0 +1,39 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'version'
+        required: true
+
+jobs:
+  Release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.8.10'
+      - name: install bloom
+        run: |
+          pip3 install bloom
+      - name: generate changelog
+        run: |
+          catkin_generate_changelog --all
+        continue-on-error: true
+      - name: prepare git config
+        run: |
+          git config --global user.email "ouxt.share@gmail.com"
+          git config --global user.name "wam-v-tan"
+      - name: prepare release
+        run: |
+          catkin_prepare_release --version ${{ github.event.inputs.version }} -y --no-push
+      - name: create a GitHub release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.event.inputs.version }}
+          release_name: Release ${{ github.event.inputs.version }}
