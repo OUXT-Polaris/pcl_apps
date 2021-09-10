@@ -5,7 +5,8 @@ on:
     inputs:
       version:
         description: 'version'
-        required: true
+        required: false
+        default: bump
 
 jobs:
   Release:
@@ -27,9 +28,14 @@ jobs:
         run: |
           git config --global user.email "ouxt.share@gmail.com"
           git config --global user.name "wam-v-tan"
-      - name: prepare release
+      - name: prepare release with specific version
+        if: ${{ github.event.inputs.version }} != bump
         run: |
           catkin_prepare_release --version ${{ github.event.inputs.version }} -y --no-push
+      - name: prepare release by bump up
+        if: ${{ github.event.inputs.version }} == bump
+        run: |
+          catkin_prepare_release -y --no-push
       - name: create a GitHub release
         uses: actions/create-release@v1
         env:
