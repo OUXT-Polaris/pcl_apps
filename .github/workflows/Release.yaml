@@ -8,11 +8,15 @@ on:
         required: true
 
 jobs:
-  Release:
+  prepare_release:
+    name: Prepare Release ${{ github.event.inputs.version }}
     runs-on: ubuntu-latest
     steps:
       - name: checkout
         uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          fetch-depth: 0
       - uses: actions/setup-python@v2
         with:
           python-version: '3.8.10'
@@ -21,19 +25,51 @@ jobs:
           pip3 install bloom
       - name: generate changelog
         run: |
-          catkin_generate_changelog --all
-        continue-on-error: true
+          catkin_generate_changelog
       - name: prepare git config
         run: |
           git config --global user.email "ouxt.share@gmail.com"
           git config --global user.name "wam-v-tan"
+          git config --global url."https://${{ secrets.WAMV_TAN_BOT_SECRET }}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
+      - name: commit changes
+        run: |
+          git add --all
+          git commit -m "release version ${{ github.event.inputs.version }}"
       - name: prepare release with specific version
         run: |
           catkin_prepare_release --version ${{ github.event.inputs.version }} -y --no-push
-      - name: create a GitHub release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: manually push tag
+        run: |
+          git push origin ${{ github.event.inputs.version }}
+      - uses: peter-evans/create-pull-request@v3
+        id: create_pull_request
         with:
-          tag_name: ${{ github.event.inputs.version }}
-          release_name: Release ${{ github.event.inputs.version }}
+          token: ${{ secrets.WAMV_TAN_BOT_SECRET }}
+          commit-message: Setup workflow
+          committer: wam-v-tan <ouxt.share@gmail.com>
+          author: wam-v-tan <ouxt.share@gmail.com>
+          signoff: false
+          branch: release/${{ github.event.inputs.version }}
+          base: ${{ github.event.repository.default_branch }}
+          delete-branch: true
+          title: '[Bot] Release ${{ github.event.inputs.version }}'
+          body: |
+            # Description
+            Release ${{ github.event.inputs.version }}
+            # How to check
+            Please check passing all CI test.
+          labels: |
+            bot
+          assignees: wam-v-tan
+          reviewers: wam-v-tan
+          team-reviewers: |
+            owners
+            maintainers
+          draft: false
+      - name: Enable Pull Request Automerge
+        if: steps.create_pull_request.outputs.pull-request-operation == 'created'
+        uses: peter-evans/enable-pull-request-automerge@v1
+        with:
+          token: ${{ secrets.WAMV_TAN_BOT_SECRET }}
+          pull-request-number: ${{ steps.create_pull_request.outputs.pull-request-number }}
+          merge-method: squash
