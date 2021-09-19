@@ -39,10 +39,6 @@ jobs:
       - name: Show target packages
         run: |
           echo "Target packages: ${{ steps.list_packages.outputs.package_list }}"
-      - name: Copy repository
-        run: |
-            mkdir -p ~/ros2_ws/src
-            cp -rf . ~/ros2_ws/src
       - name: Run ros-tooling/action-ros-ci@v0.2 with dependency-${{ matrix.rosdistro }}.repos
         uses: ros-tooling/action-ros-ci@v0.2
         if: steps.check_rosdistro_repos_files.outputs.files_exists == 'true'
