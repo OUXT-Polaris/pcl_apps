@@ -14,5 +14,5 @@ jobs:
         with:
           # You should create a personal access token and store it in your repository
           token: ${{ secrets.WAMV_TAN_BOT_SECRET }}
-          repo: OUXT-Polaris/outx_automation
+          repo: OUXT-Polaris/ouxt_automation
           workflow: document
