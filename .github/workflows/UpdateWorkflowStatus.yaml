@@ -1,18 +1,18 @@
-name: Update workflow status in outx_automation
+name: UpdateDashboard
 on:
   pull_request:
+    paths-ignore:
+    - ".github/workflows/UpdateWorkflowStatus.yaml"
   workflow_dispatch:
 
 jobs:
   build:
-    name: Update workflow status in outx_automation
+    name: UpdateDashboard
     runs-on: ubuntu-latest
     steps:
-      - name: Emit repository_dispatch
-        uses: mvasigh/dispatch-action@main
+      - uses: benc-uk/workflow-dispatch@v1
         with:
           # You should create a personal access token and store it in your repository
           token: ${{ secrets.WAMV_TAN_BOT_SECRET }}
-          repo: OUXT-Polaris
-          owner: outx_automation
-          event_type: update_workflow_status
+          repo: OUXT-Polaris/outx_automation
+          workflow: document
