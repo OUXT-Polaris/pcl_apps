@@ -1,75 +1,68 @@
-name: Release
+# This file is automatically deployed from https://github.com/at-wat/.rospkg-assets.
+# Please don't directly edit; update at-wat/.rospkg-assets instead.
 
+name: Release
 on:
-  workflow_dispatch:
-    inputs:
-      version:
-        description: 'version'
-        required: true
+  issues:
+    types: [opened, edited]
 
 jobs:
-  prepare_release:
-    name: Prepare Release ${{ github.event.inputs.version }}
+  release:
     runs-on: ubuntu-latest
+    if: startsWith(github.event.issue.title, 'Release ')
     steps:
       - name: checkout
         uses: actions/checkout@v2
+      - name: create release
+        id: create_release
+        uses: at-wat/catkin-release-action@v1
         with:
-          ref: ${{ github.event.repository.default_branch }}
-          fetch-depth: 0
-      - uses: actions/setup-python@v2
-        with:
-          python-version: '3.8.10'
-      - name: install bloom
-        run: |
-          pip3 install bloom
-      - name: generate changelog
-        run: |
-          catkin_generate_changelog
-      - name: prepare git config
-        run: |
-          git config --global user.email "ouxt.share@gmail.com"
-          git config --global user.name "wam-v-tan"
-          git config --global url."https://${{ secrets.WAMV_TAN_BOT_SECRET }}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
-      - name: commit changes
-        run: |
-          git add --all
-          git commit -m "release version ${{ github.event.inputs.version }}"
-      - name: prepare release with specific version
-        run: |
-          catkin_prepare_release --version ${{ github.event.inputs.version }} -y --no-push
-      - name: manually push tag
-        run: |
-          git push origin ${{ github.event.inputs.version }}
-      - uses: peter-evans/create-pull-request@v3
+          issue_title: ${{ github.event.issue.title }}
+          git_user: wam-v-tan
+          git_email: ouxt.share@gmail.com
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: open pull-request
+        uses: repo-sync/pull-request@v2
         id: create_pull_request
         with:
-          token: ${{ secrets.WAMV_TAN_BOT_SECRET }}
-          commit-message: Setup workflow
-          committer: wam-v-tan <ouxt.share@gmail.com>
-          author: wam-v-tan <ouxt.share@gmail.com>
-          signoff: false
-          branch: release/${{ github.event.inputs.version }}
-          base: ${{ github.event.repository.default_branch }}
-          delete-branch: true
-          title: '[Bot] Release ${{ github.event.inputs.version }}'
-          body: |
-            # Description
-            Release ${{ github.event.inputs.version }}
-            # How to check
-            Please check passing all CI test.
-          labels: |
-            bot
-          assignees: wam-v-tan
-          reviewers: wam-v-tan
-          team-reviewers: |
-            owners
-            maintainers
-          draft: false
+          source_branch: ${{ steps.create_release.outputs.created_branch }}
+          destination_branch: ${{ github.event.repository.default_branch }}
+          pr_title: Release ${{ steps.create_release.outputs.version}}
+          pr_body: close \#${{ github.event.issue.number }}
+          pr_assignee: wam-v-tan
+          github_token: ${{ secrets.WAMV_TAN_BOT_SECRET }}
       - name: Enable Pull Request Automerge
-        if: steps.create_pull_request.outputs.pull-request-operation == 'created'
         uses: peter-evans/enable-pull-request-automerge@v1
         with:
           token: ${{ secrets.WAMV_TAN_BOT_SECRET }}
-          pull-request-number: ${{ steps.create_pull_request.outputs.pull-request-number }}
+          pull-request-number: ${{ steps.create_pull_request.outputs.pr_number }}
           merge-method: squash
+      - name: create GitHub release
+        uses: actions/create-release@v1
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.create_release.outputs.version}}
+          release_name: Release ${{ steps.create_release.outputs.version}}
+      - name: bloom release
+        if: github.event.label.name == 'bloom'
+        id: bloom
+        uses: at-wat/bloom-release-action@v0
+        with:
+          ros_distro: foxy galactic rolling
+          github_token_bloom: ${{ secrets.WAMV_TAN_BOT_SECRET }}
+          github_user: wam-v-tan
+          git_user: wam-v-tan
+          git_email: ouxt.share@gmail.com
+          release_repository_push_url: https://github.com/${{ github.repository }}-release.git
+          tag_and_release: true
+          open_pr: true
+      - name: Notify Slack
+        uses: 8398a7/action-slack@v2
+        if: failure()
+        with:
+          status: ${{ job.status }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
