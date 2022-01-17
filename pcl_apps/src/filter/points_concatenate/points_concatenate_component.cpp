@@ -64,83 +64,101 @@ PointsConcatenateComponent::PointsConcatenateComponent(const rclcpp::NodeOptions
 void PointsConcatenateComponent::callback2(CallbackT in0, CallbackT in1)
 {
   pcl::PointCloud<pcl::PointXYZI>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZI>);
+  bool empty = true;
   if (in0) {
+    empty = false;
     const PointCloud2Ptr pc = in0.get();
     pcl::PointCloud<pcl::PointXYZI>::Ptr pc_cloud(new pcl::PointCloud<pcl::PointXYZI>);
     pcl::fromROSMsg(*pc, *pc_cloud);
     *cloud = *pc_cloud + *cloud;
   }
   if (in1) {
+    empty = false;
     const PointCloud2Ptr pc = in1.get();
     pcl::PointCloud<pcl::PointXYZI>::Ptr pc_cloud(new pcl::PointCloud<pcl::PointXYZI>);
     pcl::fromROSMsg(*pc, *pc_cloud);
     *cloud = *pc_cloud + *cloud;
   }
-  sensor_msgs::msg::PointCloud2 output_cloud_msg;
-  pcl::toROSMsg(*cloud, output_cloud_msg);
-  output_cloud_msg.header.stamp = sync2_->getPollTimestamp();
-  pub_->publish(output_cloud_msg);
+  if (!empty) {
+    sensor_msgs::msg::PointCloud2 output_cloud_msg;
+    pcl::toROSMsg(*cloud, output_cloud_msg);
+    output_cloud_msg.header.stamp = sync2_->getPollTimestamp();
+    pub_->publish(output_cloud_msg);
+  }
 }
 
 void PointsConcatenateComponent::callback3(CallbackT in0, CallbackT in1, CallbackT in2)
 {
   pcl::PointCloud<pcl::PointXYZI>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZI>);
+  bool empty = true;
   if (in0) {
+    empty = false;
     const PointCloud2Ptr pc = in0.get();
     pcl::PointCloud<pcl::PointXYZI>::Ptr pc_cloud(new pcl::PointCloud<pcl::PointXYZI>);
     pcl::fromROSMsg(*pc, *pc_cloud);
     *cloud = *pc_cloud + *cloud;
   }
   if (in1) {
+    empty = false;
     const PointCloud2Ptr pc = in1.get();
     pcl::PointCloud<pcl::PointXYZI>::Ptr pc_cloud(new pcl::PointCloud<pcl::PointXYZI>);
     pcl::fromROSMsg(*pc, *pc_cloud);
     *cloud = *pc_cloud + *cloud;
   }
   if (in2) {
+    empty = false;
     const PointCloud2Ptr pc = in2.get();
     pcl::PointCloud<pcl::PointXYZI>::Ptr pc_cloud(new pcl::PointCloud<pcl::PointXYZI>);
     pcl::fromROSMsg(*pc, *pc_cloud);
     *cloud = *pc_cloud + *cloud;
   }
-  sensor_msgs::msg::PointCloud2 output_cloud_msg;
-  pcl::toROSMsg(*cloud, output_cloud_msg);
-  output_cloud_msg.header.stamp = sync3_->getPollTimestamp();
-  pub_->publish(output_cloud_msg);
+  if (!empty) {
+    sensor_msgs::msg::PointCloud2 output_cloud_msg;
+    pcl::toROSMsg(*cloud, output_cloud_msg);
+    output_cloud_msg.header.stamp = sync3_->getPollTimestamp();
+    pub_->publish(output_cloud_msg);
+  }
 }
 
 void PointsConcatenateComponent::callback4(
   CallbackT in0, CallbackT in1, CallbackT in2, CallbackT in3)
 {
   pcl::PointCloud<pcl::PointXYZI>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZI>);
+  bool empty = true;
   if (in0) {
+    empty = false;
     const PointCloud2Ptr pc = in0.get();
     pcl::PointCloud<pcl::PointXYZI>::Ptr pc_cloud(new pcl::PointCloud<pcl::PointXYZI>);
     pcl::fromROSMsg(*pc, *pc_cloud);
     *cloud = *pc_cloud + *cloud;
   }
   if (in1) {
+    empty = false;
     const PointCloud2Ptr pc = in1.get();
     pcl::PointCloud<pcl::PointXYZI>::Ptr pc_cloud(new pcl::PointCloud<pcl::PointXYZI>);
     pcl::fromROSMsg(*pc, *pc_cloud);
     *cloud = *pc_cloud + *cloud;
   }
   if (in2) {
+    empty = false;
     const PointCloud2Ptr pc = in2.get();
     pcl::PointCloud<pcl::PointXYZI>::Ptr pc_cloud(new pcl::PointCloud<pcl::PointXYZI>);
     pcl::fromROSMsg(*pc, *pc_cloud);
     *cloud = *pc_cloud + *cloud;
   }
   if (in3) {
+    empty = false;
     const PointCloud2Ptr pc = in3.get();
     pcl::PointCloud<pcl::PointXYZI>::Ptr pc_cloud(new pcl::PointCloud<pcl::PointXYZI>);
     pcl::fromROSMsg(*pc, *pc_cloud);
     *cloud = *pc_cloud + *cloud;
   }
-  sensor_msgs::msg::PointCloud2 output_cloud_msg;
-  pcl::toROSMsg(*cloud, output_cloud_msg);
-  output_cloud_msg.header.stamp = sync4_->getPollTimestamp();
-  pub_->publish(output_cloud_msg);
+  if (!empty) {
+    sensor_msgs::msg::PointCloud2 output_cloud_msg;
+    pcl::toROSMsg(*cloud, output_cloud_msg);
+    output_cloud_msg.header.stamp = sync4_->getPollTimestamp();
+    pub_->publish(output_cloud_msg);
+  }
 }
 }  // namespace pcl_apps
 
