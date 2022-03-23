@@ -125,7 +125,6 @@ NdtMatchingComponent::NdtMatchingComponent(const rclcpp::NodeOptions & options)
     boost::shared_ptr<pcl::PointCloud<pcl::PointXYZ>> reference_cloud_(
       new pcl::PointCloud<pcl::PointXYZ>);
     pcl::fromROSMsg(*msg, *reference_cloud_);
-    std::cout << __FILE__ << "," << __LINE__ << std::endl;
     if (use_min_max_filter_) {
       double r;
       boost::shared_ptr<pcl::PointCloud<pcl::PointXYZ>> tmp_ptr(new pcl::PointCloud<pcl::PointXYZ>);
