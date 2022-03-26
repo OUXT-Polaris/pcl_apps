@@ -70,10 +70,10 @@ extern "C" {
 #include <pcl/point_types.h>
 #include <pcl/registration/ndt.h>
 #include <pcl/search/flann_search.h>
-
-#include <boost/shared_ptr.hpp>
 #include <pclomp/ndt_omp.h>
 #include <pclomp/voxel_grid_covariance_omp.h>
+
+#include <boost/shared_ptr.hpp>
 
 // Headers in STL
 #include <string>
