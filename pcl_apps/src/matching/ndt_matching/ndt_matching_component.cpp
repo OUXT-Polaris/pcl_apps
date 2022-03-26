@@ -31,7 +31,7 @@ NdtMatchingComponent::NdtMatchingComponent(const rclcpp::NodeOptions & options)
   /* Static Parameters */
   declare_parameter("reference_frame_id", "map");
   get_parameter("reference_frame_id", reference_frame_id_);
-  declare_parameter("reference_cloud_topic", get_name() + std::string("/reference_cloud"));
+  declare_parameter("reference_cloud_topic", get_name() + std::string("/reference"));
   get_parameter("reference_cloud_topic", reference_cloud_topic_);
   declare_parameter("input_cloud_topic", get_name() + std::string("/input"));
   get_parameter("input_cloud_topic", input_cloud_topic_);
