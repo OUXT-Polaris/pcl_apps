@@ -72,6 +72,8 @@ extern "C" {
 #include <pcl/search/flann_search.h>
 
 #include <boost/shared_ptr.hpp>
+#include <pclomp/ndt_omp.h>
+#include <pclomp/voxel_grid_covariance_omp.h>
 
 // Headers in STL
 #include <string>
@@ -100,12 +102,14 @@ private:
   std::mutex ndt_map_mtx_;
   double scan_min_range_;
   double scan_max_range_;
+  int omp_num_thread_;
   rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr sub_reference_cloud_;
   rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr sub_input_cloud_;
   rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr sub_initial_pose_;
   rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr current_relative_pose_pub_;
   void updateRelativePose(pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud, rclcpp::Time stamp);
-  pcl::NormalDistributionsTransform<pcl::PointXYZ, pcl::PointXYZ> ndt_;
+  std::shared_ptr<pcl::NormalDistributionsTransform<pcl::PointXYZ, pcl::PointXYZ>> ndt_;
+  //std::shared_ptr<pclomp::NormalDistributionsTransform<pcl::PointXYZ, pcl::PointXYZ>> ndt_;
   geometry_msgs::msg::PoseStamped current_relative_pose_;
   rclcpp::node_interfaces::OnSetParametersCallbackHandle::SharedPtr param_handler_ptr_;
 };

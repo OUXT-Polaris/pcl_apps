@@ -29,6 +29,7 @@ find_package(message_synchronizer REQUIRED)
 find_package(pcl_apps_msgs REQUIRED)
 find_package(PCL REQUIRED)
 find_package(Boost REQUIRED system)
+find_package(ndt_omp REQUIRED)
 
 include_directories(
   include
@@ -116,6 +117,7 @@ ament_export_dependencies(sensor_msgs)
 ament_export_dependencies(geometry_msgs)
 ament_export_dependencies(pcl_apps_msgs)
 ament_export_dependencies(rosidl_default_runtime)
+ament_export_dependencies(ndt_omp)
 ament_export_include_directories(include)
 
 ament_package()
