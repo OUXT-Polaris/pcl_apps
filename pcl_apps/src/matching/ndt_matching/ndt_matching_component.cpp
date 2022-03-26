@@ -31,11 +31,11 @@ NdtMatchingComponent::NdtMatchingComponent(const rclcpp::NodeOptions & options)
   /* Static Parameters */
   declare_parameter("reference_frame_id", "map");
   get_parameter("reference_frame_id", reference_frame_id_);
-  declare_parameter("reference_cloud_topic", "/pcd_loader/output");
+  declare_parameter("reference_cloud_topic", get_name() + std::string("/reference_cloud"));
   get_parameter("reference_cloud_topic", reference_cloud_topic_);
-  declare_parameter("input_cloud_topic", "/velodyne_points");
+  declare_parameter("input_cloud_topic", get_name() + std::string("/input"));
   get_parameter("input_cloud_topic", input_cloud_topic_);
-  declare_parameter("initial_pose_topic", "/initial_pose");
+  declare_parameter("initial_pose_topic", get_name() + std::string("/initial_pose"));
   get_parameter("initial_pose_topic", initial_pose_topic_);
   /* Dynamic Parameters */
   declare_parameter("transform_epsilon", 1.0);
