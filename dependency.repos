@@ -7,3 +7,7 @@ repositories:
     type: git
     url: https://github.com/OUXT-Polaris/ouxt_common.git
     version: master
+  ndt_omp:
+    type: git
+    url: https://github.com/OUXT-Polaris/ndt_omp.git
+    version: ros2
