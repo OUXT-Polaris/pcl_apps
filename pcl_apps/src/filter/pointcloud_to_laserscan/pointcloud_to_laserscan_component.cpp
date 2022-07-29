@@ -15,12 +15,10 @@
 // Headers in this package
 #include <pcl_apps/filter/pointcloud_to_laserscan/pointcloud_to_laserscan_component.hpp>
 // Headers in RCLCPP
+#include <limits>
 #include <rclcpp/rclcpp.hpp>
 #include <rclcpp_components/register_node_macro.hpp>
-
 #include <sensor_msgs/point_cloud2_iterator.hpp>
-
-#include <limits>
 
 namespace pcl_apps
 {
@@ -28,10 +26,8 @@ PointCloudToLaserScanComponent::PointCloudToLaserScanComponent(const rclcpp::Nod
 : Node("pointcloud_to_laserscan", options)
 {
   pub_ = create_publisher<sensor_msgs::msg::LaserScan>("output", 1);
-  sub_ =
-    create_subscription<sensor_msgs::msg::PointCloud2>(
-    "input", 1,
-    std::bind(&PointCloudToLaserScanComponent::callback, this, std::placeholders::_1));
+  sub_ = create_subscription<sensor_msgs::msg::PointCloud2>(
+    "input", 1, std::bind(&PointCloudToLaserScanComponent::callback, this, std::placeholders::_1));
   min_height_ = this->declare_parameter("min_height", std::numeric_limits<double>::min());
   max_height_ = this->declare_parameter("max_height", std::numeric_limits<double>::max());
   angle_min_ = this->declare_parameter("angle_min", -M_PI);
@@ -55,52 +51,45 @@ void PointCloudToLaserScanComponent::callback(const sensor_msgs::msg::PointCloud
   scan_msg.scan_time = scan_time_;
   scan_msg.range_min = range_min_;
   scan_msg.range_max = range_max_;
-  uint32_t ranges_size = std::ceil(
-    (scan_msg.angle_max - scan_msg.angle_min) / scan_msg.angle_increment);
+  uint32_t ranges_size =
+    std::ceil((scan_msg.angle_max - scan_msg.angle_min) / scan_msg.angle_increment);
   if (use_inf_) {
     scan_msg.ranges.assign(ranges_size, std::numeric_limits<double>::infinity());
   } else {
     scan_msg.ranges.assign(ranges_size, scan_msg.range_max + inf_epsilon_);
   }
-  for (sensor_msgs::PointCloud2ConstIterator<float> iter_x(*msg, "x"),
-    iter_y(*msg, "y"), iter_z(*msg, "z");
-    iter_x != iter_x.end(); ++iter_x, ++iter_y, ++iter_z)
-  {
+  for (sensor_msgs::PointCloud2ConstIterator<float> iter_x(*msg, "x"), iter_y(*msg, "y"),
+       iter_z(*msg, "z");
+       iter_x != iter_x.end(); ++iter_x, ++iter_y, ++iter_z) {
     if (std::isnan(*iter_x) || std::isnan(*iter_y) || std::isnan(*iter_z)) {
       RCLCPP_DEBUG(
-        this->get_logger(),
-        "rejected for nan in point(%f, %f, %f)\n",
-        *iter_x, *iter_y, *iter_z);
+        this->get_logger(), "rejected for nan in point(%f, %f, %f)\n", *iter_x, *iter_y, *iter_z);
       continue;
     }
     if (*iter_z > max_height_ || *iter_z < min_height_) {
       RCLCPP_DEBUG(
-        this->get_logger(),
-        "rejected for height %f not in range (%f, %f)\n",
-        *iter_z, min_height_, max_height_);
+        this->get_logger(), "rejected for height %f not in range (%f, %f)\n", *iter_z, min_height_,
+        max_height_);
       continue;
     }
     double range = hypot(*iter_x, *iter_y);
     if (range < range_min_) {
       RCLCPP_DEBUG(
-        this->get_logger(),
-        "rejected for range %f below minimum value %f. Point: (%f, %f, %f)",
+        this->get_logger(), "rejected for range %f below minimum value %f. Point: (%f, %f, %f)",
         range, range_min_, *iter_x, *iter_y, *iter_z);
       continue;
     }
     if (range > range_max_) {
       RCLCPP_DEBUG(
-        this->get_logger(),
-        "rejected for range %f above maximum value %f. Point: (%f, %f, %f)",
+        this->get_logger(), "rejected for range %f above maximum value %f. Point: (%f, %f, %f)",
         range, range_max_, *iter_x, *iter_y, *iter_z);
       continue;
     }
     double angle = atan2(*iter_y, *iter_x);
     if (angle < scan_msg.angle_min || angle > scan_msg.angle_max) {
       RCLCPP_DEBUG(
-        this->get_logger(),
-        "rejected for angle %f not in range (%f, %f)\n",
-        angle, scan_msg.angle_min, scan_msg.angle_max);
+        this->get_logger(), "rejected for angle %f not in range (%f, %f)\n", angle,
+        scan_msg.angle_min, scan_msg.angle_max);
       continue;
     }
     int index = (angle - scan_msg.angle_min) / scan_msg.angle_increment;

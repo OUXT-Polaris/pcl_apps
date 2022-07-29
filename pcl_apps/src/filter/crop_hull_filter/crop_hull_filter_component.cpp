@@ -16,6 +16,7 @@
 #include <pcl/point_types.h>
 #include <pcl/surface/convex_hull.h>
 #include <pcl_conversions/pcl_conversions.h>
+
 #include <pcl_apps/filter/crop_hull_filter/crop_hull_filter_component.hpp>
 
 // Headers in ROS2
@@ -30,17 +31,14 @@ namespace pcl_apps
 CropHullFilterComponent::CropHullFilterComponent(const rclcpp::NodeOptions & options)
 : Node("crop_hull_filter_node", options)
 {
-  pointcloud_pub_ =
-    this->create_publisher<pcl_apps_msgs::msg::PointCloudArray>("points_array", 1);
+  pointcloud_pub_ = this->create_publisher<pcl_apps_msgs::msg::PointCloudArray>("points_array", 1);
   polygon_sub_ = std::shared_ptr<PolygonSubscriber>(new PolygonSubscriber(this, "polygon"));
-  pointcloud_sub_ =
-    std::shared_ptr<PointCloudSubscriber>(new PointCloudSubscriber(this, "points"));
+  pointcloud_sub_ = std::shared_ptr<PointCloudSubscriber>(new PointCloudSubscriber(this, "points"));
   sync_ = std::make_shared<message_filters::TimeSynchronizer<
-        sensor_msgs::msg::PointCloud2, pcl_apps_msgs::msg::PolygonArray>>(
+    sensor_msgs::msg::PointCloud2, pcl_apps_msgs::msg::PolygonArray>>(
     *pointcloud_sub_, *polygon_sub_, 10);
-  sync_->registerCallback(
-    std::bind(
-      &CropHullFilterComponent::callback, this, std::placeholders::_1, std::placeholders::_2));
+  sync_->registerCallback(std::bind(
+    &CropHullFilterComponent::callback, this, std::placeholders::_1, std::placeholders::_2));
 }
 
 void CropHullFilterComponent::callback(
@@ -60,8 +58,7 @@ void CropHullFilterComponent::callback(
     boost::shared_ptr<pcl::PointCloud<pcl::PointXYZI>> hull_points(
       new pcl::PointCloud<pcl::PointXYZI>());
     for (auto point_itr = poly_itr->points.begin(); point_itr != poly_itr->points.end();
-      point_itr++)
-    {
+         point_itr++) {
       pcl::PointXYZI p;
       p.x = point_itr->x;
       p.y = point_itr->y;

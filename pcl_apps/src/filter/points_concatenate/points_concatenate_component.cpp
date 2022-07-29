@@ -36,127 +36,129 @@ PointsConcatenateComponent::PointsConcatenateComponent(const rclcpp::NodeOptions
     get_parameter("input_topic" + std::to_string(i), input_topics_[i]);
   }
   if (num_input_ == 2) {
-    sync2_ =
-      std::shared_ptr<Sync2T>(
-      new Sync2T(
-        this, {input_topics_[0], input_topics_[1]},
-        std::chrono::milliseconds{100}, std::chrono::milliseconds{100}));
+    sync2_ = std::shared_ptr<Sync2T>(new Sync2T(
+      this, {input_topics_[0], input_topics_[1]}, std::chrono::milliseconds{100},
+      std::chrono::milliseconds{100}));
     auto func2 = std::bind(
-      &PointsConcatenateComponent::callback2, this,
-      std::placeholders::_1,
-      std::placeholders::_2);
+      &PointsConcatenateComponent::callback2, this, std::placeholders::_1, std::placeholders::_2);
     sync2_->registerCallback(func2);
   } else if (num_input_ == 3) {
-    sync3_ =
-      std::shared_ptr<Sync3T>(
-      new Sync3T(
-        this, {input_topics_[0], input_topics_[1], input_topics_[2]},
-        std::chrono::milliseconds{100}, std::chrono::milliseconds{100}));
+    sync3_ = std::shared_ptr<Sync3T>(new Sync3T(
+      this, {input_topics_[0], input_topics_[1], input_topics_[2]}, std::chrono::milliseconds{100},
+      std::chrono::milliseconds{100}));
     auto func3 = std::bind(
-      &PointsConcatenateComponent::callback3, this,
-      std::placeholders::_1,
-      std::placeholders::_2,
+      &PointsConcatenateComponent::callback3, this, std::placeholders::_1, std::placeholders::_2,
       std::placeholders::_3);
     sync3_->registerCallback(func3);
   } else if (num_input_ == 4) {
-    sync4_ =
-      std::shared_ptr<Sync4T>(
-      new Sync4T(
-        this, {input_topics_[0], input_topics_[1], input_topics_[2], input_topics_[3]},
-        std::chrono::milliseconds{100}, std::chrono::milliseconds{100}));
+    sync4_ = std::shared_ptr<Sync4T>(new Sync4T(
+      this, {input_topics_[0], input_topics_[1], input_topics_[2], input_topics_[3]},
+      std::chrono::milliseconds{100}, std::chrono::milliseconds{100}));
     auto func4 = std::bind(
-      &PointsConcatenateComponent::callback4, this,
-      std::placeholders::_1,
-      std::placeholders::_2,
-      std::placeholders::_3,
-      std::placeholders::_4);
+      &PointsConcatenateComponent::callback4, this, std::placeholders::_1, std::placeholders::_2,
+      std::placeholders::_3, std::placeholders::_4);
     sync4_->registerCallback(func4);
   }
 }
 
-void PointsConcatenateComponent::callback2(
-  CallbackT in0, CallbackT in1)
+void PointsConcatenateComponent::callback2(CallbackT in0, CallbackT in1)
 {
   pcl::PointCloud<pcl::PointXYZI>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZI>);
+  bool empty = true;
   if (in0) {
+    empty = false;
     const PointCloud2Ptr pc = in0.get();
     pcl::PointCloud<pcl::PointXYZI>::Ptr pc_cloud(new pcl::PointCloud<pcl::PointXYZI>);
     pcl::fromROSMsg(*pc, *pc_cloud);
     *cloud = *pc_cloud + *cloud;
   }
   if (in1) {
+    empty = false;
     const PointCloud2Ptr pc = in1.get();
     pcl::PointCloud<pcl::PointXYZI>::Ptr pc_cloud(new pcl::PointCloud<pcl::PointXYZI>);
     pcl::fromROSMsg(*pc, *pc_cloud);
     *cloud = *pc_cloud + *cloud;
   }
-  sensor_msgs::msg::PointCloud2 output_cloud_msg;
-  pcl::toROSMsg(*cloud, output_cloud_msg);
-  output_cloud_msg.header.stamp = sync2_->getPollTimestamp();
-  pub_->publish(output_cloud_msg);
+  if (!empty) {
+    sensor_msgs::msg::PointCloud2 output_cloud_msg;
+    pcl::toROSMsg(*cloud, output_cloud_msg);
+    output_cloud_msg.header.stamp = sync2_->getPollTimestamp();
+    pub_->publish(output_cloud_msg);
+  }
 }
 
-void PointsConcatenateComponent::callback3(
-  CallbackT in0, CallbackT in1, CallbackT in2)
+void PointsConcatenateComponent::callback3(CallbackT in0, CallbackT in1, CallbackT in2)
 {
   pcl::PointCloud<pcl::PointXYZI>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZI>);
+  bool empty = true;
   if (in0) {
+    empty = false;
     const PointCloud2Ptr pc = in0.get();
     pcl::PointCloud<pcl::PointXYZI>::Ptr pc_cloud(new pcl::PointCloud<pcl::PointXYZI>);
     pcl::fromROSMsg(*pc, *pc_cloud);
     *cloud = *pc_cloud + *cloud;
   }
   if (in1) {
+    empty = false;
     const PointCloud2Ptr pc = in1.get();
     pcl::PointCloud<pcl::PointXYZI>::Ptr pc_cloud(new pcl::PointCloud<pcl::PointXYZI>);
     pcl::fromROSMsg(*pc, *pc_cloud);
     *cloud = *pc_cloud + *cloud;
   }
   if (in2) {
+    empty = false;
     const PointCloud2Ptr pc = in2.get();
     pcl::PointCloud<pcl::PointXYZI>::Ptr pc_cloud(new pcl::PointCloud<pcl::PointXYZI>);
     pcl::fromROSMsg(*pc, *pc_cloud);
     *cloud = *pc_cloud + *cloud;
   }
-  sensor_msgs::msg::PointCloud2 output_cloud_msg;
-  pcl::toROSMsg(*cloud, output_cloud_msg);
-  output_cloud_msg.header.stamp = sync3_->getPollTimestamp();
-  pub_->publish(output_cloud_msg);
+  if (!empty) {
+    sensor_msgs::msg::PointCloud2 output_cloud_msg;
+    pcl::toROSMsg(*cloud, output_cloud_msg);
+    output_cloud_msg.header.stamp = sync3_->getPollTimestamp();
+    pub_->publish(output_cloud_msg);
+  }
 }
 
 void PointsConcatenateComponent::callback4(
-  CallbackT in0, CallbackT in1, CallbackT in2,
-  CallbackT in3)
+  CallbackT in0, CallbackT in1, CallbackT in2, CallbackT in3)
 {
   pcl::PointCloud<pcl::PointXYZI>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZI>);
+  bool empty = true;
   if (in0) {
+    empty = false;
     const PointCloud2Ptr pc = in0.get();
     pcl::PointCloud<pcl::PointXYZI>::Ptr pc_cloud(new pcl::PointCloud<pcl::PointXYZI>);
     pcl::fromROSMsg(*pc, *pc_cloud);
     *cloud = *pc_cloud + *cloud;
   }
   if (in1) {
+    empty = false;
     const PointCloud2Ptr pc = in1.get();
     pcl::PointCloud<pcl::PointXYZI>::Ptr pc_cloud(new pcl::PointCloud<pcl::PointXYZI>);
     pcl::fromROSMsg(*pc, *pc_cloud);
     *cloud = *pc_cloud + *cloud;
   }
   if (in2) {
+    empty = false;
     const PointCloud2Ptr pc = in2.get();
     pcl::PointCloud<pcl::PointXYZI>::Ptr pc_cloud(new pcl::PointCloud<pcl::PointXYZI>);
     pcl::fromROSMsg(*pc, *pc_cloud);
     *cloud = *pc_cloud + *cloud;
   }
   if (in3) {
+    empty = false;
     const PointCloud2Ptr pc = in3.get();
     pcl::PointCloud<pcl::PointXYZI>::Ptr pc_cloud(new pcl::PointCloud<pcl::PointXYZI>);
     pcl::fromROSMsg(*pc, *pc_cloud);
     *cloud = *pc_cloud + *cloud;
   }
-  sensor_msgs::msg::PointCloud2 output_cloud_msg;
-  pcl::toROSMsg(*cloud, output_cloud_msg);
-  output_cloud_msg.header.stamp = sync4_->getPollTimestamp();
-  pub_->publish(output_cloud_msg);
+  if (!empty) {
+    sensor_msgs::msg::PointCloud2 output_cloud_msg;
+    pcl::toROSMsg(*cloud, output_cloud_msg);
+    output_cloud_msg.header.stamp = sync4_->getPollTimestamp();
+    pub_->publish(output_cloud_msg);
+  }
 }
 }  // namespace pcl_apps
 

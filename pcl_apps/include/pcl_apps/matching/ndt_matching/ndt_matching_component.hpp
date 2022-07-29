@@ -58,14 +58,20 @@ extern "C" {
 #include <tf2/LinearMath/Matrix3x3.h>
 #include <tf2/transform_datatypes.h>
 #include <tf2_eigen/tf2_eigen.h>
+
 #include <geometry_msgs/msg/pose_stamped.hpp>
 #include <geometry_msgs/msg/transform.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/point_cloud2.hpp>
 
 // Headers in PCL
+#include <pcl/kdtree/kdtree.h>
+#include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/point_types.h>
 #include <pcl/registration/ndt.h>
+#include <pcl/search/flann_search.h>
+
+#include <boost/shared_ptr.hpp>
 
 // Headers in STL
 #include <string>
@@ -87,9 +93,13 @@ private:
   double step_size_;
   double resolution_;
   int max_iterations_;
-  pcl::PointCloud<pcl::PointXYZ>::Ptr reference_cloud_;
+  boost::shared_ptr<pcl::PointCloud<pcl::PointXYZ>> reference_cloud_;
   bool reference_cloud_recieved_;
   bool initial_pose_recieved_;
+  bool use_min_max_filter_;
+  std::mutex ndt_map_mtx_;
+  double scan_min_range_;
+  double scan_max_range_;
   rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr sub_reference_cloud_;
   rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr sub_input_cloud_;
   rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr sub_initial_pose_;

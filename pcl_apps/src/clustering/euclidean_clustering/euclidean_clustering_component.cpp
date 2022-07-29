@@ -119,8 +119,13 @@ EuclideanClusteringComponent::EuclideanClusteringComponent(const rclcpp::NodeOpt
         pointcloud_msg.header = msg->header;
         clusters.cloud.push_back(pointcloud_msg);
       }
-      pub_->publish(clusters);
-    };
+      sensor_msgs::msg::PointCloud2 pointcloud_msg;
+      pcl::toROSMsg(pointcloud, pointcloud_msg);
+      pointcloud_msg.header = msg->header;
+      clusters.cloud.push_back(pointcloud_msg);
+    }
+    pub_->publish(clusters);
+  };
   sub_ = create_subscription<sensor_msgs::msg::PointCloud2>(input_topic_, 10, callback);
 }
 }  // namespace pcl_apps

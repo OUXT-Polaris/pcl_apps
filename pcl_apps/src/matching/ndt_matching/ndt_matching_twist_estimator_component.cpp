@@ -101,16 +101,16 @@ NdtMatchingTwistEstimatorComponent::NdtMatchingTwistEstimatorComponent(
   buffer_ = boost::circular_buffer<pcl::PointCloud<pcl::PointXYZ>::Ptr>(2);
   timestamps_ = boost::circular_buffer<rclcpp::Time>(2);
   auto callback = [this](const typename sensor_msgs::msg::PointCloud2::SharedPtr msg) -> void {
-      assert(input_cloud_frame_id_ == msg->header.frame_id);
-      timestamps_.push_back(msg->header.stamp);
-      pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud;
-      pcl::fromROSMsg(*msg, *input_cloud);
-      buffer_.push_back(input_cloud);
-      boost::optional<geometry_msgs::msg::TwistStamped> twist = estimateCurrentTwist();
-      if (twist) {
-        current_twist_pub_->publish(twist.get());
-      }
-    };
+    assert(input_cloud_frame_id_ == msg->header.frame_id);
+    timestamps_.push_back(msg->header.stamp);
+    pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud;
+    pcl::fromROSMsg(*msg, *input_cloud);
+    buffer_.push_back(input_cloud);
+    boost::optional<geometry_msgs::msg::TwistStamped> twist = estimateCurrentTwist();
+    if (twist) {
+      current_twist_pub_->publish(twist.get());
+    }
+  };
   sub_input_cloud_ =
     create_subscription<sensor_msgs::msg::PointCloud2>(input_cloud_topic_, 10, callback);
 }

@@ -18,6 +18,7 @@
 #include <rclcpp_components/register_node_macro.hpp>
 
 // Headers in STL
+#include <boost/shared_ptr.hpp>
 #include <memory>
 #include <string>
 #include <vector>
@@ -45,6 +46,16 @@ NdtMatchingComponent::NdtMatchingComponent(const rclcpp::NodeOptions & options)
   get_parameter("resolution", resolution_);
   declare_parameter("max_iterations", 35);
   get_parameter("max_iterations", max_iterations_);
+  declare_parameter("scan_min_range", 0.1);
+  get_parameter("scan_min_range", scan_min_range_);
+  declare_parameter("scan_max_range", 100.0);
+  get_parameter("scan_max_range", scan_max_range_);
+
+  declare_parameter("use_min_max_filter", true);
+  get_parameter("use_min_max_filter", use_min_max_filter_);
+
+  std::lock_guard<std::mutex> lock(ndt_map_mtx_);
+
   param_handler_ptr_ = add_on_set_parameters_callback(
     [this](
       const std::vector<rclcpp::Parameter> params) -> rcl_interfaces::msg::SetParametersResult {
@@ -108,25 +119,45 @@ NdtMatchingComponent::NdtMatchingComponent(const rclcpp::NodeOptions & options)
 
   auto reference_cloud_callback =
     [this](const typename sensor_msgs::msg::PointCloud2::SharedPtr msg) -> void {
-      initial_pose_recieved_ = false;
-      assert(msg->header.frame_id == reference_frame_id_);
-      reference_cloud_recieved_ = true;
-      pcl::fromROSMsg(*msg, *reference_cloud_);
-    };
+    initial_pose_recieved_ = false;
+    assert(msg->header.frame_id == reference_frame_id_);
+    reference_cloud_recieved_ = true;
+    boost::shared_ptr<pcl::PointCloud<pcl::PointXYZ>> reference_cloud_(
+      new pcl::PointCloud<pcl::PointXYZ>);
+    pcl::fromROSMsg(*msg, *reference_cloud_);
+    if (use_min_max_filter_) {
+      double r;
+      boost::shared_ptr<pcl::PointCloud<pcl::PointXYZ>> tmp_ptr(new pcl::PointCloud<pcl::PointXYZ>);
+      for (const auto & p : reference_cloud_->points) {
+        r = sqrt(pow(p.x, 2.0) + pow(p.y, 2.0));
+        if (scan_min_range_ < r && r < scan_max_range_) {
+          tmp_ptr->points.push_back(p);
+        }
+      }
+      reference_cloud_ = tmp_ptr;
+    }
+    ndt_.setInputTarget(reference_cloud_);
+    ndt_map_mtx_.lock();
+    ndt_map_mtx_.unlock();
+  };
   auto initial_pose_callback =
     [this](const typename geometry_msgs::msg::PoseStamped::SharedPtr msg) -> void {
-      initial_pose_recieved_ = true;
-      assert(msg->header.frame_id == reference_frame_id_);
-      current_relative_pose_ = *msg;
-    };
+    initial_pose_recieved_ = true;
+    assert(msg->header.frame_id == reference_frame_id_);
+    current_relative_pose_ = *msg;
+  };
   auto callback = [this](const typename sensor_msgs::msg::PointCloud2::SharedPtr msg) -> void {
-      pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud;
-      pcl::fromROSMsg(*msg, *input_cloud);
-      updateRelativePose(input_cloud, msg->header.stamp);
-      current_relative_pose_pub_->publish(current_relative_pose_);
-    };
+    std::lock_guard<std::mutex> lock(ndt_map_mtx_);
+    boost::shared_ptr<pcl::PointCloud<pcl::PointXYZ>> input_cloud(
+      new pcl::PointCloud<pcl::PointXYZ>);
+    pcl::fromROSMsg(*msg, *input_cloud);
+    std::vector<int> nan_index;
+    pcl::removeNaNFromPointCloud(*input_cloud, *input_cloud, nan_index);
+    updateRelativePose(input_cloud, msg->header.stamp);
+    current_relative_pose_pub_->publish(current_relative_pose_);
+  };
   sub_reference_cloud_ = create_subscription<sensor_msgs::msg::PointCloud2>(
-    reference_cloud_topic_, 1, reference_cloud_callback);
+    reference_cloud_topic_, 10, reference_cloud_callback);
   sub_input_cloud_ =
     create_subscription<sensor_msgs::msg::PointCloud2>(input_cloud_topic_, 10, callback);
   sub_initial_pose_ = create_subscription<geometry_msgs::msg::PoseStamped>(
@@ -136,19 +167,25 @@ NdtMatchingComponent::NdtMatchingComponent(const rclcpp::NodeOptions & options)
 void NdtMatchingComponent::updateRelativePose(
   pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud, rclcpp::Time stamp)
 {
+  boost::shared_ptr<pcl::PointCloud<pcl::PointXYZ>> reference_cloud_(
+    new pcl::PointCloud<pcl::PointXYZ>);
   ndt_.setTransformationEpsilon(transform_epsilon_);
   ndt_.setStepSize(step_size_);
   ndt_.setResolution(resolution_);
   ndt_.setMaximumIterations(max_iterations_);
   ndt_.setInputSource(input_cloud);
-  ndt_.setInputTarget(reference_cloud_);
+  if (ndt_.getInputTarget() == nullptr) {
+    RCLCPP_WARN_STREAM_THROTTLE(this->get_logger(), *this->get_clock(), 1, "No MAP!");
+    return;
+  }
   geometry_msgs::msg::Transform transform;
   transform.translation.x = current_relative_pose_.pose.position.x;
   transform.translation.y = current_relative_pose_.pose.position.y;
   transform.translation.z = current_relative_pose_.pose.position.z;
   transform.rotation = current_relative_pose_.pose.orientation;
   Eigen::Matrix4f mat = tf2::transformToEigen(transform).matrix().cast<float>();
-  pcl::PointCloud<pcl::PointXYZ>::Ptr output_cloud(new pcl::PointCloud<pcl::PointXYZ>);
+  boost::shared_ptr<pcl::PointCloud<pcl::PointXYZ>> output_cloud(
+    new pcl::PointCloud<pcl::PointXYZ>());
   ndt_.align(*output_cloud, mat);
   Eigen::Matrix4f final_transform = ndt_.getFinalTransformation();
   tf2::Matrix3x3 rotation_mat;
