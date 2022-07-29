@@ -13,27 +13,23 @@
 // limitations under the License.
 
 // Headers in ROS2
-#include <rclcpp/rclcpp.hpp>
-#include <rclcpp_components/register_node_macro.hpp>
-
-#include <pcl_apps/projection/pointcloud_projection/pointcloud_projection_component.hpp>
-
-#include <pcl_conversions/pcl_conversions.h>
 #include <image_geometry/pinhole_camera_model.h>
+#include <pcl_conversions/pcl_conversions.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
 #include <boost/geometry.hpp>
+#include <boost/geometry/geometries/box.hpp>
 #include <boost/geometry/geometries/point_xy.hpp>
 #include <boost/geometry/geometries/polygon.hpp>
-#include <boost/geometry/geometries/box.hpp>
-
 #include <memory>
+#include <pcl_apps/projection/pointcloud_projection/pointcloud_projection_component.hpp>
+#include <rclcpp/rclcpp.hpp>
+#include <rclcpp_components/register_node_macro.hpp>
 #include <string>
 
 namespace pcl_apps
 {
-PointCloudProjectionComponent::PointCloudProjectionComponent(
-  const rclcpp::NodeOptions & options)
+PointCloudProjectionComponent::PointCloudProjectionComponent(const rclcpp::NodeOptions & options)
 : Node("pointcloud_projection_component", options), buffer_(get_clock()), listener_(buffer_)
 {
   detection_pub_ = this->create_publisher<perception_msgs::msg::Detection2DArray>("detections", 1);
@@ -43,44 +39,33 @@ PointCloudProjectionComponent::PointCloudProjectionComponent(
   std::string pointcloud_array_topic;
   declare_parameter("pointcloud_array_topic", "/pointcloud_array");
   get_parameter("pointcloud_array_topic", pointcloud_array_topic);
-  sync_ =
-    std::shared_ptr<CameraInfoAndPoints>(
-    new CameraInfoAndPoints(
-      this,
-      {camera_info_topic, pointcloud_array_topic},
-      std::chrono::milliseconds{100},
-      std::chrono::milliseconds{100}));
+  sync_ = std::shared_ptr<CameraInfoAndPoints>(new CameraInfoAndPoints(
+    this, {camera_info_topic, pointcloud_array_topic}, std::chrono::milliseconds{100},
+    std::chrono::milliseconds{100}));
   const auto func = std::bind(
-    &PointCloudProjectionComponent::callback,
-    this, std::placeholders::_1,
-    std::placeholders::_2);
+    &PointCloudProjectionComponent::callback, this, std::placeholders::_1, std::placeholders::_2);
   sync_->registerCallback(func);
 }
 
 PointCloudProjectionComponent::PointCloudProjectionComponent(
-  const std::string & name,
-  const rclcpp::NodeOptions & options)
+  const std::string & name, const rclcpp::NodeOptions & options)
 : Node(name, options), buffer_(get_clock()), listener_(buffer_)
 {
-  detection_pub_ = this->create_publisher<perception_msgs::msg::Detection2DArray>("projected_bbox", 1);
+  detection_pub_ =
+    this->create_publisher<perception_msgs::msg::Detection2DArray>("projected_bbox", 1);
   std::string camera_info_topic;
   declare_parameter("camera_info_topic", "/camera_info");
   get_parameter("camera_info_topic", camera_info_topic);
   std::string pointcloud_array_topic;
   declare_parameter("pointcloud_array_topic", "/pointcloud_array");
   get_parameter("pointcloud_array_topic", pointcloud_array_topic);
-  sync_ =
-    std::shared_ptr<CameraInfoAndPoints>(
-    new CameraInfoAndPoints(
-      this,
-      {camera_info_topic, pointcloud_array_topic},
-      std::chrono::milliseconds{100},
-      std::chrono::milliseconds{100}));
+  sync_ = std::shared_ptr<CameraInfoAndPoints>(new CameraInfoAndPoints(
+    this, {camera_info_topic, pointcloud_array_topic}, std::chrono::milliseconds{100},
+    std::chrono::milliseconds{100}));
 }
 
 void PointCloudProjectionComponent::callback(
-  CameraInfoCallbackT camera_info,
-  PointCloudsCallbackT point_clouds)
+  CameraInfoCallbackT camera_info, PointCloudsCallbackT point_clouds)
 {
   if (!camera_info || !point_clouds) {
     return;
@@ -90,10 +75,8 @@ void PointCloudProjectionComponent::callback(
   geometry_msgs::msg::TransformStamped transform_stamped;
   try {
     transform_stamped = buffer_.lookupTransform(
-      camera_info.get()->header.frame_id,
-      point_clouds.get()->header.frame_id,
-      point_clouds.get()->header.stamp,
-      tf2::durationFromSec(1.0));
+      camera_info.get()->header.frame_id, point_clouds.get()->header.frame_id,
+      point_clouds.get()->header.stamp, tf2::durationFromSec(1.0));
   } catch (tf2::ExtrapolationException & ex) {
     RCLCPP_ERROR(get_logger(), ex.what());
     return;
@@ -127,7 +110,7 @@ void PointCloudProjectionComponent::callback(
       perception_msgs::msg::Detection2D detection;
       detection.header.frame_id = camera_info.get()->header.frame_id;
       detection.header.stamp = point_clouds.get()->header.stamp;
-//      detection.is_tracking = false;
+      //      detection.is_tracking = false;
       detection.bbox.center.x = (out.max_corner().x() + out.min_corner().x()) * 0.5;
       detection.bbox.center.y = (out.max_corner().y() + out.min_corner().y()) * 0.5;
       detection.bbox.size_x = out.max_corner().x() - out.min_corner().x();

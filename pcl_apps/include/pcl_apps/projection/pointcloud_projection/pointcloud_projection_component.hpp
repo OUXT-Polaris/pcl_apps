@@ -53,19 +53,17 @@ extern "C" {
 }  // extern "C"
 #endif
 
-#include <rclcpp/rclcpp.hpp>
-#include <message_synchronizer/message_synchronizer.hpp>
-
-#include <perception_msgs/msg/detection2_d_array.hpp>
-#include <sensor_msgs/msg/camera_info.hpp>
-#include <pcl_apps_msgs/msg/point_cloud_array.hpp>
-
+#include <tf2_ros/buffer.h>
 #include <tf2_ros/transform_broadcaster.h>
 #include <tf2_ros/transform_listener.h>
-#include <tf2_ros/buffer.h>
 
-#include <string>
 #include <memory>
+#include <message_synchronizer/message_synchronizer.hpp>
+#include <pcl_apps_msgs/msg/point_cloud_array.hpp>
+#include <perception_msgs/msg/detection2_d_array.hpp>
+#include <rclcpp/rclcpp.hpp>
+#include <sensor_msgs/msg/camera_info.hpp>
+#include <string>
 
 namespace pcl_apps
 {
@@ -74,9 +72,8 @@ typedef std::shared_ptr<CameraInfoT> CameraInfoTPtr;
 typedef pcl_apps_msgs::msg::PointCloudArray PointCloudArrayT;
 typedef std::shared_ptr<PointCloudArrayT> PointCloudArrayTPtr;
 
-typedef message_synchronizer::MessageSynchronizer2<
-    CameraInfoT,
-    PointCloudArrayT> CameraInfoAndPoints;
+typedef message_synchronizer::MessageSynchronizer2<CameraInfoT, PointCloudArrayT>
+  CameraInfoAndPoints;
 typedef const boost::optional<const CameraInfoTPtr> & CameraInfoCallbackT;
 typedef const boost::optional<const PointCloudArrayTPtr> & PointCloudsCallbackT;
 
@@ -85,11 +82,9 @@ class PointCloudProjectionComponent : public rclcpp::Node
 public:
   PCL_APPS_POINTCLOUD_PROJECTION_PUBLIC
   explicit PointCloudProjectionComponent(
-    const std::string & name,
-    const rclcpp::NodeOptions & options);
+    const std::string & name, const rclcpp::NodeOptions & options);
   PCL_APPS_POINTCLOUD_PROJECTION_PUBLIC
-  explicit PointCloudProjectionComponent(
-    const rclcpp::NodeOptions & options);
+  explicit PointCloudProjectionComponent(const rclcpp::NodeOptions & options);
 
 private:
   rclcpp::Publisher<perception_msgs::msg::Detection2DArray>::SharedPtr detection_pub_;
