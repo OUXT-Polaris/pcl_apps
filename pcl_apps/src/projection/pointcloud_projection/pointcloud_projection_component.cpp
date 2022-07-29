@@ -36,7 +36,7 @@ PointCloudProjectionComponent::PointCloudProjectionComponent(
   const rclcpp::NodeOptions & options)
 : Node("pointcloud_projection_component", options), buffer_(get_clock()), listener_(buffer_)
 {
-  detection_pub_ = this->create_publisher<vision_msgs::msg::Detection2DArray>("detections", 1);
+  detection_pub_ = this->create_publisher<perception_msgs::msg::Detection2DArray>("detections", 1);
   std::string camera_info_topic;
   declare_parameter("camera_info_topic", "/camera_info");
   get_parameter("camera_info_topic", camera_info_topic);
@@ -62,7 +62,7 @@ PointCloudProjectionComponent::PointCloudProjectionComponent(
   const rclcpp::NodeOptions & options)
 : Node(name, options), buffer_(get_clock()), listener_(buffer_)
 {
-  detection_pub_ = this->create_publisher<vision_msgs::msg::Detection2DArray>("projected_bbox", 1);
+  detection_pub_ = this->create_publisher<perception_msgs::msg::Detection2DArray>("projected_bbox", 1);
   std::string camera_info_topic;
   declare_parameter("camera_info_topic", "/camera_info");
   get_parameter("camera_info_topic", camera_info_topic);
@@ -102,7 +102,7 @@ void PointCloudProjectionComponent::callback(
   typedef boost::geometry::model::polygon<point> polygon_type;
   typedef boost::geometry::model::box<point> box;
   box camera_bbox(point(0, 0), point(camera_info.get()->width, camera_info.get()->height));
-  vision_msgs::msg::Detection2DArray detection_array;
+  perception_msgs::msg::Detection2DArray detection_array;
   for (const auto point_cloud : point_clouds.get()->cloud) {
     polygon_type poly;
     typedef boost::geometry::ring_type<polygon_type>::type ring_type;
@@ -124,10 +124,10 @@ void PointCloudProjectionComponent::callback(
     const box bx = boost::geometry::return_envelope<box>(poly);
     box out;
     if (boost::geometry::intersection(camera_bbox, bx, out)) {
-      vision_msgs::msg::Detection2D detection;
+      perception_msgs::msg::Detection2D detection;
       detection.header.frame_id = camera_info.get()->header.frame_id;
       detection.header.stamp = point_clouds.get()->header.stamp;
-      detection.is_tracking = false;
+//      detection.is_tracking = false;
       detection.bbox.center.x = (out.max_corner().x() + out.min_corner().x()) * 0.5;
       detection.bbox.center.y = (out.max_corner().y() + out.min_corner().y()) * 0.5;
       detection.bbox.size_x = out.max_corner().x() - out.min_corner().x();

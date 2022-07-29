@@ -56,12 +56,13 @@ extern "C" {
 #include <rclcpp/rclcpp.hpp>
 #include <message_synchronizer/message_synchronizer.hpp>
 
-#include <vision_msgs/msg/detection2_d_array.hpp>
+#include <perception_msgs/msg/detection2_d_array.hpp>
 #include <sensor_msgs/msg/camera_info.hpp>
 #include <pcl_apps_msgs/msg/point_cloud_array.hpp>
 
 #include <tf2_ros/transform_broadcaster.h>
 #include <tf2_ros/transform_listener.h>
+#include <tf2_ros/buffer.h>
 
 #include <string>
 #include <memory>
@@ -91,7 +92,7 @@ public:
     const rclcpp::NodeOptions & options);
 
 private:
-  rclcpp::Publisher<vision_msgs::msg::Detection2DArray>::SharedPtr detection_pub_;
+  rclcpp::Publisher<perception_msgs::msg::Detection2DArray>::SharedPtr detection_pub_;
   std::shared_ptr<CameraInfoAndPoints> sync_;
   void callback(CameraInfoCallbackT camera_info, PointCloudsCallbackT point_clouds);
   tf2_ros::Buffer buffer_;
