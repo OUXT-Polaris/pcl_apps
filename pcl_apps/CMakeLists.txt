@@ -22,11 +22,14 @@ find_package(rclcpp_components REQUIRED)
 find_package(pcl_conversions REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(tf2_eigen REQUIRED)
+find_package(tf2_geometry_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(message_filters REQUIRED)
 find_package(message_synchronizer REQUIRED)
 find_package(pcl_apps_msgs REQUIRED)
+find_package(perception_msgs REQUIRED)
+find_package(image_geometry REQUIRED)
 find_package(PCL REQUIRED)
 find_package(Boost REQUIRED system)
 
@@ -52,6 +55,9 @@ add_subdirectory(src/io)
 
 # Clustering Module
 add_subdirectory(src/clustering)
+
+# Projection Module
+add_subdirectory(src/projection)
 
 rclcpp_components_register_nodes(points_concatenate_component
   "pcl_apps::PointsConcatenateComponent")
@@ -88,6 +94,9 @@ rclcpp_components_register_nodes(euclidean_clustering_component
 
 rclcpp_components_register_nodes(pointcloud_to_laserscan_component
   "pcl_apps::PointCloudToLaserScanComponent")
+
+rclcpp_components_register_nodes(pointcloud_projection_component
+  "pcl_apps::PointCloudProjectionComponent")
 
 # Install header files
 install(
