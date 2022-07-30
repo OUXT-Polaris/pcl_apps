@@ -122,12 +122,12 @@ NdtMatchingComponent::NdtMatchingComponent(const rclcpp::NodeOptions & options)
     initial_pose_recieved_ = false;
     assert(msg->header.frame_id == reference_frame_id_);
     reference_cloud_recieved_ = true;
-    boost::shared_ptr<pcl::PointCloud<pcl::PointXYZ>> reference_cloud_(
+    std::shared_ptr<pcl::PointCloud<pcl::PointXYZ>> reference_cloud_(
       new pcl::PointCloud<pcl::PointXYZ>);
     pcl::fromROSMsg(*msg, *reference_cloud_);
     if (use_min_max_filter_) {
       double r;
-      boost::shared_ptr<pcl::PointCloud<pcl::PointXYZ>> tmp_ptr(new pcl::PointCloud<pcl::PointXYZ>);
+      std::shared_ptr<pcl::PointCloud<pcl::PointXYZ>> tmp_ptr(new pcl::PointCloud<pcl::PointXYZ>);
       for (const auto & p : reference_cloud_->points) {
         r = sqrt(pow(p.x, 2.0) + pow(p.y, 2.0));
         if (scan_min_range_ < r && r < scan_max_range_) {
@@ -148,7 +148,7 @@ NdtMatchingComponent::NdtMatchingComponent(const rclcpp::NodeOptions & options)
   };
   auto callback = [this](const typename sensor_msgs::msg::PointCloud2::SharedPtr msg) -> void {
     std::lock_guard<std::mutex> lock(ndt_map_mtx_);
-    boost::shared_ptr<pcl::PointCloud<pcl::PointXYZ>> input_cloud(
+    std::shared_ptr<pcl::PointCloud<pcl::PointXYZ>> input_cloud(
       new pcl::PointCloud<pcl::PointXYZ>);
     pcl::fromROSMsg(*msg, *input_cloud);
     std::vector<int> nan_index;
@@ -167,7 +167,7 @@ NdtMatchingComponent::NdtMatchingComponent(const rclcpp::NodeOptions & options)
 void NdtMatchingComponent::updateRelativePose(
   pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud, rclcpp::Time stamp)
 {
-  boost::shared_ptr<pcl::PointCloud<pcl::PointXYZ>> reference_cloud_(
+  std::shared_ptr<pcl::PointCloud<pcl::PointXYZ>> reference_cloud_(
     new pcl::PointCloud<pcl::PointXYZ>);
   ndt_.setTransformationEpsilon(transform_epsilon_);
   ndt_.setStepSize(step_size_);
@@ -184,7 +184,7 @@ void NdtMatchingComponent::updateRelativePose(
   transform.translation.z = current_relative_pose_.pose.position.z;
   transform.rotation = current_relative_pose_.pose.orientation;
   Eigen::Matrix4f mat = tf2::transformToEigen(transform).matrix().cast<float>();
-  boost::shared_ptr<pcl::PointCloud<pcl::PointXYZ>> output_cloud(
+  std::shared_ptr<pcl::PointCloud<pcl::PointXYZ>> output_cloud(
     new pcl::PointCloud<pcl::PointXYZ>());
   ndt_.align(*output_cloud, mat);
   Eigen::Matrix4f final_transform = ndt_.getFinalTransformation();
