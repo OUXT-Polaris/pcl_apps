@@ -31,6 +31,8 @@ NdtMatchingComponent::NdtMatchingComponent(const rclcpp::NodeOptions & options)
   /* Static Parameters */
   declare_parameter("reference_frame_id", "map");
   get_parameter("reference_frame_id", reference_frame_id_);
+  declare_parameter("base_frame_id", "base_link");
+  get_parameter("base_frame_id", base_frame_id_);
   declare_parameter("reference_cloud_topic", get_name() + std::string("/reference"));
   get_parameter("reference_cloud_topic", reference_cloud_topic_);
   declare_parameter("input_cloud_topic", get_name() + std::string("/input"));
@@ -46,13 +48,13 @@ NdtMatchingComponent::NdtMatchingComponent(const rclcpp::NodeOptions & options)
   get_parameter("resolution", resolution_);
   declare_parameter("max_iterations", 35);
   get_parameter("max_iterations", max_iterations_);
-  declare_parameter("scan_min_range", 0.1);
-  get_parameter("scan_min_range", scan_min_range_);
-  declare_parameter("scan_max_range", 100.0);
-  get_parameter("scan_max_range", scan_max_range_);
+  declare_parameter("omp_num_thread", 8);
+  get_parameter("omp_num_thread", omp_num_thread_);
 
-  declare_parameter("use_min_max_filter", true);
-  get_parameter("use_min_max_filter", use_min_max_filter_);
+  broadcaster_ = std::make_shared<tf2_ros::TransformBroadcaster>(this);
+  ndt_ = std::make_shared<pclomp::NormalDistributionsTransform<pcl::PointXYZ, pcl::PointXYZ>>();
+  ndt_->setNeighborhoodSearchMethod(pclomp::DIRECT7);
+  if (0 < omp_num_thread_) ndt_->setNumThreads(omp_num_thread_);
 
   std::lock_guard<std::mutex> lock(ndt_map_mtx_);
 
@@ -109,35 +111,24 @@ NdtMatchingComponent::NdtMatchingComponent(const rclcpp::NodeOptions & options)
       return *results;
     });
   /* Setup Publisher */
-  std::string output_topic_name = get_name() + std::string("/current_twist");
+  std::string output_topic_name = get_name() + std::string("/current_pose");
   current_relative_pose_pub_ =
-    create_publisher<geometry_msgs::msg::PoseStamped>(output_topic_name, 10);
+    create_publisher<geometry_msgs::msg::PoseStamped>(output_topic_name, 1);
 
   /* Setup Subscriber */
   reference_cloud_recieved_ = false;
   initial_pose_recieved_ = false;
 
   auto reference_cloud_callback =
-    [this](const typename sensor_msgs::msg::PointCloud2::SharedPtr msg) -> void {
+    [this](const typename sensor_msgs::msg::PointCloud2::ConstSharedPtr msg) -> void {
+    ndt_map_mtx_.lock();
     initial_pose_recieved_ = false;
     assert(msg->header.frame_id == reference_frame_id_);
     reference_cloud_recieved_ = true;
     boost::shared_ptr<pcl::PointCloud<pcl::PointXYZ>> reference_cloud_(
       new pcl::PointCloud<pcl::PointXYZ>);
     pcl::fromROSMsg(*msg, *reference_cloud_);
-    if (use_min_max_filter_) {
-      double r;
-      boost::shared_ptr<pcl::PointCloud<pcl::PointXYZ>> tmp_ptr(new pcl::PointCloud<pcl::PointXYZ>);
-      for (const auto & p : reference_cloud_->points) {
-        r = sqrt(pow(p.x, 2.0) + pow(p.y, 2.0));
-        if (scan_min_range_ < r && r < scan_max_range_) {
-          tmp_ptr->points.push_back(p);
-        }
-      }
-      reference_cloud_ = tmp_ptr;
-    }
-    ndt_.setInputTarget(reference_cloud_);
-    ndt_map_mtx_.lock();
+    ndt_->setInputTarget(reference_cloud_);
     ndt_map_mtx_.unlock();
   };
   auto initial_pose_callback =
@@ -147,17 +138,18 @@ NdtMatchingComponent::NdtMatchingComponent(const rclcpp::NodeOptions & options)
     current_relative_pose_ = *msg;
   };
   auto callback = [this](const typename sensor_msgs::msg::PointCloud2::SharedPtr msg) -> void {
-    std::lock_guard<std::mutex> lock(ndt_map_mtx_);
     boost::shared_ptr<pcl::PointCloud<pcl::PointXYZ>> input_cloud(
       new pcl::PointCloud<pcl::PointXYZ>);
+    const rclcpp::Time current_scan_time = msg->header.stamp;
     pcl::fromROSMsg(*msg, *input_cloud);
     std::vector<int> nan_index;
     pcl::removeNaNFromPointCloud(*input_cloud, *input_cloud, nan_index);
+    publishTF(reference_frame_id_, base_frame_id_, current_relative_pose_);
     updateRelativePose(input_cloud, msg->header.stamp);
     current_relative_pose_pub_->publish(current_relative_pose_);
   };
   sub_reference_cloud_ = create_subscription<sensor_msgs::msg::PointCloud2>(
-    reference_cloud_topic_, 10, reference_cloud_callback);
+    reference_cloud_topic_, rclcpp::QoS{1}.transient_local(), reference_cloud_callback);
   sub_input_cloud_ =
     create_subscription<sensor_msgs::msg::PointCloud2>(input_cloud_topic_, 10, callback);
   sub_initial_pose_ = create_subscription<geometry_msgs::msg::PoseStamped>(
@@ -167,17 +159,11 @@ NdtMatchingComponent::NdtMatchingComponent(const rclcpp::NodeOptions & options)
 void NdtMatchingComponent::updateRelativePose(
   pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud, rclcpp::Time stamp)
 {
-  boost::shared_ptr<pcl::PointCloud<pcl::PointXYZ>> reference_cloud_(
-    new pcl::PointCloud<pcl::PointXYZ>);
-  ndt_.setTransformationEpsilon(transform_epsilon_);
-  ndt_.setStepSize(step_size_);
-  ndt_.setResolution(resolution_);
-  ndt_.setMaximumIterations(max_iterations_);
-  ndt_.setInputSource(input_cloud);
-  if (ndt_.getInputTarget() == nullptr) {
-    RCLCPP_WARN_STREAM_THROTTLE(this->get_logger(), *this->get_clock(), 1, "No MAP!");
-    return;
-  }
+  ndt_->setTransformationEpsilon(transform_epsilon_);
+  ndt_->setStepSize(step_size_);
+  ndt_->setResolution(resolution_);
+  ndt_->setMaximumIterations(max_iterations_);
+  ndt_->setInputSource(input_cloud);
   geometry_msgs::msg::Transform transform;
   transform.translation.x = current_relative_pose_.pose.position.x;
   transform.translation.y = current_relative_pose_.pose.position.y;
@@ -186,8 +172,8 @@ void NdtMatchingComponent::updateRelativePose(
   Eigen::Matrix4f mat = tf2::transformToEigen(transform).matrix().cast<float>();
   boost::shared_ptr<pcl::PointCloud<pcl::PointXYZ>> output_cloud(
     new pcl::PointCloud<pcl::PointXYZ>());
-  ndt_.align(*output_cloud, mat);
-  Eigen::Matrix4f final_transform = ndt_.getFinalTransformation();
+  ndt_->align(*output_cloud, mat);
+  Eigen::Matrix4f final_transform = ndt_->getFinalTransformation();
   tf2::Matrix3x3 rotation_mat;
   rotation_mat.setValue(
     static_cast<double>(final_transform(0, 0)), static_cast<double>(final_transform(0, 1)),
@@ -206,6 +192,23 @@ void NdtMatchingComponent::updateRelativePose(
   current_relative_pose_.pose.orientation.y = quat.y();
   current_relative_pose_.pose.orientation.z = quat.z();
   current_relative_pose_.pose.orientation.w = quat.w();
+}
+void NdtMatchingComponent::publishTF(
+  std::string frame_id, std::string child_frame_id, geometry_msgs::msg::PoseStamped pose)
+{
+  geometry_msgs::msg::TransformStamped transform_stamped;
+
+  transform_stamped.header.frame_id = frame_id;
+  transform_stamped.header.stamp = pose.header.stamp;
+  transform_stamped.child_frame_id = child_frame_id;
+  transform_stamped.transform.translation.x = pose.pose.position.x;
+  transform_stamped.transform.translation.y = pose.pose.position.y;
+  transform_stamped.transform.translation.z = pose.pose.position.z;
+  transform_stamped.transform.rotation.w = pose.pose.orientation.w;
+  transform_stamped.transform.rotation.x = pose.pose.orientation.x;
+  transform_stamped.transform.rotation.y = pose.pose.orientation.y;
+  transform_stamped.transform.rotation.z = pose.pose.orientation.z;
+  broadcaster_->sendTransform(transform_stamped);
 }
 }  // namespace pcl_apps
 

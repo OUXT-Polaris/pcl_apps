@@ -15,6 +15,18 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
+if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "x86_64")
+  # For x86_64 architecture, SIMD instruction set is fixed below versions,
+  add_compile_options(-msse -msse2 -msse3 -msse4 -msse4.1 -msse4.2)
+else()
+  # For other architecture, like arm64, compile flags are generally prepared by compiler
+  # march=native is disabled as default for specific depending pcl libraries
+  # or pre-building packages for other computers.
+  if(BUILD_WITH_MARCH_NATIVE)
+    add_compile_options(-march=native)
+  endif()
+endif()
+
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
@@ -32,6 +44,7 @@ find_package(perception_msgs REQUIRED)
 find_package(image_geometry REQUIRED)
 find_package(PCL REQUIRED)
 find_package(Boost REQUIRED system)
+find_package(ndt_omp REQUIRED)
 
 include_directories(
   include
@@ -125,6 +138,7 @@ ament_export_dependencies(sensor_msgs)
 ament_export_dependencies(geometry_msgs)
 ament_export_dependencies(pcl_apps_msgs)
 ament_export_dependencies(rosidl_default_runtime)
+ament_export_dependencies(ndt_omp)
 ament_export_include_directories(include)
 
 ament_package()
