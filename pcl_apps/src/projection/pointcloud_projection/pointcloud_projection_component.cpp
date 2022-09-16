@@ -76,15 +76,14 @@ vision_msgs::msg::BoundingBox3D PointCloudProjectionComponent::toBbox(
   Eigen::Matrix3f rotational_matrix;
   feature_extractor.setInputCloud(pointcloud);
   feature_extractor.compute();
-  feature_extractor.getOBB(min_point, max_point, position, rotational_matrix);
-  Eigen::Quaternionf orientation(rotational_matrix);
-  bbox.center.position.x = position.x;
-  bbox.center.position.y = position.y;
-  bbox.center.position.z = position.z;
-  bbox.center.orientation.x = orientation.x();
-  bbox.center.orientation.y = orientation.y();
-  bbox.center.orientation.z = orientation.z();
-  bbox.center.orientation.w = orientation.w();
+  feature_extractor.getAABB(min_point, max_point);
+  bbox.center.position.x = (min_point.x + max_point.x) / 2.0;
+  bbox.center.position.y = (min_point.y + max_point.y) / 2.0;
+  bbox.center.position.z = (min_point.z + max_point.z) / 2.0;
+  bbox.center.orientation = geometry_msgs::msg::Quaternion();
+  bbox.size.x = std::abs(max_point.x - min_point.x);
+  bbox.size.y = std::abs(max_point.y - min_point.y);
+  bbox.size.z = std::abs(max_point.z - min_point.z);
   return bbox;
 }
 
