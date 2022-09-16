@@ -14,6 +14,7 @@
 
 // Headers in ROS2
 #include <image_geometry/pinhole_camera_model.h>
+#include <pcl/features/moment_of_inertia_estimation.h>
 #include <pcl_conversions/pcl_conversions.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
@@ -64,6 +65,19 @@ PointCloudProjectionComponent::PointCloudProjectionComponent(
     std::chrono::milliseconds{100}));
 }
 
+vision_msgs::msg::BoundingBox3D PointCloudProjectionComponent::toBbox(
+  pcl::PointCloud<pcl::PointXYZI>::Ptr pointcloud) const
+{
+  vision_msgs::msg::BoundingBox3D bbox;
+  pcl::MomentOfInertiaEstimation<pcl::PointXYZI> feature_extractor;
+  pcl::PointXYZ min_point_OBB;
+  pcl::PointXYZ max_point_OBB;
+  pcl::PointXYZ position_OBB;
+  feature_extractor.setInputCloud(pointcloud);
+  feature_extractor.compute();
+  return bbox;
+}
+
 void PointCloudProjectionComponent::callback(
   CameraInfoCallbackT camera_info, PointCloudsCallbackT point_clouds)
 {
@@ -86,7 +100,7 @@ void PointCloudProjectionComponent::callback(
   typedef boost::geometry::model::box<point> box;
   box camera_bbox(point(0, 0), point(camera_info.get()->width, camera_info.get()->height));
   perception_msgs::msg::Detection2DArray detection_array;
-  for (const auto point_cloud : point_clouds.get()->cloud) {
+  for (const auto & point_cloud : point_clouds.get()->cloud) {
     polygon_type poly;
     typedef boost::geometry::ring_type<polygon_type>::type ring_type;
     ring_type & ring = boost::geometry::exterior_ring(poly);
@@ -115,6 +129,7 @@ void PointCloudProjectionComponent::callback(
       detection.bbox.center.y = (out.max_corner().y() + out.min_corner().y()) * 0.5;
       detection.bbox.size_x = out.max_corner().x() - out.min_corner().x();
       detection.bbox.size_y = out.max_corner().y() - out.min_corner().y();
+      detection.bbox_3d.emplace_back(toBbox(cloud));
       detection_array.detections.emplace_back(detection);
     }
   }
