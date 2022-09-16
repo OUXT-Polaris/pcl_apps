@@ -70,11 +70,21 @@ vision_msgs::msg::BoundingBox3D PointCloudProjectionComponent::toBbox(
 {
   vision_msgs::msg::BoundingBox3D bbox;
   pcl::MomentOfInertiaEstimation<pcl::PointXYZI> feature_extractor;
-  pcl::PointXYZ min_point_OBB;
-  pcl::PointXYZ max_point_OBB;
-  pcl::PointXYZ position_OBB;
+  pcl::PointXYZI min_point;
+  pcl::PointXYZI max_point;
+  pcl::PointXYZI position;
+  Eigen::Matrix3f rotational_matrix;
   feature_extractor.setInputCloud(pointcloud);
   feature_extractor.compute();
+  feature_extractor.getOBB(min_point, max_point, position, rotational_matrix);
+  Eigen::Quaternionf orientation(rotational_matrix);
+  bbox.center.position.x = position.x;
+  bbox.center.position.y = position.y;
+  bbox.center.position.z = position.z;
+  bbox.center.orientation.x = orientation.x();
+  bbox.center.orientation.y = orientation.y();
+  bbox.center.orientation.z = orientation.z();
+  bbox.center.orientation.w = orientation.w();
   return bbox;
 }
 
