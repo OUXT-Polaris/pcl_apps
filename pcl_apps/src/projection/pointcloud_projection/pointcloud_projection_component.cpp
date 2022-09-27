@@ -109,6 +109,8 @@ void PointCloudProjectionComponent::callback(
   typedef boost::geometry::model::box<point> box;
   box camera_bbox(point(0, 0), point(camera_info.get()->width, camera_info.get()->height));
   perception_msgs::msg::Detection2DArray detection_array;
+  detection_array.header.frame_id = camera_info.get()->header.frame_id;
+  detection_array.header.stamp = point_clouds.get()->header.stamp;
   for (const auto & point_cloud : point_clouds.get()->cloud) {
     polygon_type poly;
     typedef boost::geometry::ring_type<polygon_type>::type ring_type;
