@@ -64,7 +64,6 @@ extern "C" {
 #include <pcl/impl/point_types.hpp>
 #include <pcl_apps_msgs/msg/point_cloud_array.hpp>
 #include <perception_msgs/msg/detection2_d_array.hpp>
-#include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/camera_info.hpp>
 #include <string>
 
