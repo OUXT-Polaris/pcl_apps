@@ -35,7 +35,8 @@ PointCloudProjectionComponent::PointCloudProjectionComponent(const rclcpp::NodeO
 : Node("pointcloud_projection_component", options), buffer_(get_clock()), listener_(buffer_)
 {
   detection_pub_ = this->create_publisher<perception_msgs::msg::Detection2DArray>("detections", 1);
-  marker_pub_ = this->create_publisher<visualization_msgs::msg::MarkerArray>("marker", 1);
+  marker_pub_ =
+    this->create_publisher<visualization_msgs::msg::MarkerArray>("projection/marker", 1);
   std::string camera_info_topic;
   declare_parameter("camera_info_topic", "/camera_info");
   get_parameter("camera_info_topic", camera_info_topic);
@@ -95,7 +96,7 @@ visualization_msgs::msg::MarkerArray PointCloudProjectionComponent::toMarker(
   visualization_msgs::msg::MarkerArray markers;
   size_t index = 0;
   for (const auto & detection : detections.detections) {
-    if (detection.bbox_3d.empty()) {
+    if (!detection.bbox_3d.empty()) {
       visualization_msgs::msg::Marker marker;
       marker.header = detections.header;
       marker.id = 0;
