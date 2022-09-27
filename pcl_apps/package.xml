@@ -27,6 +27,7 @@
   <depend>perception_msgs</depend>
   <depend>image_geometry</depend>
   <depend>visualization_msgs</depend>
+  <depend>color_names</depend>
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ouxt_lint_common</test_depend>
 

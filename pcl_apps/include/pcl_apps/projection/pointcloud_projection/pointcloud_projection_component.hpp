@@ -66,6 +66,7 @@ extern "C" {
 #include <perception_msgs/msg/detection2_d_array.hpp>
 #include <sensor_msgs/msg/camera_info.hpp>
 #include <string>
+#include <visualization_msgs/msg/marker_array.hpp>
 
 namespace pcl_apps
 {
@@ -91,6 +92,9 @@ public:
 private:
   vision_msgs::msg::BoundingBox3D toBbox(pcl::PointCloud<pcl::PointXYZI>::Ptr pointcloud) const;
   rclcpp::Publisher<perception_msgs::msg::Detection2DArray>::SharedPtr detection_pub_;
+  rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr marker_pub_;
+  visualization_msgs::msg::MarkerArray toMarker(
+    const perception_msgs::msg::Detection2DArray & detections) const;
   std::shared_ptr<CameraInfoAndPoints> sync_;
   void callback(CameraInfoCallbackT camera_info, PointCloudsCallbackT point_clouds);
   tf2_ros::Buffer buffer_;

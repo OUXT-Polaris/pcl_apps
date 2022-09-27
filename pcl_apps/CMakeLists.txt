@@ -26,6 +26,7 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
+find_package(color_names REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(pcl_conversions REQUIRED)
