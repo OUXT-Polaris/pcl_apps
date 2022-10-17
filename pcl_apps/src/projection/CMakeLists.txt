@@ -6,7 +6,7 @@ target_compile_definitions(pointcloud_projection_component PRIVATE "PCL_APPS_POI
 ament_target_dependencies(pointcloud_projection_component
   rclcpp rclcpp_components pcl_conversions sensor_msgs
   perception_msgs image_geometry message_synchronizer pcl_apps_msgs
-  tf2_ros tf2_geometry_msgs)
+  tf2_ros tf2_geometry_msgs visualization_msgs color_names)
 target_link_libraries(pointcloud_projection_component ${PCL_LIBRARIES})
 
 add_executable(pointcloud_projection_node
@@ -15,7 +15,7 @@ add_executable(pointcloud_projection_node
 ament_target_dependencies(pointcloud_projection_node
   rclcpp rclcpp_components pcl_conversions sensor_msgs
   perception_msgs image_geometry message_synchronizer pcl_apps_msgs
-  tf2_ros tf2_geometry_msgs)
+  tf2_ros tf2_geometry_msgs visualization_msgs color_names)
 target_link_libraries(pointcloud_projection_node
   pointcloud_projection_component)
 

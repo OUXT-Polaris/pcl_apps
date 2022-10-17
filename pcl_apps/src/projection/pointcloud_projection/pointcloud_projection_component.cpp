@@ -22,6 +22,7 @@
 #include <boost/geometry/geometries/box.hpp>
 #include <boost/geometry/geometries/point_xy.hpp>
 #include <boost/geometry/geometries/polygon.hpp>
+#include <color_names/color_names.hpp>
 #include <memory>
 #include <pcl_apps/projection/pointcloud_projection/pointcloud_projection_component.hpp>
 #include <rclcpp/rclcpp.hpp>
@@ -34,6 +35,8 @@ PointCloudProjectionComponent::PointCloudProjectionComponent(const rclcpp::NodeO
 : Node("pointcloud_projection_component", options), buffer_(get_clock()), listener_(buffer_)
 {
   detection_pub_ = this->create_publisher<perception_msgs::msg::Detection2DArray>("detections", 1);
+  marker_pub_ =
+    this->create_publisher<visualization_msgs::msg::MarkerArray>("projection/marker", 1);
   std::string camera_info_topic;
   declare_parameter("camera_info_topic", "/camera_info");
   get_parameter("camera_info_topic", camera_info_topic);
@@ -87,6 +90,30 @@ vision_msgs::msg::BoundingBox3D PointCloudProjectionComponent::toBbox(
   return bbox;
 }
 
+visualization_msgs::msg::MarkerArray PointCloudProjectionComponent::toMarker(
+  const perception_msgs::msg::Detection2DArray & detections) const
+{
+  visualization_msgs::msg::MarkerArray markers;
+  size_t index = 0;
+  for (const auto & detection : detections.detections) {
+    if (!detection.bbox_3d.empty() && !detection.bbox_3d_header.empty()) {
+      visualization_msgs::msg::Marker marker;
+      marker.header = detection.bbox_3d_header[0];
+      marker.id = 0;
+      marker.ns = "detection_" + std::to_string(index);
+      marker.action = visualization_msgs::msg::Marker::ADD;
+      marker.type = visualization_msgs::msg::Marker::CUBE;
+      marker.pose = detection.bbox_3d[0].center;
+      marker.scale = detection.bbox_3d[0].size;
+      marker.color = color_names::makeColorMsg("greenyellow", 0.3);
+      marker.lifetime = rclcpp::Duration(0, 100000000);
+      markers.markers.emplace_back(marker);
+    }
+    ++index;
+  }
+  return markers;
+}
+
 void PointCloudProjectionComponent::callback(
   CameraInfoCallbackT camera_info, PointCloudsCallbackT point_clouds)
 {
@@ -135,16 +162,20 @@ void PointCloudProjectionComponent::callback(
       perception_msgs::msg::Detection2D detection;
       detection.header.frame_id = camera_info.get()->header.frame_id;
       detection.header.stamp = point_clouds.get()->header.stamp;
-      //      detection.is_tracking = false;
+      std_msgs::msg::Header bbox_header;
+      bbox_header.frame_id = point_clouds.get()->header.frame_id;
+      bbox_header.stamp = point_clouds.get()->header.stamp;
       detection.bbox.center.x = (out.max_corner().x() + out.min_corner().x()) * 0.5;
       detection.bbox.center.y = (out.max_corner().y() + out.min_corner().y()) * 0.5;
       detection.bbox.size_x = out.max_corner().x() - out.min_corner().x();
       detection.bbox.size_y = out.max_corner().y() - out.min_corner().y();
       detection.bbox_3d.emplace_back(toBbox(cloud));
+      detection.bbox_3d_header.emplace_back(bbox_header);
       detection_array.detections.emplace_back(detection);
     }
   }
   detection_pub_->publish(detection_array);
+  marker_pub_->publish(toMarker(detection_array));
 }
 }  // namespace pcl_apps
 
