@@ -77,8 +77,6 @@ extern "C" {
 #include <pclomp/ndt_omp.h>
 #include <pclomp/voxel_grid_covariance_omp.h>
 
-#include <boost/shared_ptr.hpp>
-
 // Headers in STL
 #include <string>
 
@@ -100,7 +98,7 @@ private:
   double step_size_;
   double resolution_;
   int max_iterations_;
-  boost::shared_ptr<pcl::PointCloud<pcl::PointXYZ>> reference_cloud_;
+  std::shared_ptr<pcl::PointCloud<pcl::PointXYZ>> reference_cloud_;
   std::shared_ptr<tf2_ros::TransformBroadcaster> broadcaster_;
   bool reference_cloud_recieved_;
   bool initial_pose_recieved_;
