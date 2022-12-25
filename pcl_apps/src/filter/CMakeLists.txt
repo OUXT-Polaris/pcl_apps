@@ -30,7 +30,7 @@ add_executable(points_transform_node
 target_link_libraries(points_transform_node
   points_transform_component ${PCL_LIBRARIES})
 ament_target_dependencies(points_transform_node
-  rclcpp rclcpp_components pcl_conversions tf2_ros sensor_msgs)
+  rclcpp rclcpp_components pcl_conversions tf2_ros sensor_msgs tf2_eigen)
 
 # Voxelgrid Filter Component/Node
 add_library(voxelgrid_filter_component SHARED
