@@ -165,8 +165,8 @@ void PointCloudProjectionComponent::callback(
       std_msgs::msg::Header bbox_header;
       bbox_header.frame_id = point_clouds.get()->header.frame_id;
       bbox_header.stamp = point_clouds.get()->header.stamp;
-      detection.bbox.center.x = (out.max_corner().x() + out.min_corner().x()) * 0.5;
-      detection.bbox.center.y = (out.max_corner().y() + out.min_corner().y()) * 0.5;
+      detection.bbox.center.position.x = (out.max_corner().x() + out.min_corner().x()) * 0.5;
+      detection.bbox.center.position.y = (out.max_corner().y() + out.min_corner().y()) * 0.5;
       detection.bbox.size_x = out.max_corner().x() - out.min_corner().x();
       detection.bbox.size_y = out.max_corner().y() - out.min_corner().y();
       detection.bbox_3d.emplace_back(toBbox(cloud));
