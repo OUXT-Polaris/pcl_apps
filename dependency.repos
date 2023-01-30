@@ -3,7 +3,18 @@ repositories:
     type: git
     url: https://github.com/OUXT-Polaris/message_synchronizer.git
     version: master
+  ouxt_common:    
+    url: https://github.com/OUXT-Polaris/ouxt_common.git
+    version: master
   perception_msgs:
     type: git
     url: https://github.com/OUXT-Polaris/perception_msgs.git
+    version: master
+  ndt_omp:
+    type: git
+    url: https://github.com/tier4/ndt_omp.git
+    version: tier4/main
+  color_names:
+    type: git
+    url: https://github.com/OUXT-Polaris/color_names.git
     version: master

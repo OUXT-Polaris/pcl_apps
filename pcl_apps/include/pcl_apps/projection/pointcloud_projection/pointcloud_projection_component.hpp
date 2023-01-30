@@ -53,17 +53,20 @@ extern "C" {
 }  // extern "C"
 #endif
 
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
 #include <tf2_ros/buffer.h>
 #include <tf2_ros/transform_broadcaster.h>
 #include <tf2_ros/transform_listener.h>
 
 #include <memory>
 #include <message_synchronizer/message_synchronizer.hpp>
+#include <pcl/impl/point_types.hpp>
 #include <pcl_apps_msgs/msg/point_cloud_array.hpp>
 #include <perception_msgs/msg/detection2_d_array.hpp>
-#include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/camera_info.hpp>
 #include <string>
+#include <visualization_msgs/msg/marker_array.hpp>
 
 namespace pcl_apps
 {
@@ -87,7 +90,11 @@ public:
   explicit PointCloudProjectionComponent(const rclcpp::NodeOptions & options);
 
 private:
+  vision_msgs::msg::BoundingBox3D toBbox(pcl::PointCloud<pcl::PointXYZI>::Ptr pointcloud) const;
   rclcpp::Publisher<perception_msgs::msg::Detection2DArray>::SharedPtr detection_pub_;
+  rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr marker_pub_;
+  visualization_msgs::msg::MarkerArray toMarker(
+    const perception_msgs::msg::Detection2DArray & detections) const;
   std::shared_ptr<CameraInfoAndPoints> sync_;
   void callback(CameraInfoCallbackT camera_info, PointCloudsCallbackT point_clouds);
   tf2_ros::Buffer buffer_;

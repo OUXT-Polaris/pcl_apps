@@ -6,7 +6,7 @@ target_compile_definitions(ndt_matching_component PRIVATE "PCL_APPS_NDT_MATCHING
 target_link_libraries(ndt_matching_component
   ${PCL_LIBRARIES})
 ament_target_dependencies(ndt_matching_component
-  rclcpp rclcpp_components pcl_conversions sensor_msgs tf2_eigen)
+  rclcpp rclcpp_components pcl_conversions sensor_msgs tf2_eigen ndt_omp tf2_geometry_msgs)
 
 add_executable(ndt_matching_node
   ndt_matching/ndt_matching_node.cpp
@@ -14,7 +14,7 @@ add_executable(ndt_matching_node
 target_link_libraries(ndt_matching_node
   ndt_matching_component ${PCL_LIBRARIES})
 ament_target_dependencies(ndt_matching_node
-  rclcpp rclcpp_components pcl_conversions sensor_msgs tf2_eigen)
+  rclcpp rclcpp_components pcl_conversions sensor_msgs tf2_eigen ndt_omp)
 
 # Ndt Matching Twist Estimator Component/Node
 add_library(ndt_matching_twist_estimator_component SHARED
