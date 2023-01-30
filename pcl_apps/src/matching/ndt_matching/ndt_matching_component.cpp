@@ -18,7 +18,6 @@
 #include <rclcpp_components/register_node_macro.hpp>
 
 // Headers in STL
-#include <boost/shared_ptr.hpp>
 #include <memory>
 #include <string>
 #include <vector>
@@ -125,8 +124,6 @@ NdtMatchingComponent::NdtMatchingComponent(const rclcpp::NodeOptions & options)
     initial_pose_recieved_ = false;
     assert(msg->header.frame_id == reference_frame_id_);
     reference_cloud_recieved_ = true;
-    boost::shared_ptr<pcl::PointCloud<pcl::PointXYZ>> reference_cloud_(
-      new pcl::PointCloud<pcl::PointXYZ>);
     pcl::fromROSMsg(*msg, *reference_cloud_);
     ndt_->setInputTarget(reference_cloud_);
     ndt_map_mtx_.unlock();
@@ -138,9 +135,8 @@ NdtMatchingComponent::NdtMatchingComponent(const rclcpp::NodeOptions & options)
     current_relative_pose_ = *msg;
   };
   auto callback = [this](const typename sensor_msgs::msg::PointCloud2::SharedPtr msg) -> void {
-    boost::shared_ptr<pcl::PointCloud<pcl::PointXYZ>> input_cloud(
-      new pcl::PointCloud<pcl::PointXYZ>);
-    const rclcpp::Time current_scan_time = msg->header.stamp;
+    std::lock_guard<std::mutex> lock(ndt_map_mtx_);
+    pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud(new pcl::PointCloud<pcl::PointXYZ>);
     pcl::fromROSMsg(*msg, *input_cloud);
     std::vector<int> nan_index;
     pcl::removeNaNFromPointCloud(*input_cloud, *input_cloud, nan_index);
@@ -170,8 +166,7 @@ void NdtMatchingComponent::updateRelativePose(
   transform.translation.z = current_relative_pose_.pose.position.z;
   transform.rotation = current_relative_pose_.pose.orientation;
   Eigen::Matrix4f mat = tf2::transformToEigen(transform).matrix().cast<float>();
-  boost::shared_ptr<pcl::PointCloud<pcl::PointXYZ>> output_cloud(
-    new pcl::PointCloud<pcl::PointXYZ>());
+  auto output_cloud = std::make_shared<pcl::PointCloud<pcl::PointXYZ>>();
   ndt_->align(*output_cloud, mat);
   Eigen::Matrix4f final_transform = ndt_->getFinalTransformation();
   tf2::Matrix3x3 rotation_mat;

@@ -58,7 +58,11 @@ extern "C" {
 #include <pcl_conversions/pcl_conversions.h>
 #include <tf2/LinearMath/Matrix3x3.h>
 #include <tf2/transform_datatypes.h>
+#ifdef USE_TF2_EIGEN_DEPRECATED_HEADER
 #include <tf2_eigen/tf2_eigen.h>
+#else
+#include <tf2_eigen/tf2_eigen.hpp>
+#endif
 
 #include <geometry_msgs/msg/transform.hpp>
 #include <geometry_msgs/msg/twist_stamped.hpp>

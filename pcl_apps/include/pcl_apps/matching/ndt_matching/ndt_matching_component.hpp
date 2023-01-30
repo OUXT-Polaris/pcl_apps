@@ -57,11 +57,23 @@ extern "C" {
 #include <pcl_conversions/pcl_conversions.h>
 #include <tf2/LinearMath/Matrix3x3.h>
 #include <tf2/transform_datatypes.h>
+#ifdef USE_TF2_EIGEN_DEPRECATED_HEADER
 #include <tf2_eigen/tf2_eigen.h>
+#else
+#include <tf2_eigen/tf2_eigen.hpp>
+#endif
+#ifdef USE_TF2_GEOMETRY_MSGS_DEPRECATED_HEADER
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#else
+#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
+#endif
 #include <tf2_ros/transform_broadcaster.h>
 #include <tf2_ros/transform_listener.h>
+#ifdef USE_TF2_SENSOR_MSGS_DEPRECATED_HEADER
 #include <tf2_sensor_msgs/tf2_sensor_msgs.h>
+#else
+#include <tf2_sensor_msgs/tf2_sensor_msgs.hpp>
+#endif
 
 #include <geometry_msgs/msg/pose_stamped.hpp>
 #include <geometry_msgs/msg/transform.hpp>
@@ -76,8 +88,6 @@ extern "C" {
 #include <pcl/search/flann_search.h>
 #include <pclomp/ndt_omp.h>
 #include <pclomp/voxel_grid_covariance_omp.h>
-
-#include <boost/shared_ptr.hpp>
 
 // Headers in STL
 #include <string>
@@ -100,7 +110,7 @@ private:
   double step_size_;
   double resolution_;
   int max_iterations_;
-  boost::shared_ptr<pcl::PointCloud<pcl::PointXYZ>> reference_cloud_;
+  pcl::PointCloud<pcl::PointXYZ>::Ptr reference_cloud_;
   std::shared_ptr<tf2_ros::TransformBroadcaster> broadcaster_;
   bool reference_cloud_recieved_;
   bool initial_pose_recieved_;
@@ -118,7 +128,6 @@ private:
   rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr current_relative_pose_pub_;
   void updateRelativePose(pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud, rclcpp::Time stamp);
   std::shared_ptr<pclomp::NormalDistributionsTransform<pcl::PointXYZ, pcl::PointXYZ>> ndt_;
-  // std::shared_ptr<pcl::NormalDistributionsTransform<pcl::PointXYZ, pcl::PointXYZ>> ndt_;
   geometry_msgs::msg::PoseStamped current_relative_pose_;
   rclcpp::node_interfaces::OnSetParametersCallbackHandle::SharedPtr param_handler_ptr_;
 };

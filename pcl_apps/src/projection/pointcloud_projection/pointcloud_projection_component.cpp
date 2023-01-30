@@ -16,7 +16,11 @@
 #include <image_geometry/pinhole_camera_model.h>
 #include <pcl/features/moment_of_inertia_estimation.h>
 #include <pcl_conversions/pcl_conversions.h>
+#ifdef USE_TF2_GEOMETRY_MSGS_DEPRECATED_HEADER
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#else
+#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
+#endif
 
 #include <boost/geometry.hpp>
 #include <boost/geometry/geometries/box.hpp>
@@ -165,8 +169,13 @@ void PointCloudProjectionComponent::callback(
       std_msgs::msg::Header bbox_header;
       bbox_header.frame_id = point_clouds.get()->header.frame_id;
       bbox_header.stamp = point_clouds.get()->header.stamp;
+#ifdef HUMBLE
+      detection.bbox.center.position.x = (out.max_corner().x() + out.min_corner().x()) * 0.5;
+      detection.bbox.center.position.y = (out.max_corner().y() + out.min_corner().y()) * 0.5;
+#else
       detection.bbox.center.x = (out.max_corner().x() + out.min_corner().x()) * 0.5;
       detection.bbox.center.y = (out.max_corner().y() + out.min_corner().y()) * 0.5;
+#endif
       detection.bbox.size_x = out.max_corner().x() - out.min_corner().x();
       detection.bbox.size_y = out.max_corner().y() - out.min_corner().y();
       detection.bbox_3d.emplace_back(toBbox(cloud));

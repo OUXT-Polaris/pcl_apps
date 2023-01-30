@@ -44,7 +44,7 @@ PcdLoaderComponent::PcdLoaderComponent(const rclcpp::NodeOptions & options)
       output_topic, rclcpp::QoS(10).transient_local());
     pub_->publish(msg);
   } else {
-    RCLCPP_ERROR(get_logger(), "Failed to load ", file_path);
+    RCLCPP_ERROR_STREAM(get_logger(), "Failed to load " << file_path);
   }
 }
 }  // namespace pcl_apps
