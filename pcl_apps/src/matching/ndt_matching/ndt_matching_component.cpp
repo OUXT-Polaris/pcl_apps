@@ -124,7 +124,6 @@ NdtMatchingComponent::NdtMatchingComponent(const rclcpp::NodeOptions & options)
     initial_pose_recieved_ = false;
     assert(msg->header.frame_id == reference_frame_id_);
     reference_cloud_recieved_ = true;
-    auto reference_cloud_ = std::make_shared<pcl::PointCloud<pcl::PointXYZ>>();
     pcl::fromROSMsg(*msg, *reference_cloud_);
     ndt_->setInputTarget(reference_cloud_);
     ndt_map_mtx_.unlock();
