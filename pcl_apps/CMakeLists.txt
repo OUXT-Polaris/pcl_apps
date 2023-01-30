@@ -48,21 +48,15 @@ find_package(PCL REQUIRED)
 find_package(Boost REQUIRED system)
 
 if(${tf2_eigen_VERSION} VERSION_LESS 0.18.0)
-  target_compile_definitions(${PROJECT_NAME} PUBLIC
-    USE_TF2_EIGEN_DEPRECATED_HEADER
-  )
+  add_compile_definitions(USE_TF2_EIGEN_DEPRECATED_HEADER)
 endif()
 
 if(${tf2_sensor_msgs_VERSION} VERSION_LESS 0.18.0)
-  target_compile_definitions(${PROJECT_NAME} PUBLIC
-    USE_TF2_SENSOR_MSGS_DEPRECATED_HEADER
-  )
+  add_compile_definitions(USE_TF2_SENSOR_MSGS_DEPRECATED_HEADER)
 endif()
 
 if(${tf2_geometry_msgs_VERSION} VERSION_LESS 0.18.0)
-  target_compile_definitions(${PROJECT_NAME} PUBLIC
-    USE_TF2_GEOMETRY_MSGS_DEPRECATED_HEADER
-  )
+  add_compile_definitions(USE_TF2_GEOMETRY_MSGS_DEPRECATED_HEADER)
 endif()
 
 include_directories(
