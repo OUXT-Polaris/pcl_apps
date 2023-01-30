@@ -136,8 +136,8 @@ NdtMatchingComponent::NdtMatchingComponent(const rclcpp::NodeOptions & options)
     current_relative_pose_ = *msg;
   };
   auto callback = [this](const typename sensor_msgs::msg::PointCloud2::SharedPtr msg) -> void {
-    auto input_cloud = std::make_shared<pcl::PointCloud<pcl::PointXYZ>>();
-    const rclcpp::Time current_scan_time = msg->header.stamp;
+    std::lock_guard<std::mutex> lock(ndt_map_mtx_);
+    std::shared_ptr<pcl::PointCloud<pcl::PointXYZ>> input_cloud(new pcl::PointCloud<pcl::PointXYZ>);
     pcl::fromROSMsg(*msg, *input_cloud);
     std::vector<int> nan_index;
     pcl::removeNaNFromPointCloud(*input_cloud, *input_cloud, nan_index);
