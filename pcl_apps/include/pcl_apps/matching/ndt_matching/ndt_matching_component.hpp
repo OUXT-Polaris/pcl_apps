@@ -57,11 +57,23 @@ extern "C" {
 #include <pcl_conversions/pcl_conversions.h>
 #include <tf2/LinearMath/Matrix3x3.h>
 #include <tf2/transform_datatypes.h>
+#ifdef USE_TF2_EIGEN_DEPRECATED_HEADER
 #include <tf2_eigen/tf2_eigen.h>
+#else
+#include <tf2_eigen/tf2_eigen.hpp>
+#endif
+#ifdef USE_TF2_GEOMETRY_MSGS_DEPRECATED_HEADER
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#else
+#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
+#endif
 #include <tf2_ros/transform_broadcaster.h>
 #include <tf2_ros/transform_listener.h>
+#ifdef USE_TF2_SENSOR_MSGS_DEPRECATED_HEADER
 #include <tf2_sensor_msgs/tf2_sensor_msgs.h>
+#else
+#include <tf2_sensor_msgs/tf2_sensor_msgs.hpp>
+#endif
 
 #include <geometry_msgs/msg/pose_stamped.hpp>
 #include <geometry_msgs/msg/transform.hpp>
@@ -98,7 +110,7 @@ private:
   double step_size_;
   double resolution_;
   int max_iterations_;
-  std::shared_ptr<pcl::PointCloud<pcl::PointXYZ>> reference_cloud_;
+  pcl::PointCloud<pcl::PointXYZ>::Ptr reference_cloud_;
   std::shared_ptr<tf2_ros::TransformBroadcaster> broadcaster_;
   bool reference_cloud_recieved_;
   bool initial_pose_recieved_;

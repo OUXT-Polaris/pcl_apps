@@ -55,7 +55,13 @@ extern "C" {
 
 // Headers in ROS2
 #include <pcl_conversions/pcl_conversions.h>
+
+#ifdef USE_TF2_EIGEN_DEPRECATED_HEADER
 #include <tf2_eigen/tf2_eigen.h>
+#else
+#include <tf2_eigen/tf2_eigen.hpp>
+#endif
+
 #include <tf2_ros/transform_listener.h>
 
 #include <geometry_msgs/msg/transform_stamped.hpp>

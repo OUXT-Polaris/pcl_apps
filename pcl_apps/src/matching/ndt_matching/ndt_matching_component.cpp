@@ -137,7 +137,7 @@ NdtMatchingComponent::NdtMatchingComponent(const rclcpp::NodeOptions & options)
   };
   auto callback = [this](const typename sensor_msgs::msg::PointCloud2::SharedPtr msg) -> void {
     std::lock_guard<std::mutex> lock(ndt_map_mtx_);
-    std::shared_ptr<pcl::PointCloud<pcl::PointXYZ>> input_cloud(new pcl::PointCloud<pcl::PointXYZ>);
+    pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud(new pcl::PointCloud<pcl::PointXYZ>);
     pcl::fromROSMsg(*msg, *input_cloud);
     std::vector<int> nan_index;
     pcl::removeNaNFromPointCloud(*input_cloud, *input_cloud, nan_index);

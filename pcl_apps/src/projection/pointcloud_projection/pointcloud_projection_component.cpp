@@ -16,7 +16,11 @@
 #include <image_geometry/pinhole_camera_model.h>
 #include <pcl/features/moment_of_inertia_estimation.h>
 #include <pcl_conversions/pcl_conversions.h>
+#ifdef USE_TF2_GEOMETRY_MSGS_DEPRECATED_HEADER
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#else
+#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
+#endif
 
 #include <boost/geometry.hpp>
 #include <boost/geometry/geometries/box.hpp>
