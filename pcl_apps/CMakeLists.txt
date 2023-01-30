@@ -59,6 +59,10 @@ if(${tf2_geometry_msgs_VERSION} VERSION_LESS 0.18.0)
   add_compile_definitions(USE_TF2_GEOMETRY_MSGS_DEPRECATED_HEADER)
 endif()
 
+if ($ENV{ROS_DISTRO} STREQUAL "humble")
+  add_compile_definitions(HUMBLE)
+endif()
+
 include_directories(
   include
   ${PCL_INCLUDE_DIRS}
