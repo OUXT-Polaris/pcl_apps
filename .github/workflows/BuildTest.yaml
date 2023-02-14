@@ -7,15 +7,46 @@ on:
   workflow_dispatch:
 
 jobs:
-  build_and_test:
-    name: Build
+  build:
+    name: build
     runs-on: ubuntu-20.04
+    timeout-minutes: 180
     strategy:
       fail-fast: false
+      max-parallel: 8
       matrix:
-        rosdistro : [galactic]
+        rosdistro: [humble]
+        include:
+          # Galactic Geochelone (May 2021 - November 2022)
+          # - docker_image: rostooling/setup-ros-docker:ubuntu-focal-ros-galactic-ros-base-latest
+          #   rosdistro: galactic
+          # Humble Hawksbill (May 2022 - May 2027)
+          - docker_image: rostooling/setup-ros-docker:ubuntu-jammy-ros-humble-ros-base-latest
+            rosdistro: humble
+          # Rolling Ridley
+          # - docker_image: rostooling/setup-ros-docker:ubuntu-jammy-ros-rolling-ros-base-latest
+          #   rosdistro: rolling
+    env:
+      ROS_DISTRO: ${{ matrix.rosdistro }}
+    container:
+      image: ${{ matrix.docker_image }}
     steps:
-      - uses: actions/checkout@v2-beta
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: workaround for jammy
+        if: ${{ matrix.rosdistro == 'humble' }}
+        run: |
+          apt remove libunwind-14-dev -y
+          apt install python3-nose -y
+          pip uninstall nose -y
+      - name: Search packages in this repository
+        id: list_packages
+        run: |
+          echo ::set-output name=package_list::$(colcon list --names-only | sed -e ':loop; N; $!b loop; s/\n/ /g')
+      - name: Show target packages
+        run: |
+          echo "Target packages: ${{ steps.list_packages.outputs.package_list }}"
       - name: Check dependency-${{ matrix.rosdistro }}.repos existence
         id: check_rosdistro_repos_files
         uses: andstor/file-existence-action@v1
@@ -28,23 +59,65 @@ jobs:
         with:
           files: dependency.repos
           allow_failure: false
-      - name: Run OUXT-Polaris/ros2-ci@master with dependency-${{ matrix.rosdistro }}.repos
-        uses: OUXT-Polaris/ros2-ci@master
+      - name: Run build test with dependency-${{ matrix.rosdistro }}.repos
+        uses: ros-tooling/action-ros-ci@v0.2
         if: steps.check_rosdistro_repos_files.outputs.files_exists == 'true'
         with:
-          ros2-distro: ${{ matrix.rosdistro }}
-          repos-filepath: dependency-${{ matrix.rosdistro }}.repos
-      - name: Run OUXT-Polaris/ros2-ci@master with dependency.repos
-        uses: OUXT-Polaris/ros2-ci@master
+          package-name: ${{ steps.list_packages.outputs.package_list }}
+          target-ros2-distro: ${{ matrix.rosdistro }}
+          vcs-repo-file-url: dependency-${{ matrix.rosdistro }}.repos
+          extra-cmake-args: -DBUILD_CPP_MOCK_SCENARIOS=ON
+          colcon-defaults: |
+            {
+              "build": {
+                "mixin": ["coverage-gcc", "coverage-pytest"]
+              },
+              "test": {
+                "mixin": ["coverage-pytest"]
+              }
+            }
+          # If possible, pin the repository in the workflow to a specific commit to avoid
+          # changes in colcon-mixin-repository from breaking your tests.
+          colcon-mixin-repository: https://raw.githubusercontent.com/colcon/colcon-mixin-repository/1ddb69bedfd1f04c2f000e95452f7c24a4d6176b/index.yaml
+      - name: Run build test with dependency.repos
+        uses: ros-tooling/action-ros-ci@v0.2
         if: steps.check_rosdistro_repos_files.outputs.files_exists == 'false' && steps.check_repos_files.outputs.files_exists == 'true'
         with:
-          ros2-distro: ${{ matrix.rosdistro }}
-          repos-filepath: dependency.repos
-      - name: Run OUXT-Polaris/ros2-ci@master without repos
-        uses: OUXT-Polaris/ros2-ci@master
+          package-name: ${{ steps.list_packages.outputs.package_list }}
+          target-ros2-distro: ${{ matrix.rosdistro }}
+          vcs-repo-file-url: dependency.repos
+          extra-cmake-args: -DBUILD_CPP_MOCK_SCENARIOS=ON
+          colcon-defaults: |
+            {
+              "build": {
+                "mixin": ["coverage-gcc", "coverage-pytest"]
+              },
+              "test": {
+                "mixin": ["coverage-pytest"]
+              }
+            }
+          # If possible, pin the repository in the workflow to a specific commit to avoid
+          # changes in colcon-mixin-repository from breaking your tests.
+          colcon-mixin-repository: https://raw.githubusercontent.com/colcon/colcon-mixin-repository/1ddb69bedfd1f04c2f000e95452f7c24a4d6176b/index.yaml
+      - name: Run build test without .repos file
+        uses: ros-tooling/action-ros-ci@v0.2
         if: steps.check_rosdistro_repos_files.outputs.files_exists == 'false' && steps.check_repos_files.outputs.files_exists == 'false'
         with:
-          ros2-distro: ${{ matrix.rosdistro }}
+          package-name: ${{ steps.list_packages.outputs.package_list }}
+          target-ros2-distro: ${{ matrix.rosdistro }}
+          extra-cmake-args: -DBUILD_CPP_MOCK_SCENARIOS=ON
+          colcon-defaults: |
+            {
+              "build": {
+                "mixin": ["coverage-gcc", "coverage-pytest"]
+              },
+              "test": {
+                "mixin": ["coverage-pytest"]
+              }
+            }
+          # If possible, pin the repository in the workflow to a specific commit to avoid
+          # changes in colcon-mixin-repository from breaking your tests.
+          colcon-mixin-repository: https://raw.githubusercontent.com/colcon/colcon-mixin-repository/1ddb69bedfd1f04c2f000e95452f7c24a4d6176b/index.yaml
       - name: Notify Slack
         uses: 8398a7/action-slack@v2
         if: failure()
