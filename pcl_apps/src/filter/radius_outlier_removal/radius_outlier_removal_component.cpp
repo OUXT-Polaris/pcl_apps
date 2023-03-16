@@ -71,6 +71,8 @@ RadiusOutlierRemovalComponent::RadiusOutlierRemovalComponent(const rclcpp::NodeO
   auto callback = [this](const typename sensor_msgs::msg::PointCloud2::SharedPtr msg) -> void {
     pcl::PointCloud<pcl::PointXYZI>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZI>);
     pcl::fromROSMsg(*msg, *cloud);
+    std::vector<int> nan_index;
+    pcl::removeNaNFromPointCloud(*cloud, *cloud, nan_index);
     if (cloud->size() != 0) {
       filter_.setInputCloud(cloud);
       filter_.setRadiusSearch(search_radius_);
