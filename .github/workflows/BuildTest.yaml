@@ -59,6 +59,7 @@ jobs:
         with:
           files: dependency.repos
           allow_failure: false
+      - uses: hendrikmuhs/ccache-action@v1.2
       - name: Run build test with dependency-${{ matrix.rosdistro }}.repos
         uses: ros-tooling/action-ros-ci@v0.2
         if: steps.check_rosdistro_repos_files.outputs.files_exists == 'true'
@@ -66,11 +67,14 @@ jobs:
           package-name: ${{ steps.list_packages.outputs.package_list }}
           target-ros2-distro: ${{ matrix.rosdistro }}
           vcs-repo-file-url: dependency-${{ matrix.rosdistro }}.repos
-          extra-cmake-args: -DBUILD_CPP_MOCK_SCENARIOS=ON
           colcon-defaults: |
             {
               "build": {
-                "mixin": ["coverage-gcc", "coverage-pytest"]
+                "mixin": ["coverage-gcc", "coverage-pytest"],
+                "cmake-args": [
+                  "-DCMAKE_C_COMPILER_LAUNCHER=ccache",
+                  "-DCMAKE_CXX_COMPILER_LAUNCHER=ccache"
+                ]
               },
               "test": {
                 "mixin": ["coverage-pytest"]
@@ -86,11 +90,14 @@ jobs:
           package-name: ${{ steps.list_packages.outputs.package_list }}
           target-ros2-distro: ${{ matrix.rosdistro }}
           vcs-repo-file-url: dependency.repos
-          extra-cmake-args: -DBUILD_CPP_MOCK_SCENARIOS=ON
           colcon-defaults: |
             {
               "build": {
-                "mixin": ["coverage-gcc", "coverage-pytest"]
+                "mixin": ["coverage-gcc", "coverage-pytest"],
+                "cmake-args": [
+                  "-DCMAKE_C_COMPILER_LAUNCHER=ccache",
+                  "-DCMAKE_CXX_COMPILER_LAUNCHER=ccache"
+                ]
               },
               "test": {
                 "mixin": ["coverage-pytest"]
@@ -105,11 +112,14 @@ jobs:
         with:
           package-name: ${{ steps.list_packages.outputs.package_list }}
           target-ros2-distro: ${{ matrix.rosdistro }}
-          extra-cmake-args: -DBUILD_CPP_MOCK_SCENARIOS=ON
           colcon-defaults: |
             {
               "build": {
-                "mixin": ["coverage-gcc", "coverage-pytest"]
+                "mixin": ["coverage-gcc", "coverage-pytest"],
+                "cmake-args": [
+                  "-DCMAKE_C_COMPILER_LAUNCHER=ccache",
+                  "-DCMAKE_CXX_COMPILER_LAUNCHER=ccache"
+                ]
               },
               "test": {
                 "mixin": ["coverage-pytest"]
@@ -126,3 +136,15 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+  merge:
+    name: merge
+    runs-on: ubuntu-20.04
+    timeout-minutes: 180
+    needs: build
+    steps:
+      - name: Merge PR
+        uses: nbrugger-tgm/merge-pr-action@v0.2.3
+        if: contains( github.event.pull_request.labels.*.name, 'bot') && github.event_name == 'pull_request'
+        with :
+          token: ${{ secrets.GITHUB_TOKEN }}
+          method: squash
