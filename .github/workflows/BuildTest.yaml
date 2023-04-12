@@ -60,6 +60,9 @@ jobs:
           files: dependency.repos
           allow_failure: false
       - uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: ccache
+          restore-keys: ccache
       - name: Run build test with dependency-${{ matrix.rosdistro }}.repos
         uses: ros-tooling/action-ros-ci@v0.2
         if: steps.check_rosdistro_repos_files.outputs.files_exists == 'true'
@@ -82,7 +85,7 @@ jobs:
             }
           # If possible, pin the repository in the workflow to a specific commit to avoid
           # changes in colcon-mixin-repository from breaking your tests.
-          colcon-mixin-repository: https://raw.githubusercontent.com/colcon/colcon-mixin-repository/1ddb69bedfd1f04c2f000e95452f7c24a4d6176b/index.yaml
+          colcon-mixin-repository: https://raw.githubusercontent.com/colcon/colcon-mixin-repository/1ddb69bedfd1f04c2f000e95452f7c24a4d6176b/index.yaml   
       - name: Run build test with dependency.repos
         uses: ros-tooling/action-ros-ci@v0.2
         if: steps.check_rosdistro_repos_files.outputs.files_exists == 'false' && steps.check_repos_files.outputs.files_exists == 'true'
