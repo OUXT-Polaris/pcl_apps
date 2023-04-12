@@ -51,7 +51,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: /tmp/ccache
-          key: ccache
+          key: ccache-${{ matrix.rosdistro }}
       - name: Search packages in this repository
         id: list_packages
         run: |
