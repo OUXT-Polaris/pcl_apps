@@ -40,6 +40,18 @@ jobs:
           apt remove libunwind-14-dev -y
           apt install python3-nose -y
           pip uninstall nose -y
+      - name: install ccache
+        run: |
+          apt install -y ccache
+      - name: Make ccache dir
+        run: |
+          mkdir -p /tmp/ccache
+      - name: Cache Primes
+        id: cache-primes
+        uses: actions/cache@v3
+        with:
+          path: /tmp/ccache
+          key: ccache
       - name: Search packages in this repository
         id: list_packages
         run: |
@@ -59,13 +71,6 @@ jobs:
         with:
           files: dependency.repos
           allow_failure: false
-      - uses: hendrikmuhs/ccache-action@v1.2
-        with:
-          key: ccache
-          restore-keys: ccache
-      - name: Make ccache dir
-        run: |
-          mkdir -p /tmp/ccache
       - name: Run build test with dependency-${{ matrix.rosdistro }}.repos
         uses: ros-tooling/action-ros-ci@v0.2
         if: steps.check_rosdistro_repos_files.outputs.files_exists == 'true'
