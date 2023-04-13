@@ -70,7 +70,7 @@ jobs:
           files: dependency.repos
           allow_failure: false
       - name: Run build test with dependency-${{ matrix.rosdistro }}.repos
-        uses: ros-tooling/action-ros-ci@v0.2
+        uses: ros-tooling/action-ros-ci@v0.3
         if: steps.check_rosdistro_repos_files.outputs.files_exists == 'true'
         with:
           package-name: ${{ steps.list_packages.outputs.package_list }}
@@ -91,7 +91,7 @@ jobs:
         env: 
           CCACHE_DIR: /tmp/ccache
       - name: Run build test with dependency.repos
-        uses: ros-tooling/action-ros-ci@v0.2
+        uses: ros-tooling/action-ros-ci@v0.3
         if: steps.check_rosdistro_repos_files.outputs.files_exists == 'false' && steps.check_repos_files.outputs.files_exists == 'true'
         with:
           package-name: ${{ steps.list_packages.outputs.package_list }}
@@ -112,7 +112,7 @@ jobs:
         env: 
           CCACHE_DIR: /tmp/ccache
       - name: Run build test without .repos file
-        uses: ros-tooling/action-ros-ci@v0.2
+        uses: ros-tooling/action-ros-ci@v0.3
         if: steps.check_rosdistro_repos_files.outputs.files_exists == 'false' && steps.check_repos_files.outputs.files_exists == 'false'
         with:
           package-name: ${{ steps.list_packages.outputs.package_list }}
