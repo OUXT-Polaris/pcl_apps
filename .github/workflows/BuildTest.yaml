@@ -79,7 +79,7 @@ jobs:
           colcon-defaults: |
             {
               "build": {
-                "mixin": ["coverage-gcc", "coverage-pytest", "ccache"]
+                "mixin": ["coverage-gcc", "coverage-pytest", "ccache", "asan-gcc"]
               },
               "test": {
                 "mixin": ["coverage-pytest"]
@@ -100,7 +100,7 @@ jobs:
           colcon-defaults: |
             {
               "build": {
-                "mixin": ["coverage-gcc", "coverage-pytest", "ccache"]
+                "mixin": ["coverage-gcc", "coverage-pytest", "ccache", "asan-gcc"]
               },
               "test": {
                 "mixin": ["coverage-pytest"]
@@ -120,7 +120,7 @@ jobs:
           colcon-defaults: |
             {
               "build": {
-                "mixin": ["coverage-gcc", "coverage-pytest", "ccache"]
+                "mixin": ["coverage-gcc", "coverage-pytest", "ccache", "asan-gcc"]
               },
               "test": {
                 "mixin": ["coverage-pytest"]
