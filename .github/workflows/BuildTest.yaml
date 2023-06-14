@@ -113,7 +113,7 @@ jobs:
     needs: build
     steps:
       - name: merge PR
-        if : ${{ github.event_name == 'pull_request' }} && ${{ github.actor != 'wam-v-tan' }}
+        if : ${{ (github.event_name == 'pull_request') && (github.actor == 'wam-v-tan') }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: gh pr merge ${{ github.event.pull_request.html_url }} --merge
