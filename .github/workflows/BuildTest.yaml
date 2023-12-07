@@ -79,6 +79,7 @@ jobs:
           extra-cmake-args: -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
         env: 
           CCACHE_DIR: /tmp/ccache
+          DEVELOP: true
       - name: Run build test with dependency.repos
         uses: ros-tooling/action-ros-ci@v0.3
         if: steps.check_rosdistro_repos_files.outputs.files_exists == 'false' && steps.check_repos_files.outputs.files_exists == 'true'
@@ -89,6 +90,7 @@ jobs:
           extra-cmake-args: -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
         env: 
           CCACHE_DIR: /tmp/ccache
+          DEVELOP: true
       - name: Run build test without .repos file
         uses: ros-tooling/action-ros-ci@v0.3
         if: steps.check_rosdistro_repos_files.outputs.files_exists == 'false' && steps.check_repos_files.outputs.files_exists == 'false'
@@ -98,6 +100,7 @@ jobs:
           extra-cmake-args: -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
         env: 
           CCACHE_DIR: /tmp/ccache
+          DEVELOP: true
       - name: Notify Slack
         uses: 8398a7/action-slack@v2
         if: failure()
