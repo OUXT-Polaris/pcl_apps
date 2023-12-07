@@ -14,3 +14,7 @@ Pcd Writer Component load pcd file and publish as sensor_msgs::msg::PointCloud2
 +====================+==========+=======================================+==========+=========+
 | ~/output_topic     | String   | output topic name                     | ~/output | False   |
 +--------------------+----------+---------------------------------------+----------+---------+
+| ~/file_path        | String   | pcd file path                         |    ""    | False   |
++--------------------+----------+---------------------------------------+----------+---------+
+| ~/inference_id     | String   | FrameID of the cloud from PCD file    |   map    | False   |
++--------------------+----------+---------------------------------------+----------+---------+
