@@ -25,43 +25,13 @@ else()
 endif()
 
 # find dependencies
-find_package(ament_cmake REQUIRED)
-find_package(color_names REQUIRED)
-find_package(geometry_msgs REQUIRED)
-find_package(image_geometry REQUIRED)
-find_package(message_filters REQUIRED)
-find_package(message_synchronizer REQUIRED)
-find_package(ndt_omp REQUIRED)
-find_package(pcl_apps_msgs REQUIRED)
-find_package(pcl_conversions REQUIRED)
-find_package(perception_msgs REQUIRED)
-find_package(rclcpp REQUIRED)
-find_package(rclcpp_components REQUIRED)
-find_package(sensor_msgs REQUIRED)
-find_package(tf2_eigen REQUIRED)
-find_package(tf2_geometry_msgs REQUIRED)
-find_package(tf2_ros REQUIRED)
-find_package(tf2_sensor_msgs REQUIRED)
-find_package(visualization_msgs REQUIRED)
+find_package(ament_cmake_auto REQUIRED)
+ament_auto_find_build_dependencies()
 
 find_package(PCL REQUIRED)
 find_package(Boost REQUIRED system)
 
-if(${tf2_eigen_VERSION} VERSION_LESS 0.18.0)
-  add_compile_definitions(USE_TF2_EIGEN_DEPRECATED_HEADER)
-endif()
-
-if(${tf2_sensor_msgs_VERSION} VERSION_LESS 0.18.0)
-  add_compile_definitions(USE_TF2_SENSOR_MSGS_DEPRECATED_HEADER)
-endif()
-
-if(${tf2_geometry_msgs_VERSION} VERSION_LESS 0.18.0)
-  add_compile_definitions(USE_TF2_GEOMETRY_MSGS_DEPRECATED_HEADER)
-endif()
-
-if ($ENV{ROS_DISTRO} STREQUAL "humble")
-  add_compile_definitions(HUMBLE)
-endif()
+add_compile_definitions(HUMBLE)
 
 include_directories(
   include
@@ -136,26 +106,7 @@ install(
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
-  # the following line skips the linter which checks for copyrights
-  # uncomment the line when a copyright and license is not present in all source files
-  #set(ament_cmake_copyright_FOUND TRUE)
-  # the following line skips cpplint (only works in a git repo)
-  # uncomment the line when this package is not in a git repo
-  #set(ament_cmake_cpplint_FOUND TRUE)
   ament_lint_auto_find_test_dependencies()
 endif()
 
-# export
-ament_export_dependencies(ament_cmake)
-ament_export_dependencies(rclcpp)
-ament_export_dependencies(rclcpp_components)
-ament_export_dependencies(pcl_conversions)
-ament_export_dependencies(tf2_ros)
-ament_export_dependencies(sensor_msgs)
-ament_export_dependencies(geometry_msgs)
-ament_export_dependencies(pcl_apps_msgs)
-ament_export_dependencies(rosidl_default_runtime)
-ament_export_dependencies(ndt_omp)
-ament_export_include_directories(include)
-
-ament_package()
+ament_auto_package()
