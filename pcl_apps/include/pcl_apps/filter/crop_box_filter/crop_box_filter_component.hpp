@@ -54,6 +54,7 @@ extern "C" {
 #endif
 
 #include <memory>
+#include <pcl_apps/adapter.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/point_cloud2.hpp>
 
@@ -66,12 +67,12 @@ public:
   explicit CropBoxFilterComponent(const rclcpp::NodeOptions & options);
 
 private:
-  void pointsCallback(const sensor_msgs::msg::PointCloud2::SharedPtr msg);
+  void pointsCallback(const PCLPointCloudTypePtr & msg);
   double max_x_, max_y_, max_z_;
   double min_x_, min_y_, min_z_;
   bool keep_organized_, negative_;
-  rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr pub_;
-  rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr sub_;
+  PointCloudPublisher pub_;
+  PointCloudSubscriber sub_;
 };
 }  // namespace pcl_apps
 
