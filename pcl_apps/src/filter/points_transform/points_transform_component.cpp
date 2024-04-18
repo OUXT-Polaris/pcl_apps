@@ -47,15 +47,22 @@ PointsTransformComponent::PointsTransformComponent(const rclcpp::NodeOptions & o
     if (header.frame_id == output_frame_id_) {
       pub_->publish(msg);
     } else {
-      tf2::TimePoint time_point = tf2::TimePoint(
-        std::chrono::seconds(header.stamp.sec) + std::chrono::nanoseconds(header.stamp.nanosec));
-      geometry_msgs::msg::TransformStamped transform_stamped = buffer_.lookupTransform(
-        output_frame_id_, header.frame_id, time_point, tf2::durationFromSec(1.0));
-      Eigen::Matrix4f mat =
-        tf2::transformToEigen(transform_stamped.transform).matrix().cast<float>();
-      PCLPointCloudTypePtr transformed;
-      pcl::transformPointCloud(*msg, *transformed, mat);
-      pub_->publish(transformed);
+      try {
+        tf2::TimePoint time_point = tf2::TimePoint(
+          std::chrono::seconds(header.stamp.sec) + std::chrono::nanoseconds(header.stamp.nanosec));
+        geometry_msgs::msg::TransformStamped transform_stamped = buffer_.lookupTransform(
+          output_frame_id_, header.frame_id, time_point, tf2::durationFromSec(1.0));
+        Eigen::Matrix4f mat =
+          tf2::transformToEigen(transform_stamped.transform).matrix().cast<float>();
+        pcl::transformPointCloud(*msg, *msg, mat);
+        pub_->publish(msg);
+      } catch (tf2::ExtrapolationException & ex) {
+        RCLCPP_ERROR(get_logger(), ex.what());
+        return;
+      } catch (tf2::LookupException & ex) {
+        RCLCPP_ERROR(get_logger(), ex.what());
+        return;
+      }
     }
   };
   declare_parameter("input_topic", get_name() + std::string("/input"));
