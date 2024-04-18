@@ -48,19 +48,19 @@ PointsTransformComponent::PointsTransformComponent(const rclcpp::NodeOptions & o
       pub_->publish(msg);
     } else {
       tf2::TimePoint time_point = tf2::TimePoint(
-        std::chrono::seconds(header.stamp.sec) +
-        std::chrono::nanoseconds(header.stamp.nanosec));
+        std::chrono::seconds(header.stamp.sec) + std::chrono::nanoseconds(header.stamp.nanosec));
       geometry_msgs::msg::TransformStamped transform_stamped = buffer_.lookupTransform(
         output_frame_id_, header.frame_id, time_point, tf2::durationFromSec(1.0));
-      // sensor_msgs::msg::PointCloud2 output_msg;
-      // sensor_msgs::msg::PointCloud2 input_msg = *msg;
-      // tf2::doTransform(input_msg, output_msg, transform_stamped);
-      // pub_->publish(output_msg);
+      Eigen::Matrix4f mat =
+        tf2::transformToEigen(transform_stamped.transform).matrix().cast<float>();
+      PCLPointCloudTypePtr transformed;
+      pcl::transformPointCloud(*msg, *transformed, mat);
+      pub_->publish(transformed);
     }
   };
   declare_parameter("input_topic", get_name() + std::string("/input"));
   get_parameter("input_topic", input_topic_);
-  // sub_ = create_subscription<sensor_msgs::msg::PointCloud2>(input_topic_, 10, callback);
+  sub_ = create_subscription<PointCloudAdapterType>(input_topic_, 10, callback);
 }
 }  // namespace pcl_apps
 
