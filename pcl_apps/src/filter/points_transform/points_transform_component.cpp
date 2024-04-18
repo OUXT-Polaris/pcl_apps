@@ -55,6 +55,7 @@ PointsTransformComponent::PointsTransformComponent(const rclcpp::NodeOptions & o
         Eigen::Matrix4f mat =
           tf2::transformToEigen(transform_stamped.transform).matrix().cast<float>();
         pcl::transformPointCloud(*msg, *msg, mat);
+        msg->header.frame_id = output_frame_id_;
         pub_->publish(msg);
       } catch (tf2::ExtrapolationException & ex) {
         RCLCPP_ERROR(get_logger(), ex.what());
