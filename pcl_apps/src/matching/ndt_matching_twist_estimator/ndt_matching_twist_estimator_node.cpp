@@ -13,7 +13,7 @@
 // limitations under the License.
 
 // Headers in this package
-#include <pcl_apps/matching/ndt_matching/ndt_matching_twist_estimator_component.hpp>
+#include <pcl_apps/matching/ndt_matching_twist_estimator/ndt_matching_twist_estimator_component.hpp>
 
 // Headers in RCLCPP
 #include <rclcpp/rclcpp.hpp>

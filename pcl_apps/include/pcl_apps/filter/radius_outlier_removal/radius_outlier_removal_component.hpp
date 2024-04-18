@@ -74,8 +74,8 @@ public:
 
 private:
   std::string input_topic_;
-  rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr sub_;
-  rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr pub_;
+  PointCloudSubscriber sub_;
+  PointCloudPublisher pub_;
   pcl::RadiusOutlierRemoval<pcl::PointXYZI> filter_;
   double search_radius_;
   int min_neighbors_in_search_radius_;

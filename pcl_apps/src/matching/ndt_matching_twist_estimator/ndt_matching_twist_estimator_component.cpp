@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <pcl_apps/matching/ndt_matching/ndt_matching_twist_estimator_component.hpp>
+#include <pcl_apps/matching/ndt_matching_twist_estimator/ndt_matching_twist_estimator_component.hpp>
 
 // Headers in ROS2
 #include <rclcpp_components/register_node_macro.hpp>

@@ -44,65 +44,44 @@ link_directories(
 )
 add_definitions(${PCL_DEFINITIONS})
 
+function(add_pcl_apps_component module component_name component_name_in_macro class_name)
+  ament_auto_add_library(${component_name}_component SHARED
+  src/${module}/${component_name}/${component_name}_component.cpp
+  )
+  target_compile_definitions(${component_name}_component PRIVATE "PCL_APPS_${component_name_in_macro}_BUILDING_DLL")
+  target_link_libraries(${component_name}_component
+    boost_system ${PCL_LIBRARIES})
+
+  ament_auto_add_executable(${component_name}_node
+    src/${module}/${component_name}/${component_name}_node.cpp)
+  target_link_libraries(${component_name}_node
+  ${component_name}_component ${PCL_LIBRARIES})
+
+  rclcpp_components_register_nodes(${component_name}_component pcl_apps::${class_name})
+endfunction(add_pcl_apps_component)
+
+
 # Filter Modules
-add_subdirectory(src/filter)
+add_pcl_apps_component(filter points_concatenate POINTS_CONCATENATE PointsConcatenateComponent)
+add_pcl_apps_component(filter points_transform POINTS_TRANSFORM PointsTransformComponent)
+add_pcl_apps_component(filter radius_outlier_removal RADIUS_OUTLIER_REMOVAL RadiusOutlierRemovalComponent)
+add_pcl_apps_component(filter crop_hull_filter CROP_HULL_FILTER CropHullFilterComponent)
+add_pcl_apps_component(filter crop_box_filter CROP_BOX_FILTER CropBoxFilterComponent)
+add_pcl_apps_component(filter pointcloud_to_laserscan POINTCLOUD_TO_LASERSCAN PointCloudToLaserScanComponent)
 
 # Matching Modules
-add_subdirectory(src/matching)
+add_pcl_apps_component(matching ndt_matching NDT_MATCHING NdtMatchingComponent)
+add_pcl_apps_component(matching ndt_matching_twist_estimator NDT_MATCHING_TWIST_ESTIMATOR NdtMatchingTwistEstimatorComponent)
 
 # IO Module
-add_subdirectory(src/io)
+add_pcl_apps_component(io pcd_writer PCD_WRITER PcdWriter)
+add_pcl_apps_component(io pcd_loader PCD_LOADER PcdLoader)
 
 # Clustering Module
-add_subdirectory(src/clustering)
+add_pcl_apps_component(clustering euclidean_clustering EUCLIDEAN_CLUSTERING EuclideanClusteringComponent)
 
 # Projection Module
-add_subdirectory(src/projection)
-
-rclcpp_components_register_nodes(points_concatenate_component
-  "pcl_apps::PointsConcatenateComponent")
-
-rclcpp_components_register_nodes(points_transform_component
-  "pcl_apps::PointsTransformComponent")
-
-rclcpp_components_register_nodes(voxelgrid_filter_component
-  "pcl_apps::VoxelgridFilterComponent")
-
-rclcpp_components_register_nodes(ndt_matching_component
-  "pcl_apps::NdtMatchingComponent")
-
-rclcpp_components_register_nodes(ndt_matching_twist_estimator_component
-  "pcl_apps::NdtMatchingTwistEstimatorComponent")
-
-rclcpp_components_register_nodes(pcd_writer_component
-  "pcl_apps::PcdWriterComponent")
-
-rclcpp_components_register_nodes(pcd_loader_component
-  "pcl_apps::PcdLoaderComponent")
-
-rclcpp_components_register_nodes(radius_outlier_removal_component
-  "pcl_apps::RadiusOutlierRemovalComponent")
-
-rclcpp_components_register_nodes(crop_hull_filter_component
-  "pcl_apps::CropHullFilterComponent")
-
-rclcpp_components_register_nodes(crop_box_filter_component
-  "pcl_apps::CropBoxFilterComponent")
-
-rclcpp_components_register_nodes(euclidean_clustering_component
-  "pcl_apps::EuclideanClusteringComponent")
-
-rclcpp_components_register_nodes(pointcloud_to_laserscan_component
-  "pcl_apps::PointCloudToLaserScanComponent")
-
-rclcpp_components_register_nodes(pointcloud_projection_component
-  "pcl_apps::PointCloudProjectionComponent")
-
-# Install header files
-install(
-  DIRECTORY "include/"
-  DESTINATION include
-)
+add_pcl_apps_component(projection pointcloud_projection POINTCLOUD_PROJECTION PointCloudProjectionComponent)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
