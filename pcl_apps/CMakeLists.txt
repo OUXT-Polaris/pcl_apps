@@ -44,7 +44,7 @@ link_directories(
 )
 add_definitions(${PCL_DEFINITIONS})
 
-function(add_pcl_apps_component module component_name component_name_in_macro class_name)
+function(add_pcl_apps_component module component_name component_name_in_macro)
   ament_auto_add_library(${component_name}_component SHARED
   src/${module}/${component_name}/${component_name}_component.cpp
   )
@@ -55,33 +55,49 @@ function(add_pcl_apps_component module component_name component_name_in_macro cl
   ament_auto_add_executable(${component_name}_node
     src/${module}/${component_name}/${component_name}_node.cpp)
   target_link_libraries(${component_name}_node
-  ${component_name}_component ${PCL_LIBRARIES})
+    ${component_name}_component ${PCL_LIBRARIES})
 
-  rclcpp_components_register_nodes(${component_name}_component pcl_apps::${class_name})
+  install(TARGETS ${component_name}_component
+    ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION lib
+    RUNTIME DESTINATION bin)
+  install(TARGETS ${component_name}_node DESTINATION lib/pcl_apps)
 endfunction(add_pcl_apps_component)
 
 
 # Filter Modules
-add_pcl_apps_component(filter points_concatenate POINTS_CONCATENATE PointsConcatenateComponent)
-add_pcl_apps_component(filter points_transform POINTS_TRANSFORM PointsTransformComponent)
+add_pcl_apps_component(filter points_concatenate POINTS_CONCATENATE)
+rclcpp_components_register_nodes(points_concatenate_component "pcl_apps::PointsConcatenateComponent")
+add_pcl_apps_component(filter points_transform POINTS_TRANSFORM)
+rclcpp_components_register_nodes(points_concatenate_component "pcl_apps::PointsTransformComponent")
 add_pcl_apps_component(filter radius_outlier_removal RADIUS_OUTLIER_REMOVAL RadiusOutlierRemovalComponent)
-add_pcl_apps_component(filter crop_hull_filter CROP_HULL_FILTER CropHullFilterComponent)
-add_pcl_apps_component(filter crop_box_filter CROP_BOX_FILTER CropBoxFilterComponent)
+rclcpp_components_register_nodes(radius_outlier_removal_component "pcl_apps::RadiusOutlierRemovalComponent")
+add_pcl_apps_component(filter crop_hull_filter CROP_HULL_FILTER)
+rclcpp_components_register_nodes(crop_hull_filter_component "pcl_apps::CropHullFilterComponent")
+add_pcl_apps_component(filter crop_box_filter CROP_BOX_FILTER)
+rclcpp_components_register_nodes(crop_box_filter_component "pcl_apps::CropBoxFilterComponent")
 add_pcl_apps_component(filter pointcloud_to_laserscan POINTCLOUD_TO_LASERSCAN PointCloudToLaserScanComponent)
+rclcpp_components_register_nodes(pointcloud_to_laserscan_component "pcl_apps::PointCloudToLaserScanComponent")
 
 # Matching Modules
-add_pcl_apps_component(matching ndt_matching NDT_MATCHING NdtMatchingComponent)
-add_pcl_apps_component(matching ndt_matching_twist_estimator NDT_MATCHING_TWIST_ESTIMATOR NdtMatchingTwistEstimatorComponent)
+add_pcl_apps_component(matching ndt_matching NDT_MATCHING)
+rclcpp_components_register_nodes(ndt_matching_component "pcl_apps::NdtMatchingComponent")
+add_pcl_apps_component(matching ndt_matching_twist_estimator NDT_MATCHING_TWIST_ESTIMATOR)
+rclcpp_components_register_nodes(ndt_matching_twist_estimator_component "pcl_apps::NdtMatchingTwistEstimatorComponent")
 
 # IO Module
-add_pcl_apps_component(io pcd_writer PCD_WRITER PcdWriter)
+add_pcl_apps_component(io pcd_writer PCD_WRITER)
+rclcpp_components_register_nodes(pcd_writer_component "pcl_apps::PcdWriterComponent")
 add_pcl_apps_component(io pcd_loader PCD_LOADER PcdLoader)
+rclcpp_components_register_nodes(pcd_loader_component "pcl_apps::PcdLoaderComponent")
 
 # Clustering Module
-add_pcl_apps_component(clustering euclidean_clustering EUCLIDEAN_CLUSTERING EuclideanClusteringComponent)
+add_pcl_apps_component(clustering euclidean_clustering EUCLIDEAN_CLUSTERING)
+rclcpp_components_register_nodes(pcd_loader_component "pcl_apps::EuclideanClusteringComponent")
 
 # Projection Module
-add_pcl_apps_component(projection pointcloud_projection POINTCLOUD_PROJECTION PointCloudProjectionComponent)
+add_pcl_apps_component(projection pointcloud_projection POINTCLOUD_PROJECTION)
+rclcpp_components_register_nodes(pointcloud_projection_component "pcl_apps::PointCloudProjectionComponent")
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
