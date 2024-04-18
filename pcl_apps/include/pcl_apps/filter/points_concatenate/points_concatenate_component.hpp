@@ -54,9 +54,8 @@ extern "C" {
 #endif
 
 // Headers in ROS2
-#include <pcl_conversions/pcl_conversions.h>
-
 #include <message_synchronizer/message_synchronizer.hpp>
+#include <pcl_apps/adapter.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/point_cloud2.hpp>
 

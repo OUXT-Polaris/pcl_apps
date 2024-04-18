@@ -53,10 +53,10 @@ extern "C" {
 }  // extern "C"
 #endif
 
+#include <pcl_apps/adapter.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/laser_scan.hpp>
 #include <sensor_msgs/msg/point_cloud2.hpp>
-#include <pcl_apps/adapter.hpp>
 
 namespace pcl_apps
 {
