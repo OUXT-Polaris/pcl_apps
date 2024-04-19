@@ -73,13 +73,13 @@ PointCloudProjectionComponent::PointCloudProjectionComponent(
 }
 
 vision_msgs::msg::BoundingBox3D PointCloudProjectionComponent::toBbox(
-  pcl::PointCloud<pcl::PointXYZI>::Ptr pointcloud) const
+  pcl::PointCloud<PCLPointType>::Ptr pointcloud) const
 {
   vision_msgs::msg::BoundingBox3D bbox;
-  pcl::MomentOfInertiaEstimation<pcl::PointXYZI> feature_extractor;
-  pcl::PointXYZI min_point;
-  pcl::PointXYZI max_point;
-  pcl::PointXYZI position;
+  pcl::MomentOfInertiaEstimation<PCLPointType> feature_extractor;
+  PCLPointType min_point;
+  PCLPointType max_point;
+  PCLPointType position;
   Eigen::Matrix3f rotational_matrix;
   feature_extractor.setInputCloud(pointcloud);
   feature_extractor.compute();
@@ -146,7 +146,7 @@ void PointCloudProjectionComponent::callback(
     polygon_type poly;
     typedef boost::geometry::ring_type<polygon_type>::type ring_type;
     ring_type & ring = boost::geometry::exterior_ring(poly);
-    pcl::PointCloud<pcl::PointXYZI>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZI>());
+    pcl::PointCloud<PCLPointType>::Ptr cloud(new pcl::PointCloud<PCLPointType>());
     pcl::fromROSMsg(point_cloud, *cloud);
     for (auto point_itr = cloud->begin(); point_itr != cloud->end(); point_itr++) {
       geometry_msgs::msg::PointStamped p;

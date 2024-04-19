@@ -78,6 +78,8 @@ add_pcl_apps_component(filter crop_box_filter CROP_BOX_FILTER)
 rclcpp_components_register_nodes(crop_box_filter_component "pcl_apps::CropBoxFilterComponent")
 add_pcl_apps_component(filter pointcloud_to_laserscan POINTCLOUD_TO_LASERSCAN PointCloudToLaserScanComponent)
 rclcpp_components_register_nodes(pointcloud_to_laserscan_component "pcl_apps::PointCloudToLaserScanComponent")
+add_pcl_apps_component(filter voxelgrid_filter VOEXLGRID_FILTER VoxelgridFilterComponent)
+rclcpp_components_register_nodes(voxelgrid_filter_component "pcl_apps::VoxelgridFilterComponent")
 
 # Matching Modules
 add_pcl_apps_component(matching ndt_matching NDT_MATCHING)

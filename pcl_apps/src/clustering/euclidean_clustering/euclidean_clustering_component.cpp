@@ -82,11 +82,11 @@ EuclideanClusteringComponent::EuclideanClusteringComponent(const rclcpp::NodeOpt
   auto callback = [this](const typename sensor_msgs::msg::PointCloud2::SharedPtr msg) -> void {
     pcl_apps_msgs::msg::PointCloudArray clusters;
     clusters.header = msg->header;
-    pcl::PointCloud<pcl::PointXYZI>::Ptr cloud;
+    pcl::PointCloud<PCLPointType>::Ptr cloud;
     pcl::fromROSMsg(*msg, *cloud);
     std::vector<pcl::PointIndices> cluster_indices;
-    pcl::EuclideanClusterExtraction<pcl::PointXYZI> clustering;
-    pcl::search::KdTree<pcl::PointXYZI>::Ptr tree(new pcl::search::KdTree<pcl::PointXYZI>);
+    pcl::EuclideanClusterExtraction<PCLPointType> clustering;
+    pcl::search::KdTree<PCLPointType>::Ptr tree(new pcl::search::KdTree<PCLPointType>);
     tree->setInputCloud(cloud);
     clustering.setClusterTolerance(cluster_tolerance_);
     clustering.setMinClusterSize(min_cluster_size_);
@@ -96,7 +96,7 @@ EuclideanClusteringComponent::EuclideanClusteringComponent(const rclcpp::NodeOpt
     clustering.extract(cluster_indices);
     for (auto cluster_itr = cluster_indices.begin(); cluster_itr != cluster_indices.end();
          cluster_itr++) {
-      pcl::PointCloud<pcl::PointXYZI> pointcloud;
+      pcl::PointCloud<PCLPointType> pointcloud;
       pointcloud.width = cluster_itr->indices.size();
       pointcloud.height = 1;
       pointcloud.is_dense = false;
@@ -106,7 +106,7 @@ EuclideanClusteringComponent::EuclideanClusteringComponent(const rclcpp::NodeOpt
         double y = cloud->points[cluster_itr->indices[i]].y;
         double z = cloud->points[cluster_itr->indices[i]].z;
         double intensity = cloud->points[cluster_itr->indices[i]].intensity;
-        pcl::PointXYZI p;
+        PCLPointType p;
         p.x = x;
         p.y = y;
         p.z = z;

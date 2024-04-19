@@ -63,19 +63,19 @@ PointsConcatenateComponent::PointsConcatenateComponent(const rclcpp::NodeOptions
 
 void PointsConcatenateComponent::callback2(CallbackT in0, CallbackT in1)
 {
-  pcl::PointCloud<pcl::PointXYZI>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZI>);
+  pcl::PointCloud<PCLPointType>::Ptr cloud(new pcl::PointCloud<PCLPointType>);
   bool empty = true;
   if (in0) {
     empty = false;
     const PointCloud2Ptr pc = in0.get();
-    pcl::PointCloud<pcl::PointXYZI>::Ptr pc_cloud(new pcl::PointCloud<pcl::PointXYZI>);
+    pcl::PointCloud<PCLPointType>::Ptr pc_cloud(new pcl::PointCloud<PCLPointType>);
     pcl::fromROSMsg(*pc, *pc_cloud);
     *cloud = *pc_cloud + *cloud;
   }
   if (in1) {
     empty = false;
     const PointCloud2Ptr pc = in1.get();
-    pcl::PointCloud<pcl::PointXYZI>::Ptr pc_cloud(new pcl::PointCloud<pcl::PointXYZI>);
+    pcl::PointCloud<PCLPointType>::Ptr pc_cloud(new pcl::PointCloud<PCLPointType>);
     pcl::fromROSMsg(*pc, *pc_cloud);
     *cloud = *pc_cloud + *cloud;
   }
@@ -89,26 +89,26 @@ void PointsConcatenateComponent::callback2(CallbackT in0, CallbackT in1)
 
 void PointsConcatenateComponent::callback3(CallbackT in0, CallbackT in1, CallbackT in2)
 {
-  pcl::PointCloud<pcl::PointXYZI>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZI>);
+  pcl::PointCloud<PCLPointType>::Ptr cloud(new pcl::PointCloud<PCLPointType>);
   bool empty = true;
   if (in0) {
     empty = false;
     const PointCloud2Ptr pc = in0.get();
-    pcl::PointCloud<pcl::PointXYZI>::Ptr pc_cloud(new pcl::PointCloud<pcl::PointXYZI>);
+    pcl::PointCloud<PCLPointType>::Ptr pc_cloud(new pcl::PointCloud<PCLPointType>);
     pcl::fromROSMsg(*pc, *pc_cloud);
     *cloud = *pc_cloud + *cloud;
   }
   if (in1) {
     empty = false;
     const PointCloud2Ptr pc = in1.get();
-    pcl::PointCloud<pcl::PointXYZI>::Ptr pc_cloud(new pcl::PointCloud<pcl::PointXYZI>);
+    pcl::PointCloud<PCLPointType>::Ptr pc_cloud(new pcl::PointCloud<PCLPointType>);
     pcl::fromROSMsg(*pc, *pc_cloud);
     *cloud = *pc_cloud + *cloud;
   }
   if (in2) {
     empty = false;
     const PointCloud2Ptr pc = in2.get();
-    pcl::PointCloud<pcl::PointXYZI>::Ptr pc_cloud(new pcl::PointCloud<pcl::PointXYZI>);
+    pcl::PointCloud<PCLPointType>::Ptr pc_cloud(new pcl::PointCloud<PCLPointType>);
     pcl::fromROSMsg(*pc, *pc_cloud);
     *cloud = *pc_cloud + *cloud;
   }
@@ -123,33 +123,33 @@ void PointsConcatenateComponent::callback3(CallbackT in0, CallbackT in1, Callbac
 void PointsConcatenateComponent::callback4(
   CallbackT in0, CallbackT in1, CallbackT in2, CallbackT in3)
 {
-  pcl::PointCloud<pcl::PointXYZI>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZI>);
+  pcl::PointCloud<PCLPointType>::Ptr cloud(new pcl::PointCloud<PCLPointType>);
   bool empty = true;
   if (in0) {
     empty = false;
     const PointCloud2Ptr pc = in0.get();
-    pcl::PointCloud<pcl::PointXYZI>::Ptr pc_cloud(new pcl::PointCloud<pcl::PointXYZI>);
+    pcl::PointCloud<PCLPointType>::Ptr pc_cloud(new pcl::PointCloud<PCLPointType>);
     pcl::fromROSMsg(*pc, *pc_cloud);
     *cloud = *pc_cloud + *cloud;
   }
   if (in1) {
     empty = false;
     const PointCloud2Ptr pc = in1.get();
-    pcl::PointCloud<pcl::PointXYZI>::Ptr pc_cloud(new pcl::PointCloud<pcl::PointXYZI>);
+    pcl::PointCloud<PCLPointType>::Ptr pc_cloud(new pcl::PointCloud<PCLPointType>);
     pcl::fromROSMsg(*pc, *pc_cloud);
     *cloud = *pc_cloud + *cloud;
   }
   if (in2) {
     empty = false;
     const PointCloud2Ptr pc = in2.get();
-    pcl::PointCloud<pcl::PointXYZI>::Ptr pc_cloud(new pcl::PointCloud<pcl::PointXYZI>);
+    pcl::PointCloud<PCLPointType>::Ptr pc_cloud(new pcl::PointCloud<PCLPointType>);
     pcl::fromROSMsg(*pc, *pc_cloud);
     *cloud = *pc_cloud + *cloud;
   }
   if (in3) {
     empty = false;
     const PointCloud2Ptr pc = in3.get();
-    pcl::PointCloud<pcl::PointXYZI>::Ptr pc_cloud(new pcl::PointCloud<pcl::PointXYZI>);
+    pcl::PointCloud<PCLPointType>::Ptr pc_cloud(new pcl::PointCloud<PCLPointType>);
     pcl::fromROSMsg(*pc, *pc_cloud);
     *cloud = *pc_cloud + *cloud;
   }

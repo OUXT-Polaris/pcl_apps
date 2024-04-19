@@ -59,6 +59,7 @@ extern "C" {
 #include <pcl/filters/crop_hull.h>
 
 #include <memory>
+#include <pcl_apps/adapter.hpp>
 #include <pcl_apps_msgs/msg/point_cloud_array.hpp>
 #include <pcl_apps_msgs/msg/polygon_array.hpp>
 #include <rclcpp/rclcpp.hpp>
@@ -66,7 +67,7 @@ extern "C" {
 namespace pcl_apps
 {
 typedef message_filters::Subscriber<pcl_apps_msgs::msg::PolygonArray> PolygonSubscriber;
-typedef message_filters::Subscriber<sensor_msgs::msg::PointCloud2> PointCloudSubscriber;
+typedef message_filters::Subscriber<sensor_msgs::msg::PointCloud2> ROS2PointCloudSubscriber;
 class CropHullFilterComponent : public rclcpp::Node
 {
 public:
@@ -82,7 +83,7 @@ private:
     const sensor_msgs::msg::PointCloud2::ConstSharedPtr point_cloud,
     const pcl_apps_msgs::msg::PolygonArray::ConstSharedPtr polygon);
   std::shared_ptr<PolygonSubscriber> polygon_sub_;
-  std::shared_ptr<PointCloudSubscriber> pointcloud_sub_;
+  std::shared_ptr<ROS2PointCloudSubscriber> pointcloud_sub_;
 };
 }  // namespace pcl_apps
 
