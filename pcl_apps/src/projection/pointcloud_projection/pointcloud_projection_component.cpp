@@ -129,8 +129,8 @@ void PointCloudProjectionComponent::callback(
   geometry_msgs::msg::TransformStamped transform_stamped;
   try {
     transform_stamped = buffer_.lookupTransform(
-      camera_info.value()->header.frame_id, point_clouds.value()->header.frame_id,
-      point_clouds.value()->header.stamp, tf2::durationFromSec(1.0));
+      camera_info.value().header.frame_id, point_clouds.value().header.frame_id,
+      point_clouds.value().header.stamp, tf2::durationFromSec(1.0));
   } catch (tf2::ExtrapolationException & ex) {
     RCLCPP_ERROR(get_logger(), ex.what());
     return;
@@ -138,11 +138,11 @@ void PointCloudProjectionComponent::callback(
   typedef boost::geometry::model::d2::point_xy<double> point;
   typedef boost::geometry::model::polygon<point> polygon_type;
   typedef boost::geometry::model::box<point> box;
-  box camera_bbox(point(0, 0), point(camera_info.value()->width, camera_info.value()->height));
+  box camera_bbox(point(0, 0), point(camera_info.value().width, camera_info.value().height));
   perception_msgs::msg::Detection2DArray detection_array;
-  detection_array.header.frame_id = camera_info.value()->header.frame_id;
-  detection_array.header.stamp = point_clouds.value()->header.stamp;
-  for (const auto & point_cloud : point_clouds.value()->cloud) {
+  detection_array.header.frame_id = camera_info.value().header.frame_id;
+  detection_array.header.stamp = point_clouds.value().header.stamp;
+  for (const auto & point_cloud : point_clouds.value().cloud) {
     polygon_type poly;
     typedef boost::geometry::ring_type<polygon_type>::type ring_type;
     ring_type & ring = boost::geometry::exterior_ring(poly);
@@ -164,11 +164,11 @@ void PointCloudProjectionComponent::callback(
     box out;
     if (boost::geometry::intersection(camera_bbox, bx, out)) {
       perception_msgs::msg::Detection2D detection;
-      detection.header.frame_id = camera_info.value()->header.frame_id;
-      detection.header.stamp = point_clouds.value()->header.stamp;
+      detection.header.frame_id = camera_info.value().header.frame_id;
+      detection.header.stamp = point_clouds.value().header.stamp;
       std_msgs::msg::Header bbox_header;
-      bbox_header.frame_id = point_clouds.value()->header.frame_id;
-      bbox_header.stamp = point_clouds.value()->header.stamp;
+      bbox_header.frame_id = point_clouds.value().header.frame_id;
+      bbox_header.stamp = point_clouds.value().header.stamp;
 #ifdef HUMBLE
       detection.bbox.center.position.x = (out.max_corner().x() + out.min_corner().x()) * 0.5;
       detection.bbox.center.position.y = (out.max_corner().y() + out.min_corner().y()) * 0.5;

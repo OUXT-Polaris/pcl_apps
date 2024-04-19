@@ -25,6 +25,9 @@ namespace pcl_apps
 PointsConcatenateComponent::PointsConcatenateComponent(const rclcpp::NodeOptions & options)
 : Node("points_concatenate", options)
 {
+  google::InitGoogleLogging("");
+  google::InstallFailureSignalHandler();
+
   declare_parameter("num_input", 2);
   get_parameter("num_input", num_input_);
   assert(num_input_ >= 2 && num_input_ <= 4);
@@ -35,8 +38,8 @@ PointsConcatenateComponent::PointsConcatenateComponent(const rclcpp::NodeOptions
       "input_topic" + std::to_string(i), get_name() + std::string("/input") + std::to_string(i));
     get_parameter("input_topic" + std::to_string(i), input_topics_[i]);
   }
-  const auto get_timestamp = [](const std::shared_ptr<PCLPointCloudType> & data) -> rclcpp::Time {
-    return pcl_conversions::fromPCL(data->header.stamp);
+  const auto get_timestamp = [](const PCLPointCloudType & data) -> rclcpp::Time {
+    return pcl_conversions::fromPCL(data.header.stamp);
   };
   if (num_input_ == 2) {
     sync2_ = std::make_shared<Sync2T>(Sync2T(
@@ -76,11 +79,11 @@ void PointsConcatenateComponent::callback2(const CallbackT & in0, const Callback
   bool empty = true;
   if (in0) {
     empty = false;
-    *cloud += *in0.value();
+    *cloud += in0.value();
   }
   if (in1) {
     empty = false;
-    *cloud += *in1.value();
+    *cloud += in1.value();
   }
   if (!empty) {
     cloud->header.stamp = pcl_conversions::toPCL(sync2_->getPollTimestamp());
@@ -95,15 +98,15 @@ void PointsConcatenateComponent::callback3(
   bool empty = true;
   if (in0) {
     empty = false;
-    *cloud += *in0.value();
+    *cloud += in0.value();
   }
   if (in1) {
     empty = false;
-    *cloud += *in1.value();
+    *cloud += in1.value();
   }
   if (in2) {
     empty = false;
-    *cloud += *in2.value();
+    *cloud += in2.value();
   }
   if (!empty) {
     cloud->header.stamp = pcl_conversions::toPCL(sync3_->getPollTimestamp());
@@ -118,19 +121,19 @@ void PointsConcatenateComponent::callback4(
   bool empty = true;
   if (in0) {
     empty = false;
-    *cloud += *in0.value();
+    *cloud += in0.value();
   }
   if (in1) {
     empty = false;
-    *cloud += *in1.value();
+    *cloud += in1.value();
   }
   if (in2) {
     empty = false;
-    *cloud += *in2.value();
+    *cloud += in2.value();
   }
   if (in3) {
     empty = false;
-    *cloud += *in3.value();
+    *cloud += in3.value();
   }
   if (!empty) {
     cloud->header.stamp = pcl_conversions::toPCL(sync4_->getPollTimestamp());

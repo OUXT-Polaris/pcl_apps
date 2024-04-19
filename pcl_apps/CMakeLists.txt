@@ -50,7 +50,7 @@ function(add_pcl_apps_component module component_name component_name_in_macro)
   )
   target_compile_definitions(${component_name}_component PRIVATE "PCL_APPS_${component_name_in_macro}_BUILDING_DLL")
   target_link_libraries(${component_name}_component
-    boost_system ${PCL_LIBRARIES})
+    boost_system ${PCL_LIBRARIES} glog)
 
   ament_auto_add_executable(${component_name}_node
     src/${module}/${component_name}/${component_name}_node.cpp)

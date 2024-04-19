@@ -68,9 +68,11 @@ extern "C" {
 #include <memory>
 #include <string>
 
+#include <glog/logging.h>
+
 namespace pcl_apps
 {
-typedef std::optional<PCLPointCloudTypePtr> CallbackT;
+typedef std::optional<PCLPointCloudType> CallbackT;
 typedef message_synchronizer::MessageSynchronizer2<
   PointCloudAdapterType, PointCloudAdapterType, PCLPointCloudType, PCLPointCloudType>
   Sync2T;
