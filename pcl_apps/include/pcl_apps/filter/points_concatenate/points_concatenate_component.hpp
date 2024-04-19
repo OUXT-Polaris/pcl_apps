@@ -71,17 +71,17 @@ extern "C" {
 namespace pcl_apps
 {
 typedef std::optional<PCLPointCloudTypePtr> CallbackT;
-typedef message_synchronizer::MessageSynchronizer2<PointCloudAdapterType, PointCloudAdapterType>
+typedef message_synchronizer::MessageSynchronizer2<
+  PointCloudAdapterType, PointCloudAdapterType, PCLPointCloudType, PCLPointCloudType>
   Sync2T;
-typedef std::shared_ptr<Sync2T> Sync2PtrT;
 typedef message_synchronizer::MessageSynchronizer3<
-  PointCloudAdapterType, PointCloudAdapterType, PointCloudAdapterType>
+  PointCloudAdapterType, PointCloudAdapterType, PointCloudAdapterType, PCLPointCloudType,
+  PCLPointCloudType, PCLPointCloudType>
   Sync3T;
-typedef std::shared_ptr<Sync3T> Sync3PtrT;
 typedef message_synchronizer::MessageSynchronizer4<
-  PointCloudAdapterType, PointCloudAdapterType, PointCloudAdapterType, PointCloudAdapterType>
+  PointCloudAdapterType, PointCloudAdapterType, PointCloudAdapterType, PointCloudAdapterType,
+  PCLPointCloudType, PCLPointCloudType, PCLPointCloudType, PCLPointCloudType>
   Sync4T;
-typedef std::shared_ptr<Sync4T> Sync4PtrT;
 
 class PointsConcatenateComponent : public rclcpp::Node
 {
@@ -95,9 +95,9 @@ private:
   void callback4(
     const CallbackT & in0, const CallbackT & in1, const CallbackT & in2, const CallbackT & in3);
   PointCloudPublisher pub_;
-  Sync2PtrT sync2_;
-  Sync3PtrT sync3_;
-  Sync4PtrT sync4_;
+  std::shared_ptr<Sync2T> sync2_;
+  std::shared_ptr<Sync3T> sync3_;
+  std::shared_ptr<Sync4T> sync4_;
   std::array<std::string, 8> input_topics_;
   int num_input_;
 };

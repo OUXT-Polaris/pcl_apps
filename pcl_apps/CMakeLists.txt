@@ -66,8 +66,8 @@ endfunction(add_pcl_apps_component)
 
 
 # Filter Modules
-# add_pcl_apps_component(filter points_concatenate POINTS_CONCATENATE)
-# rclcpp_components_register_nodes(points_concatenate_component "pcl_apps::PointsConcatenateComponent")
+add_pcl_apps_component(filter points_concatenate POINTS_CONCATENATE)
+rclcpp_components_register_nodes(points_concatenate_component "pcl_apps::PointsConcatenateComponent")
 add_pcl_apps_component(filter points_transform POINTS_TRANSFORM)
 rclcpp_components_register_nodes(points_transform_component "pcl_apps::PointsTransformComponent")
 add_pcl_apps_component(filter radius_outlier_removal RADIUS_OUTLIER_REMOVAL RadiusOutlierRemovalComponent)

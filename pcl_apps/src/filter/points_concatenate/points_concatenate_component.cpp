@@ -35,31 +35,38 @@ PointsConcatenateComponent::PointsConcatenateComponent(const rclcpp::NodeOptions
       "input_topic" + std::to_string(i), get_name() + std::string("/input") + std::to_string(i));
     get_parameter("input_topic" + std::to_string(i), input_topics_[i]);
   }
+  const auto get_timestamp = [](const std::shared_ptr<PCLPointCloudType> & data) -> rclcpp::Time {
+    return pcl_conversions::fromPCL(data->header.stamp);
+  };
   if (num_input_ == 2) {
-    sync2_ = std::shared_ptr<Sync2T>(
-      new Sync2T(
-        this, {input_topics_[0], input_topics_[1]}, std::chrono::milliseconds{100},
-        std::chrono::milliseconds{100}),
-      options, [](const auto & data) { pcl_conversions::fromPCL(); });
-    // auto func2 = std::bind(
-    //   &PointsConcatenateComponent::callback2, this, std::placeholders::_1, std::placeholders::_2);
-    // sync2_->registerCallback(func2);
+    sync2_ = std::make_shared<Sync2T>(Sync2T(
+      this, {input_topics_[0], input_topics_[1]}, std::chrono::milliseconds{100},
+      std::chrono::milliseconds{100},
+      rclcpp::SubscriptionOptionsWithAllocator<std::allocator<void>>(), get_timestamp,
+      get_timestamp));
+    auto func2 = std::bind(
+      &PointsConcatenateComponent::callback2, this, std::placeholders::_1, std::placeholders::_2);
+    sync2_->registerCallback(func2);
   } else if (num_input_ == 3) {
-    // sync3_ = std::shared_ptr<Sync3T>(new Sync3T(
-    //   this, {input_topics_[0], input_topics_[1], input_topics_[2]}, std::chrono::milliseconds{100},
-    //   std::chrono::milliseconds{100}));
-    // auto func3 = std::bind(
-    //   &PointsConcatenateComponent::callback3, this, std::placeholders::_1, std::placeholders::_2,
-    //   std::placeholders::_3);
-    // sync3_->registerCallback(func3);
+    sync3_ = std::make_shared<Sync3T>(Sync3T(
+      this, {input_topics_[0], input_topics_[1], input_topics_[2]}, std::chrono::milliseconds{100},
+      std::chrono::milliseconds{100},
+      rclcpp::SubscriptionOptionsWithAllocator<std::allocator<void>>(), get_timestamp,
+      get_timestamp, get_timestamp));
+    auto func3 = std::bind(
+      &PointsConcatenateComponent::callback3, this, std::placeholders::_1, std::placeholders::_2,
+      std::placeholders::_3);
+    sync3_->registerCallback(func3);
   } else if (num_input_ == 4) {
-    // sync4_ = std::shared_ptr<Sync4T>(new Sync4T(
-    //   this, {input_topics_[0], input_topics_[1], input_topics_[2], input_topics_[3]},
-    //   std::chrono::milliseconds{100}, std::chrono::milliseconds{100}));
-    // auto func4 = std::bind(
-    //   &PointsConcatenateComponent::callback4, this, std::placeholders::_1, std::placeholders::_2,
-    //   std::placeholders::_3, std::placeholders::_4);
-    // sync4_->registerCallback(func4);
+    sync4_ = std::make_shared<Sync4T>(Sync4T(
+      this, {input_topics_[0], input_topics_[1], input_topics_[2], input_topics_[3]},
+      std::chrono::milliseconds{100}, std::chrono::milliseconds{100},
+      rclcpp::SubscriptionOptionsWithAllocator<std::allocator<void>>(), get_timestamp,
+      get_timestamp, get_timestamp, get_timestamp));
+    auto func4 = std::bind(
+      &PointsConcatenateComponent::callback4, this, std::placeholders::_1, std::placeholders::_2,
+      std::placeholders::_3, std::placeholders::_4);
+    sync4_->registerCallback(func4);
   }
 }
 
