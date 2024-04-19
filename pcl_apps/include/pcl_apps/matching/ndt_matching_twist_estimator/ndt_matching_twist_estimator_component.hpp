@@ -75,7 +75,6 @@ extern "C" {
 
 // Headers in Boost
 #include <boost/circular_buffer.hpp>
-#include <boost/optional.hpp>
 
 // Headers in STL
 #include <string>
@@ -99,7 +98,7 @@ private:
   double resolution_;
   int max_iterations_;
   std::string input_cloud_frame_id_;
-  boost::optional<geometry_msgs::msg::TwistStamped> estimateCurrentTwist();
+  std::optional<geometry_msgs::msg::TwistStamped> estimateCurrentTwist();
   pcl::NormalDistributionsTransform<pcl::PointXYZ, pcl::PointXYZ> ndt_;
   double toSec(rclcpp::Duration duration)
   {

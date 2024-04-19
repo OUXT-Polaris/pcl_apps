@@ -70,15 +70,16 @@ extern "C" {
 
 namespace pcl_apps
 {
-typedef sensor_msgs::msg::PointCloud2 PointCloud2;
-typedef std::shared_ptr<PointCloud2> PointCloud2Ptr;
-typedef const boost::optional<const PointCloud2Ptr> & CallbackT;
-typedef message_synchronizer::MessageSynchronizer2<PointCloud2, PointCloud2> Sync2T;
+typedef std::optional<PCLPointCloudTypePtr> CallbackT;
+typedef message_synchronizer::MessageSynchronizer2<PointCloudAdapterType, PointCloudAdapterType>
+  Sync2T;
 typedef std::shared_ptr<Sync2T> Sync2PtrT;
-typedef message_synchronizer::MessageSynchronizer3<PointCloud2, PointCloud2, PointCloud2> Sync3T;
+typedef message_synchronizer::MessageSynchronizer3<
+  PointCloudAdapterType, PointCloudAdapterType, PointCloudAdapterType>
+  Sync3T;
 typedef std::shared_ptr<Sync3T> Sync3PtrT;
 typedef message_synchronizer::MessageSynchronizer4<
-  PointCloud2, PointCloud2, PointCloud2, PointCloud2>
+  PointCloudAdapterType, PointCloudAdapterType, PointCloudAdapterType, PointCloudAdapterType>
   Sync4T;
 typedef std::shared_ptr<Sync4T> Sync4PtrT;
 
@@ -89,20 +90,11 @@ public:
   explicit PointsConcatenateComponent(const rclcpp::NodeOptions & options);
 
 private:
-  void callback2(CallbackT in0, CallbackT in1);
-  void callback3(CallbackT in0, CallbackT in1, CallbackT in2);
-  void callback4(CallbackT in0, CallbackT in1, CallbackT in2, CallbackT in3);
-  /*
-  boost::shared_ptr<message_filters::Synchronizer<SyncPolicy>> sync_;
-  void input(
-    const PointCloud2::SharedPtr & in0, const PointCloud2::SharedPtr & in1,
-    const PointCloud2::SharedPtr & in2, const PointCloud2::SharedPtr & in3,
-    const PointCloud2::SharedPtr & in4, const PointCloud2::SharedPtr & in5,
-    const PointCloud2::SharedPtr & in6, const PointCloud2::SharedPtr & in7);
-  std::array<boost::shared_ptr<PointCloudSubsciber>, 8> sub_ptrs_;
-  message_filters::PassThrough<PointCloud2> nf_;
-  */
-  rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr pub_;
+  void callback2(const CallbackT & in0, const CallbackT & in1);
+  void callback3(const CallbackT & in0, const CallbackT & in1, const CallbackT & in2);
+  void callback4(
+    const CallbackT & in0, const CallbackT & in1, const CallbackT & in2, const CallbackT & in3);
+  PointCloudPublisher pub_;
   Sync2PtrT sync2_;
   Sync3PtrT sync3_;
   Sync4PtrT sync4_;

@@ -106,16 +106,16 @@ NdtMatchingTwistEstimatorComponent::NdtMatchingTwistEstimatorComponent(
     pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud;
     pcl::fromROSMsg(*msg, *input_cloud);
     buffer_.push_back(input_cloud);
-    boost::optional<geometry_msgs::msg::TwistStamped> twist = estimateCurrentTwist();
+    std::optional<geometry_msgs::msg::TwistStamped> twist = estimateCurrentTwist();
     if (twist) {
-      current_twist_pub_->publish(twist.get());
+      current_twist_pub_->publish(twist.value());
     }
   };
   sub_input_cloud_ =
     create_subscription<sensor_msgs::msg::PointCloud2>(input_cloud_topic_, 10, callback);
 }
 
-boost::optional<geometry_msgs::msg::TwistStamped>
+std::optional<geometry_msgs::msg::TwistStamped>
 NdtMatchingTwistEstimatorComponent::estimateCurrentTwist()
 {
   assert(timestamps_.size() == buffer_.size());
@@ -161,7 +161,7 @@ NdtMatchingTwistEstimatorComponent::estimateCurrentTwist()
     twist.twist.angular.z = yaw / diff_time;
     return twist;
   }
-  return boost::none;
+  return std::nullopt;
 }
 }  // namespace pcl_apps
 
