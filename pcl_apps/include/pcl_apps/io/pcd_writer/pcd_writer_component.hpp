@@ -75,12 +75,12 @@ public:
   explicit PcdWriterComponent(const rclcpp::NodeOptions & options);
 
 private:
-  rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr sub_;
+  PointCloudSubscriber sub_;
   std::string input_topic_;
   bool pointcloud_recieved_;
   bool save_every_pointcloud_;
   rclcpp::Service<pcl_apps_msgs::srv::WritePcd>::SharedPtr server_;
-  pcl::PointCloud<PCLPointType> cloud_;
+  PCLPointCloudTypePtr cloud_;
 };
 }  // namespace pcl_apps
 
