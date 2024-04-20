@@ -79,11 +79,11 @@ EuclideanClusteringComponent::EuclideanClusteringComponent(const rclcpp::NodeOpt
     });
   std::string output_topic_name = get_name() + std::string("/output");
   pub_ = create_publisher<pcl_apps_msgs::msg::PointCloudArray>(output_topic_name, 10);
-  auto callback = [this](const typename sensor_msgs::msg::PointCloud2::SharedPtr msg) -> void {
+  auto callback = [this](const PCLPointCloudTypePtr cloud) -> void {
     pcl_apps_msgs::msg::PointCloudArray clusters;
-    clusters.header = msg->header;
-    pcl::PointCloud<PCLPointType>::Ptr cloud;
-    pcl::fromROSMsg(*msg, *cloud);
+    clusters.header = pcl_conversions::fromPCL(cloud->header);
+    // pcl::PointCloud<PCLPointType>::Ptr cloud;
+    // pcl::fromROSMsg(*msg, *cloud);
     std::vector<pcl::PointIndices> cluster_indices;
     pcl::EuclideanClusterExtraction<PCLPointType> clustering;
     pcl::search::KdTree<PCLPointType>::Ptr tree(new pcl::search::KdTree<PCLPointType>);
@@ -115,12 +115,12 @@ EuclideanClusteringComponent::EuclideanClusteringComponent(const rclcpp::NodeOpt
       }
       sensor_msgs::msg::PointCloud2 pointcloud_msg;
       pcl::toROSMsg(pointcloud, pointcloud_msg);
-      pointcloud_msg.header = msg->header;
+      pointcloud_msg.header = pcl_conversions::fromPCL(cloud->header);
       clusters.cloud.push_back(pointcloud_msg);
     }
     pub_->publish(clusters);
   };
-  sub_ = create_subscription<sensor_msgs::msg::PointCloud2>(input_topic_, 10, callback);
+  sub_ = create_subscription<PointCloudAdapterType>(input_topic_, 10, callback);
 }
 }  // namespace pcl_apps
 

@@ -79,7 +79,7 @@ public:
   explicit EuclideanClusteringComponent(const rclcpp::NodeOptions & options);
 
 private:
-  rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr sub_;
+  PointCloudSubscriber sub_;
   rclcpp::Publisher<pcl_apps_msgs::msg::PointCloudArray>::SharedPtr pub_;
   std::string input_topic_;
   double cluster_tolerance_;
