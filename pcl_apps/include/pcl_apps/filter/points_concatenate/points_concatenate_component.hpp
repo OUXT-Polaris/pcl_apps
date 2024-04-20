@@ -54,9 +54,8 @@ extern "C" {
 #endif
 
 // Headers in ROS2
-#include <pcl_conversions/pcl_conversions.h>
-
 #include <message_synchronizer/message_synchronizer.hpp>
+#include <pcl_apps/adapter.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/point_cloud2.hpp>
 
@@ -103,7 +102,7 @@ private:
   std::array<boost::shared_ptr<PointCloudSubsciber>, 8> sub_ptrs_;
   message_filters::PassThrough<PointCloud2> nf_;
   */
-  rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr pub_;
+  PointCloudPublisher pub_;
   Sync2PtrT sync2_;
   Sync3PtrT sync3_;
   Sync4PtrT sync4_;
