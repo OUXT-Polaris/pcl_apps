@@ -30,11 +30,11 @@ PcdWriterComponent::PcdWriterComponent(const rclcpp::NodeOptions & options)
   declare_parameter("input_topic", get_name() + std::string("/input"));
   get_parameter("input_topic", input_topic_);
   pointcloud_recieved_ = false;
-  auto callback = [this](const typename sensor_msgs::msg::PointCloud2::SharedPtr msg) -> void {
-    pcl::fromROSMsg(*msg, cloud_);
+  auto callback = [this](const PCLPointCloudTypePtr msg) -> void {
+    cloud_ = msg;
     pointcloud_recieved_ = true;
   };
-  sub_ = create_subscription<sensor_msgs::msg::PointCloud2>(input_topic_, 10, callback);
+  sub_ = create_subscription<PointCloudAdapterType>(input_topic_, 10, callback);
   auto write_pcd_callback =
     [this](
       const std::shared_ptr<rmw_request_id_t> request_header,
@@ -44,11 +44,11 @@ PcdWriterComponent::PcdWriterComponent(const rclcpp::NodeOptions & options)
     if (pointcloud_recieved_) {
       int result = 0;
       if (request->format == request->ASCII) {
-        result = pcl::io::savePCDFileASCII(request->path, cloud_);
+        result = pcl::io::savePCDFileASCII(request->path, *cloud_);
       } else if (request->format == request->BINARY) {
-        result = pcl::io::savePCDFileBinary(request->path, cloud_);
+        result = pcl::io::savePCDFileBinary(request->path, *cloud_);
       } else if (request->format == request->BINARY_COMPRESSED) {
-        result = pcl::io::savePCDFileBinaryCompressed(request->path, cloud_);
+        result = pcl::io::savePCDFileBinaryCompressed(request->path, *cloud_);
       } else {
         response->result = response->FAIL;
         response->description = "invalid file format";

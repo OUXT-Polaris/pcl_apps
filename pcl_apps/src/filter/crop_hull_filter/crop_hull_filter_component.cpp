@@ -15,7 +15,6 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/surface/convex_hull.h>
-#include <pcl_conversions/pcl_conversions.h>
 
 #include <pcl_apps/filter/crop_hull_filter/crop_hull_filter_component.hpp>
 
@@ -33,7 +32,8 @@ CropHullFilterComponent::CropHullFilterComponent(const rclcpp::NodeOptions & opt
 {
   pointcloud_pub_ = this->create_publisher<pcl_apps_msgs::msg::PointCloudArray>("points_array", 1);
   polygon_sub_ = std::shared_ptr<PolygonSubscriber>(new PolygonSubscriber(this, "polygon"));
-  pointcloud_sub_ = std::shared_ptr<PointCloudSubscriber>(new PointCloudSubscriber(this, "points"));
+  pointcloud_sub_ =
+    std::shared_ptr<ROS2PointCloudSubscriber>(new ROS2PointCloudSubscriber(this, "points"));
   sync_ = std::make_shared<message_filters::TimeSynchronizer<
     sensor_msgs::msg::PointCloud2, pcl_apps_msgs::msg::PolygonArray>>(
     *pointcloud_sub_, *polygon_sub_, 10);
@@ -47,17 +47,17 @@ void CropHullFilterComponent::callback(
 {
   pcl_apps_msgs::msg::PointCloudArray point_clouds;
   point_clouds.header = point_cloud->header;
-  pcl::CropHull<pcl::PointXYZI> filter;
-  pcl::PointCloud<pcl::PointXYZI>::Ptr pcl_cloud(new pcl::PointCloud<pcl::PointXYZI>());
+  pcl::CropHull<PCLPointType> filter;
+  pcl::PointCloud<PCLPointType>::Ptr pcl_cloud(new pcl::PointCloud<PCLPointType>());
   pcl::fromROSMsg(*point_cloud, *pcl_cloud);
   for (auto poly_itr = polygon->polygon.begin(); poly_itr != polygon->polygon.end(); poly_itr++) {
-    pcl::ConvexHull<pcl::PointXYZI> convex_hull;
+    pcl::ConvexHull<PCLPointType> convex_hull;
     std::vector<pcl::Vertices> convex_hull_polygons;
-    pcl::PointCloud<pcl::PointXYZI>::Ptr hull_cloud(new pcl::PointCloud<pcl::PointXYZI>());
-    pcl::PointCloud<pcl::PointXYZI>::Ptr hull_points(new pcl::PointCloud<pcl::PointXYZI>());
+    pcl::PointCloud<PCLPointType>::Ptr hull_cloud(new pcl::PointCloud<PCLPointType>());
+    pcl::PointCloud<PCLPointType>::Ptr hull_points(new pcl::PointCloud<PCLPointType>());
     for (auto point_itr = poly_itr->points.begin(); point_itr != poly_itr->points.end();
          point_itr++) {
-      pcl::PointXYZI p;
+      PCLPointType p;
       p.x = point_itr->x;
       p.y = point_itr->y;
       p.z = point_itr->z;
@@ -69,7 +69,7 @@ void CropHullFilterComponent::callback(
     filter.setHullCloud(hull_points);
     filter.setDim(2);
     filter.setCropOutside(false);
-    pcl::PointCloud<pcl::PointXYZI>::Ptr filtered(new pcl::PointCloud<pcl::PointXYZI>());
+    pcl::PointCloud<PCLPointType>::Ptr filtered(new pcl::PointCloud<PCLPointType>());
     filter.setInputCloud(pcl_cloud);
     filter.filter(*filtered);
     sensor_msgs::msg::PointCloud2 filtered_msg;

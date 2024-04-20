@@ -54,9 +54,10 @@ extern "C" {
 #endif
 
 // Headers in ROS2
-#include <pcl_conversions/pcl_conversions.h>
 #include <tf2/LinearMath/Matrix3x3.h>
 #include <tf2/transform_datatypes.h>
+
+#include <pcl_apps/adapter.hpp>
 #ifdef USE_TF2_EIGEN_DEPRECATED_HEADER
 #include <tf2_eigen/tf2_eigen.h>
 #else
@@ -110,7 +111,7 @@ private:
   double step_size_;
   double resolution_;
   int max_iterations_;
-  pcl::PointCloud<pcl::PointXYZ>::Ptr reference_cloud_;
+  PCLPointCloudTypePtr reference_cloud_;
   std::shared_ptr<tf2_ros::TransformBroadcaster> broadcaster_;
   bool reference_cloud_recieved_;
   bool initial_pose_recieved_;
@@ -120,14 +121,14 @@ private:
   tf2_ros::Buffer tf_buffer_{get_clock()};
   tf2_ros::TransformListener tf_listener_{tf_buffer_};
   void publishTF(
-    const std::string frame_id, const std::string child_frame_id,
-    const geometry_msgs::msg::PoseStamped pose);
-  rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::ConstSharedPtr sub_reference_cloud_;
-  rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr sub_input_cloud_;
+    const std::string & frame_id, const std::string & child_frame_id,
+    const geometry_msgs::msg::PoseStamped & pose);
+  PointCloudSubscriber sub_reference_cloud_;
+  PointCloudSubscriber sub_input_cloud_;
   rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr sub_initial_pose_;
   rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr current_relative_pose_pub_;
-  void updateRelativePose(pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud, rclcpp::Time stamp);
-  std::shared_ptr<pclomp::NormalDistributionsTransform<pcl::PointXYZ, pcl::PointXYZ>> ndt_;
+  void updateRelativePose(PCLPointCloudTypePtr input_cloud, rclcpp::Time stamp);
+  std::shared_ptr<pclomp::NormalDistributionsTransform<PCLPointType, PCLPointType>> ndt_;
   geometry_msgs::msg::PoseStamped current_relative_pose_;
   rclcpp::node_interfaces::OnSetParametersCallbackHandle::SharedPtr param_handler_ptr_;
 };

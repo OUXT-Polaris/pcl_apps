@@ -54,7 +54,7 @@ extern "C" {
 #endif
 
 // Headers in ROS2
-#include <pcl_conversions/pcl_conversions.h>
+#include <pcl_apps/adapter.hpp>
 
 #ifdef USE_TF2_EIGEN_DEPRECATED_HEADER
 #include <tf2_eigen/tf2_eigen.h>
@@ -89,8 +89,8 @@ private:
   rclcpp::Clock ros_clock_;
   tf2_ros::Buffer buffer_;
   tf2_ros::TransformListener listener_;
-  rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr sub_;
-  rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr pub_;
+  PointCloudSubscriber sub_;
+  PointCloudPublisher pub_;
   std::string input_topic_;
 };
 }  // namespace pcl_apps

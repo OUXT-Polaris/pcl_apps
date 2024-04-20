@@ -51,7 +51,7 @@ NdtMatchingComponent::NdtMatchingComponent(const rclcpp::NodeOptions & options)
   get_parameter("omp_num_thread", omp_num_thread_);
 
   broadcaster_ = std::make_shared<tf2_ros::TransformBroadcaster>(this);
-  ndt_ = std::make_shared<pclomp::NormalDistributionsTransform<pcl::PointXYZ, pcl::PointXYZ>>();
+  ndt_ = std::make_shared<pclomp::NormalDistributionsTransform<PCLPointType, PCLPointType>>();
   ndt_->setNeighborhoodSearchMethod(pclomp::DIRECT7);
   if (0 < omp_num_thread_) ndt_->setNumThreads(omp_num_thread_);
 
@@ -118,42 +118,33 @@ NdtMatchingComponent::NdtMatchingComponent(const rclcpp::NodeOptions & options)
   reference_cloud_recieved_ = false;
   initial_pose_recieved_ = false;
 
-  auto reference_cloud_callback =
-    [this](const typename sensor_msgs::msg::PointCloud2::ConstSharedPtr msg) -> void {
+  auto reference_cloud_callback = [this](const PCLPointCloudTypePtr reference_cloud_) -> void {
     ndt_map_mtx_.lock();
     initial_pose_recieved_ = false;
-    assert(msg->header.frame_id == reference_frame_id_);
     reference_cloud_recieved_ = true;
-    pcl::fromROSMsg(*msg, *reference_cloud_);
     ndt_->setInputTarget(reference_cloud_);
     ndt_map_mtx_.unlock();
   };
   auto initial_pose_callback =
     [this](const typename geometry_msgs::msg::PoseStamped::SharedPtr msg) -> void {
     initial_pose_recieved_ = true;
-    assert(msg->header.frame_id == reference_frame_id_);
     current_relative_pose_ = *msg;
   };
-  auto callback = [this](const typename sensor_msgs::msg::PointCloud2::SharedPtr msg) -> void {
-    std::lock_guard<std::mutex> lock(ndt_map_mtx_);
-    pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud(new pcl::PointCloud<pcl::PointXYZ>);
-    pcl::fromROSMsg(*msg, *input_cloud);
+  auto callback = [this](const PCLPointCloudTypePtr input_cloud) -> void {
     std::vector<int> nan_index;
     pcl::removeNaNFromPointCloud(*input_cloud, *input_cloud, nan_index);
     publishTF(reference_frame_id_, base_frame_id_, current_relative_pose_);
-    updateRelativePose(input_cloud, msg->header.stamp);
+    updateRelativePose(input_cloud, pcl_conversions::fromPCL(input_cloud->header.stamp));
     current_relative_pose_pub_->publish(current_relative_pose_);
   };
-  sub_reference_cloud_ = create_subscription<sensor_msgs::msg::PointCloud2>(
+  sub_reference_cloud_ = create_subscription<PointCloudAdapterType>(
     reference_cloud_topic_, rclcpp::QoS{1}.transient_local(), reference_cloud_callback);
-  sub_input_cloud_ =
-    create_subscription<sensor_msgs::msg::PointCloud2>(input_cloud_topic_, 10, callback);
+  sub_input_cloud_ = create_subscription<PointCloudAdapterType>(input_cloud_topic_, 10, callback);
   sub_initial_pose_ = create_subscription<geometry_msgs::msg::PoseStamped>(
     initial_pose_topic_, 1, initial_pose_callback);
 }
 
-void NdtMatchingComponent::updateRelativePose(
-  pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud, rclcpp::Time stamp)
+void NdtMatchingComponent::updateRelativePose(PCLPointCloudTypePtr input_cloud, rclcpp::Time stamp)
 {
   ndt_->setTransformationEpsilon(transform_epsilon_);
   ndt_->setStepSize(step_size_);
@@ -166,7 +157,7 @@ void NdtMatchingComponent::updateRelativePose(
   transform.translation.z = current_relative_pose_.pose.position.z;
   transform.rotation = current_relative_pose_.pose.orientation;
   Eigen::Matrix4f mat = tf2::transformToEigen(transform).matrix().cast<float>();
-  auto output_cloud = std::make_shared<pcl::PointCloud<pcl::PointXYZ>>();
+  auto output_cloud = std::make_shared<pcl::PointCloud<PCLPointType>>();
   ndt_->align(*output_cloud, mat);
   Eigen::Matrix4f final_transform = ndt_->getFinalTransformation();
   tf2::Matrix3x3 rotation_mat;
@@ -188,8 +179,10 @@ void NdtMatchingComponent::updateRelativePose(
   current_relative_pose_.pose.orientation.z = quat.z();
   current_relative_pose_.pose.orientation.w = quat.w();
 }
+
 void NdtMatchingComponent::publishTF(
-  std::string frame_id, std::string child_frame_id, geometry_msgs::msg::PoseStamped pose)
+  const std::string & frame_id, const std::string & child_frame_id,
+  const geometry_msgs::msg::PoseStamped & pose)
 {
   geometry_msgs::msg::TransformStamped transform_stamped;
 

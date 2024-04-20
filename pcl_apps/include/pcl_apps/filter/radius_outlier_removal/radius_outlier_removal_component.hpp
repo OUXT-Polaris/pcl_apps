@@ -53,9 +53,7 @@ extern "C" {
 }  // extern "C"
 #endif
 
-// Headers in ROS2
-#include <pcl_conversions/pcl_conversions.h>
-
+#include <pcl_apps/adapter.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/point_cloud2.hpp>
 
@@ -76,9 +74,9 @@ public:
 
 private:
   std::string input_topic_;
-  rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr sub_;
-  rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr pub_;
-  pcl::RadiusOutlierRemoval<pcl::PointXYZI> filter_;
+  PointCloudSubscriber sub_;
+  PointCloudPublisher pub_;
+  pcl::RadiusOutlierRemoval<PCLPointType> filter_;
   double search_radius_;
   int min_neighbors_in_search_radius_;
   rclcpp::Node::OnSetParametersCallbackHandle::SharedPtr param_handler_ptr_;

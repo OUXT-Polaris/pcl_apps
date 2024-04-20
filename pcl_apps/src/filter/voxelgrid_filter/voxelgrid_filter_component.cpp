@@ -54,20 +54,16 @@ VoxelgridFilterComponent::VoxelgridFilterComponent(const rclcpp::NodeOptions & o
       return *results;
     });
   std::string output_topic_name = get_name() + std::string("/output");
-  pub_ = create_publisher<sensor_msgs::msg::PointCloud2>(output_topic_name, 10);
-  auto callback = [this](const typename sensor_msgs::msg::PointCloud2::SharedPtr msg) -> void {
-    pcl::PCLPointCloud2::Ptr cloud(new pcl::PCLPointCloud2());
-    pcl_conversions::toPCL(*msg, *cloud);
+  pub_ = create_publisher<PointCloudAdapterType>(output_topic_name, 10);
+  auto callback = [this](const PCLPointCloudTypePtr cloud) -> void {
     filter_.setInputCloud(cloud);
     assert(leaf_size_ > 0.0);
     filter_.setLeafSize(leaf_size_, leaf_size_, leaf_size_);
     pcl::PCLPointCloud2::Ptr cloud_filtered(new pcl::PCLPointCloud2());
-    filter_.filter(*cloud_filtered);
-    sensor_msgs::msg::PointCloud2 output_cloud_msg;
-    pcl_conversions::fromPCL(*cloud_filtered, output_cloud_msg);
-    pub_->publish(output_cloud_msg);
+    filter_.filter(*cloud);
+    pub_->publish(cloud);
   };
-  sub_ = create_subscription<sensor_msgs::msg::PointCloud2>(input_topic_, 10, callback);
+  sub_ = create_subscription<PointCloudAdapterType>(input_topic_, 10, callback);
 }
 }  // namespace pcl_apps
 
