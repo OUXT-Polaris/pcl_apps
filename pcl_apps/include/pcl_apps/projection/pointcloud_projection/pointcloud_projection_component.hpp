@@ -62,7 +62,6 @@ extern "C" {
 #include <memory>
 #include <message_synchronizer/message_synchronizer.hpp>
 #include <pcl/impl/point_types.hpp>
-#include <pcl_apps/adapter.hpp>
 #include <pcl_apps_msgs/msg/point_cloud_array.hpp>
 #include <perception_msgs/msg/detection2_d_array.hpp>
 #include <sensor_msgs/msg/camera_info.hpp>
@@ -78,8 +77,8 @@ typedef std::shared_ptr<PointCloudArrayT> PointCloudArrayTPtr;
 
 typedef message_synchronizer::MessageSynchronizer2<CameraInfoT, PointCloudArrayT>
   CameraInfoAndPoints;
-typedef const std::optional<CameraInfoT> & CameraInfoCallbackT;
-typedef const std::optional<PointCloudArrayT> & PointCloudsCallbackT;
+typedef const boost::optional<const CameraInfoTPtr> & CameraInfoCallbackT;
+typedef const boost::optional<const PointCloudArrayTPtr> & PointCloudsCallbackT;
 
 class PointCloudProjectionComponent : public rclcpp::Node
 {
@@ -91,7 +90,7 @@ public:
   explicit PointCloudProjectionComponent(const rclcpp::NodeOptions & options);
 
 private:
-  vision_msgs::msg::BoundingBox3D toBbox(pcl::PointCloud<PCLPointType>::Ptr pointcloud) const;
+  vision_msgs::msg::BoundingBox3D toBbox(pcl::PointCloud<pcl::PointXYZI>::Ptr pointcloud) const;
   rclcpp::Publisher<perception_msgs::msg::Detection2DArray>::SharedPtr detection_pub_;
   rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr marker_pub_;
   visualization_msgs::msg::MarkerArray toMarker(
