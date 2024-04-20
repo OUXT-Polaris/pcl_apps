@@ -66,6 +66,7 @@ extern "C" {
 
 #include <geometry_msgs/msg/transform.hpp>
 #include <geometry_msgs/msg/twist_stamped.hpp>
+#include <pcl_apps/adapter.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/point_cloud2.hpp>
 
@@ -89,9 +90,9 @@ public:
 
 private:
   std::string input_cloud_topic_;
-  rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr sub_input_cloud_;
+  PointCloudSubscriber sub_input_cloud_;
   rclcpp::Publisher<geometry_msgs::msg::TwistStamped>::SharedPtr current_twist_pub_;
-  boost::circular_buffer<pcl::PointCloud<pcl::PointXYZ>::Ptr> buffer_;
+  boost::circular_buffer<pcl::PointCloud<PCLPointType>::Ptr> buffer_;
   boost::circular_buffer<rclcpp::Time> timestamps_;
   double transform_epsilon_;
   double step_size_;
@@ -99,7 +100,7 @@ private:
   int max_iterations_;
   std::string input_cloud_frame_id_;
   std::optional<geometry_msgs::msg::TwistStamped> estimateCurrentTwist();
-  pcl::NormalDistributionsTransform<pcl::PointXYZ, pcl::PointXYZ> ndt_;
+  pcl::NormalDistributionsTransform<PCLPointType, PCLPointType> ndt_;
   double toSec(rclcpp::Duration duration)
   {
     double ret;
