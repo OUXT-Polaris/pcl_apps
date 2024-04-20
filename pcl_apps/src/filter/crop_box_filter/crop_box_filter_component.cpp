@@ -42,16 +42,14 @@ CropBoxFilterComponent::CropBoxFilterComponent(const rclcpp::NodeOptions & optio
   get_parameter("keep_organized", keep_organized_);
   declare_parameter("negative", false);
   get_parameter("negative", negative_);
-  pub_ = create_publisher<sensor_msgs::msg::PointCloud2>("~/points_filtered", 1);
-  sub_ = create_subscription<sensor_msgs::msg::PointCloud2>(
-    "~/points", 1, std::bind(&CropBoxFilterComponent::pointsCallback, this, std::placeholders::_1));
+  pub_ = create_publisher<PointCloudAdapterType>("~/points_filtered", 1);
+  sub_ = create_subscription<PointCloudAdapterType>(
+    "~/points", 1, [this](const PCLPointCloudTypePtr & msg) { pointsCallback(msg); });
 }
 
-void CropBoxFilterComponent::pointsCallback(const sensor_msgs::msg::PointCloud2::SharedPtr msg)
+void CropBoxFilterComponent::pointsCallback(const PCLPointCloudTypePtr & msg)
 {
-  pcl::CropBox<pcl::PCLPointCloud2> filter;
-  pcl::PCLPointCloud2::Ptr cloud(new pcl::PCLPointCloud2());
-  pcl_conversions::toPCL(*msg, *cloud);
+  pcl::CropBox<PCLPointType> filter;
   Eigen::Vector4f new_min_point, new_max_point;
   new_min_point << min_x_, min_y_, min_z_, 0.0;
   new_max_point << max_x_, max_y_, max_z_, 0.0;
@@ -59,12 +57,10 @@ void CropBoxFilterComponent::pointsCallback(const sensor_msgs::msg::PointCloud2:
   filter.setMax(new_max_point);
   filter.setNegative(negative_);
   filter.setKeepOrganized(keep_organized_);
-  filter.setInputCloud(cloud);
-  pcl::PCLPointCloud2::Ptr filtered_cloud(new pcl::PCLPointCloud2());
+  filter.setInputCloud(msg);
+  PCLPointCloudTypePtr filtered_cloud(new PCLPointCloudType());
   filter.filter(*filtered_cloud);
-  sensor_msgs::msg::PointCloud2 output_cloud_msg;
-  pcl_conversions::fromPCL(*filtered_cloud, output_cloud_msg);
-  pub_->publish(output_cloud_msg);
+  pub_->publish(filtered_cloud);
 }
 }  // namespace pcl_apps
 

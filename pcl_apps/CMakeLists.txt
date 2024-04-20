@@ -25,43 +25,13 @@ else()
 endif()
 
 # find dependencies
-find_package(ament_cmake REQUIRED)
-find_package(color_names REQUIRED)
-find_package(geometry_msgs REQUIRED)
-find_package(image_geometry REQUIRED)
-find_package(message_filters REQUIRED)
-find_package(message_synchronizer REQUIRED)
-find_package(ndt_omp REQUIRED)
-find_package(pcl_apps_msgs REQUIRED)
-find_package(pcl_conversions REQUIRED)
-find_package(perception_msgs REQUIRED)
-find_package(rclcpp REQUIRED)
-find_package(rclcpp_components REQUIRED)
-find_package(sensor_msgs REQUIRED)
-find_package(tf2_eigen REQUIRED)
-find_package(tf2_geometry_msgs REQUIRED)
-find_package(tf2_ros REQUIRED)
-find_package(tf2_sensor_msgs REQUIRED)
-find_package(visualization_msgs REQUIRED)
+find_package(ament_cmake_auto REQUIRED)
+ament_auto_find_build_dependencies()
 
 find_package(PCL REQUIRED)
 find_package(Boost REQUIRED system)
 
-if(${tf2_eigen_VERSION} VERSION_LESS 0.18.0)
-  add_compile_definitions(USE_TF2_EIGEN_DEPRECATED_HEADER)
-endif()
-
-if(${tf2_sensor_msgs_VERSION} VERSION_LESS 0.18.0)
-  add_compile_definitions(USE_TF2_SENSOR_MSGS_DEPRECATED_HEADER)
-endif()
-
-if(${tf2_geometry_msgs_VERSION} VERSION_LESS 0.18.0)
-  add_compile_definitions(USE_TF2_GEOMETRY_MSGS_DEPRECATED_HEADER)
-endif()
-
-if ($ENV{ROS_DISTRO} STREQUAL "humble")
-  add_compile_definitions(HUMBLE)
-endif()
+add_compile_definitions(HUMBLE)
 
 include_directories(
   include
@@ -74,88 +44,66 @@ link_directories(
 )
 add_definitions(${PCL_DEFINITIONS})
 
+function(add_pcl_apps_component module component_name component_name_in_macro)
+  ament_auto_add_library(${component_name}_component SHARED
+  src/${module}/${component_name}/${component_name}_component.cpp
+  )
+  target_compile_definitions(${component_name}_component PRIVATE "PCL_APPS_${component_name_in_macro}_BUILDING_DLL")
+  target_link_libraries(${component_name}_component
+    boost_system ${PCL_LIBRARIES})
+
+  ament_auto_add_executable(${component_name}_node
+    src/${module}/${component_name}/${component_name}_node.cpp)
+  target_link_libraries(${component_name}_node
+    ${component_name}_component ${PCL_LIBRARIES})
+
+  install(TARGETS ${component_name}_component
+    ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION lib
+    RUNTIME DESTINATION bin)
+  install(TARGETS ${component_name}_node DESTINATION lib/pcl_apps)
+endfunction(add_pcl_apps_component)
+
+
 # Filter Modules
-add_subdirectory(src/filter)
+add_pcl_apps_component(filter points_concatenate POINTS_CONCATENATE)
+rclcpp_components_register_nodes(points_concatenate_component "pcl_apps::PointsConcatenateComponent")
+add_pcl_apps_component(filter points_transform POINTS_TRANSFORM)
+rclcpp_components_register_nodes(points_transform_component "pcl_apps::PointsTransformComponent")
+add_pcl_apps_component(filter radius_outlier_removal RADIUS_OUTLIER_REMOVAL RadiusOutlierRemovalComponent)
+rclcpp_components_register_nodes(radius_outlier_removal_component "pcl_apps::RadiusOutlierRemovalComponent")
+add_pcl_apps_component(filter crop_hull_filter CROP_HULL_FILTER)
+rclcpp_components_register_nodes(crop_hull_filter_component "pcl_apps::CropHullFilterComponent")
+add_pcl_apps_component(filter crop_box_filter CROP_BOX_FILTER)
+rclcpp_components_register_nodes(crop_box_filter_component "pcl_apps::CropBoxFilterComponent")
+add_pcl_apps_component(filter pointcloud_to_laserscan POINTCLOUD_TO_LASERSCAN PointCloudToLaserScanComponent)
+rclcpp_components_register_nodes(pointcloud_to_laserscan_component "pcl_apps::PointCloudToLaserScanComponent")
+add_pcl_apps_component(filter voxelgrid_filter VOEXLGRID_FILTER VoxelgridFilterComponent)
+rclcpp_components_register_nodes(voxelgrid_filter_component "pcl_apps::VoxelgridFilterComponent")
 
 # Matching Modules
-add_subdirectory(src/matching)
+add_pcl_apps_component(matching ndt_matching NDT_MATCHING)
+rclcpp_components_register_nodes(ndt_matching_component "pcl_apps::NdtMatchingComponent")
+add_pcl_apps_component(matching ndt_matching_twist_estimator NDT_MATCHING_TWIST_ESTIMATOR)
+rclcpp_components_register_nodes(ndt_matching_twist_estimator_component "pcl_apps::NdtMatchingTwistEstimatorComponent")
 
 # IO Module
-add_subdirectory(src/io)
+add_pcl_apps_component(io pcd_writer PCD_WRITER)
+rclcpp_components_register_nodes(pcd_writer_component "pcl_apps::PcdWriterComponent")
+add_pcl_apps_component(io pcd_loader PCD_LOADER PcdLoader)
+rclcpp_components_register_nodes(pcd_loader_component "pcl_apps::PcdLoaderComponent")
 
 # Clustering Module
-add_subdirectory(src/clustering)
+add_pcl_apps_component(clustering euclidean_clustering EUCLIDEAN_CLUSTERING)
+rclcpp_components_register_nodes(pcd_loader_component "pcl_apps::EuclideanClusteringComponent")
 
 # Projection Module
-add_subdirectory(src/projection)
-
-rclcpp_components_register_nodes(points_concatenate_component
-  "pcl_apps::PointsConcatenateComponent")
-
-rclcpp_components_register_nodes(points_transform_component
-  "pcl_apps::PointsTransformComponent")
-
-rclcpp_components_register_nodes(voxelgrid_filter_component
-  "pcl_apps::VoxelgridFilterComponent")
-
-rclcpp_components_register_nodes(ndt_matching_component
-  "pcl_apps::NdtMatchingComponent")
-
-rclcpp_components_register_nodes(ndt_matching_twist_estimator_component
-  "pcl_apps::NdtMatchingTwistEstimatorComponent")
-
-rclcpp_components_register_nodes(pcd_writer_component
-  "pcl_apps::PcdWriterComponent")
-
-rclcpp_components_register_nodes(pcd_loader_component
-  "pcl_apps::PcdLoaderComponent")
-
-rclcpp_components_register_nodes(radius_outlier_removal_component
-  "pcl_apps::RadiusOutlierRemovalComponent")
-
-rclcpp_components_register_nodes(crop_hull_filter_component
-  "pcl_apps::CropHullFilterComponent")
-
-rclcpp_components_register_nodes(crop_box_filter_component
-  "pcl_apps::CropBoxFilterComponent")
-
-rclcpp_components_register_nodes(euclidean_clustering_component
-  "pcl_apps::EuclideanClusteringComponent")
-
-rclcpp_components_register_nodes(pointcloud_to_laserscan_component
-  "pcl_apps::PointCloudToLaserScanComponent")
-
-rclcpp_components_register_nodes(pointcloud_projection_component
-  "pcl_apps::PointCloudProjectionComponent")
-
-# Install header files
-install(
-  DIRECTORY "include/"
-  DESTINATION include
-)
+add_pcl_apps_component(projection pointcloud_projection POINTCLOUD_PROJECTION)
+rclcpp_components_register_nodes(pointcloud_projection_component "pcl_apps::PointCloudProjectionComponent")
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
-  # the following line skips the linter which checks for copyrights
-  # uncomment the line when a copyright and license is not present in all source files
-  #set(ament_cmake_copyright_FOUND TRUE)
-  # the following line skips cpplint (only works in a git repo)
-  # uncomment the line when this package is not in a git repo
-  #set(ament_cmake_cpplint_FOUND TRUE)
   ament_lint_auto_find_test_dependencies()
 endif()
 
-# export
-ament_export_dependencies(ament_cmake)
-ament_export_dependencies(rclcpp)
-ament_export_dependencies(rclcpp_components)
-ament_export_dependencies(pcl_conversions)
-ament_export_dependencies(tf2_ros)
-ament_export_dependencies(sensor_msgs)
-ament_export_dependencies(geometry_msgs)
-ament_export_dependencies(pcl_apps_msgs)
-ament_export_dependencies(rosidl_default_runtime)
-ament_export_dependencies(ndt_omp)
-ament_export_include_directories(include)
-
-ament_package()
+ament_auto_package()

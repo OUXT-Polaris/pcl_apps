@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <pcl_apps/matching/ndt_matching/ndt_matching_twist_estimator_component.hpp>
+#include <pcl_apps/matching/ndt_matching_twist_estimator/ndt_matching_twist_estimator_component.hpp>
 
 // Headers in ROS2
 #include <rclcpp_components/register_node_macro.hpp>
@@ -98,24 +98,20 @@ NdtMatchingTwistEstimatorComponent::NdtMatchingTwistEstimatorComponent(
   std::string output_topic_name = get_name() + std::string("/current_relative_pose");
   current_twist_pub_ = create_publisher<geometry_msgs::msg::TwistStamped>(output_topic_name, 10);
   // Setup Subscriber
-  buffer_ = boost::circular_buffer<pcl::PointCloud<pcl::PointXYZ>::Ptr>(2);
+  buffer_ = boost::circular_buffer<PCLPointCloudTypePtr>(2);
   timestamps_ = boost::circular_buffer<rclcpp::Time>(2);
-  auto callback = [this](const typename sensor_msgs::msg::PointCloud2::SharedPtr msg) -> void {
-    assert(input_cloud_frame_id_ == msg->header.frame_id);
-    timestamps_.push_back(msg->header.stamp);
-    pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud;
-    pcl::fromROSMsg(*msg, *input_cloud);
+  auto callback = [this](const PCLPointCloudTypePtr input_cloud) -> void {
+    timestamps_.push_back(pcl_conversions::fromPCL(input_cloud->header.stamp));
     buffer_.push_back(input_cloud);
-    boost::optional<geometry_msgs::msg::TwistStamped> twist = estimateCurrentTwist();
+    std::optional<geometry_msgs::msg::TwistStamped> twist = estimateCurrentTwist();
     if (twist) {
-      current_twist_pub_->publish(twist.get());
+      current_twist_pub_->publish(twist.value());
     }
   };
-  sub_input_cloud_ =
-    create_subscription<sensor_msgs::msg::PointCloud2>(input_cloud_topic_, 10, callback);
+  sub_input_cloud_ = create_subscription<PointCloudAdapterType>(input_cloud_topic_, 10, callback);
 }
 
-boost::optional<geometry_msgs::msg::TwistStamped>
+std::optional<geometry_msgs::msg::TwistStamped>
 NdtMatchingTwistEstimatorComponent::estimateCurrentTwist()
 {
   assert(timestamps_.size() == buffer_.size());
@@ -135,7 +131,7 @@ NdtMatchingTwistEstimatorComponent::estimateCurrentTwist()
     transform.rotation.z = 0.0;
     transform.rotation.w = 1.0;
     Eigen::Matrix4f mat = tf2::transformToEigen(transform).matrix().cast<float>();
-    pcl::PointCloud<pcl::PointXYZ>::Ptr output_cloud(new pcl::PointCloud<pcl::PointXYZ>);
+    PCLPointCloudTypePtr output_cloud(new pcl::PointCloud<PCLPointType>);
     ndt_.align(*output_cloud, mat);
     Eigen::Matrix4f final_transform = ndt_.getFinalTransformation();
     tf2::Matrix3x3 rotation_mat;
@@ -161,7 +157,7 @@ NdtMatchingTwistEstimatorComponent::estimateCurrentTwist()
     twist.twist.angular.z = yaw / diff_time;
     return twist;
   }
-  return boost::none;
+  return std::nullopt;
 }
 }  // namespace pcl_apps
 

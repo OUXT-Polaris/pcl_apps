@@ -40,25 +40,35 @@ PointsTransformComponent::PointsTransformComponent(const rclcpp::NodeOptions & o
   std::string output_topic_name;
   declare_parameter("output_topic", get_name() + std::string("/output"));
   get_parameter("output_topic", output_topic_name);
-  pub_ = create_publisher<sensor_msgs::msg::PointCloud2>(output_topic_name, 10);
-  auto callback = [this](const typename sensor_msgs::msg::PointCloud2::SharedPtr msg) -> void {
-    if (msg->header.frame_id == output_frame_id_) {
-      pub_->publish(*msg);
+  pub_ = create_publisher<PointCloudAdapterType>(output_topic_name, 10);
+  auto callback = [this](const PCLPointCloudTypePtr msg) -> void {
+    std_msgs::msg::Header header;
+    pcl_conversions::fromPCL(msg->header, header);
+    if (header.frame_id == output_frame_id_) {
+      pub_->publish(msg);
     } else {
-      tf2::TimePoint time_point = tf2::TimePoint(
-        std::chrono::seconds(msg->header.stamp.sec) +
-        std::chrono::nanoseconds(msg->header.stamp.nanosec));
-      geometry_msgs::msg::TransformStamped transform_stamped = buffer_.lookupTransform(
-        output_frame_id_, msg->header.frame_id, time_point, tf2::durationFromSec(1.0));
-      sensor_msgs::msg::PointCloud2 output_msg;
-      sensor_msgs::msg::PointCloud2 input_msg = *msg;
-      tf2::doTransform(input_msg, output_msg, transform_stamped);
-      pub_->publish(output_msg);
+      try {
+        tf2::TimePoint time_point = tf2::TimePoint(
+          std::chrono::seconds(header.stamp.sec) + std::chrono::nanoseconds(header.stamp.nanosec));
+        geometry_msgs::msg::TransformStamped transform_stamped = buffer_.lookupTransform(
+          output_frame_id_, header.frame_id, time_point, tf2::durationFromSec(1.0));
+        Eigen::Matrix4f mat =
+          tf2::transformToEigen(transform_stamped.transform).matrix().cast<float>();
+        pcl::transformPointCloud(*msg, *msg, mat);
+        msg->header.frame_id = output_frame_id_;
+        pub_->publish(msg);
+      } catch (tf2::ExtrapolationException & ex) {
+        RCLCPP_ERROR(get_logger(), ex.what());
+        return;
+      } catch (tf2::LookupException & ex) {
+        RCLCPP_ERROR(get_logger(), ex.what());
+        return;
+      }
     }
   };
   declare_parameter("input_topic", get_name() + std::string("/input"));
   get_parameter("input_topic", input_topic_);
-  sub_ = create_subscription<sensor_msgs::msg::PointCloud2>(input_topic_, 10, callback);
+  sub_ = create_subscription<PointCloudAdapterType>(input_topic_, 10, callback);
 }
 }  // namespace pcl_apps
 

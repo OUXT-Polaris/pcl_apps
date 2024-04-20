@@ -54,8 +54,7 @@ extern "C" {
 #endif
 
 // Headers in ROS2
-#include <pcl_conversions/pcl_conversions.h>
-
+#include <pcl_apps/adapter.hpp>
 #include <pcl_apps_msgs/msg/point_cloud_array.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/point_cloud2.hpp>
@@ -80,7 +79,7 @@ public:
   explicit EuclideanClusteringComponent(const rclcpp::NodeOptions & options);
 
 private:
-  rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr sub_;
+  PointCloudSubscriber sub_;
   rclcpp::Publisher<pcl_apps_msgs::msg::PointCloudArray>::SharedPtr pub_;
   std::string input_topic_;
   double cluster_tolerance_;

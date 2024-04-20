@@ -29,7 +29,7 @@ PointsConcatenateComponent::PointsConcatenateComponent(const rclcpp::NodeOptions
   get_parameter("num_input", num_input_);
   assert(num_input_ >= 2 && num_input_ <= 4);
   std::string output_topic_name = get_name() + std::string("/output");
-  pub_ = create_publisher<sensor_msgs::msg::PointCloud2>(output_topic_name, 10);
+  pub_ = create_publisher<PointCloudAdapterType>(output_topic_name, 10);
   for (int i = 0; i < num_input_; i++) {
     declare_parameter(
       "input_topic" + std::to_string(i), get_name() + std::string("/input") + std::to_string(i));
@@ -80,10 +80,8 @@ void PointsConcatenateComponent::callback2(CallbackT in0, CallbackT in1)
     *cloud = *pc_cloud + *cloud;
   }
   if (!empty) {
-    sensor_msgs::msg::PointCloud2 output_cloud_msg;
-    pcl::toROSMsg(*cloud, output_cloud_msg);
-    output_cloud_msg.header.stamp = sync2_->getPollTimestamp();
-    pub_->publish(output_cloud_msg);
+    cloud->header.stamp = pcl_conversions::toPCL(sync2_->getPollTimestamp());
+    pub_->publish(cloud);
   }
 }
 
@@ -113,10 +111,8 @@ void PointsConcatenateComponent::callback3(CallbackT in0, CallbackT in1, Callbac
     *cloud = *pc_cloud + *cloud;
   }
   if (!empty) {
-    sensor_msgs::msg::PointCloud2 output_cloud_msg;
-    pcl::toROSMsg(*cloud, output_cloud_msg);
-    output_cloud_msg.header.stamp = sync3_->getPollTimestamp();
-    pub_->publish(output_cloud_msg);
+    cloud->header.stamp = pcl_conversions::toPCL(sync3_->getPollTimestamp());
+    pub_->publish(cloud);
   }
 }
 
@@ -154,10 +150,8 @@ void PointsConcatenateComponent::callback4(
     *cloud = *pc_cloud + *cloud;
   }
   if (!empty) {
-    sensor_msgs::msg::PointCloud2 output_cloud_msg;
-    pcl::toROSMsg(*cloud, output_cloud_msg);
-    output_cloud_msg.header.stamp = sync4_->getPollTimestamp();
-    pub_->publish(output_cloud_msg);
+    cloud->header.stamp = pcl_conversions::toPCL(sync4_->getPollTimestamp());
+    pub_->publish(cloud);
   }
 }
 }  // namespace pcl_apps

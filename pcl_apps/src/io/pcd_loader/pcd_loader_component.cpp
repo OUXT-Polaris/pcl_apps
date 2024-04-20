@@ -34,15 +34,12 @@ PcdLoaderComponent::PcdLoaderComponent(const rclcpp::NodeOptions & options)
   std::string inference_id;
   declare_parameter("inference_id", std::string("map"));
   get_parameter("inference_id", inference_id);
-  pcl::PCLPointCloud2 cloud;
-  int result = pcl::io::loadPCDFile(file_path, cloud);
+  PCLPointCloudTypePtr cloud = PCLPointCloudTypePtr(new PCLPointCloudType);
+  int result = pcl::io::loadPCDFile(file_path, *cloud);
   if (result == 0) {
-    sensor_msgs::msg::PointCloud2 msg;
-    pcl_conversions::fromPCL(cloud, msg);
-    msg.header.frame_id = inference_id;
-    pub_ = create_publisher<sensor_msgs::msg::PointCloud2>(
-      output_topic, rclcpp::QoS(10).transient_local());
-    pub_->publish(msg);
+    cloud->header.frame_id = inference_id;
+    pub_ = create_publisher<PointCloudAdapterType>(output_topic, rclcpp::QoS(10).transient_local());
+    pub_->publish(cloud);
   } else {
     RCLCPP_ERROR_STREAM(get_logger(), "Failed to load " << file_path);
   }

@@ -54,8 +54,7 @@ extern "C" {
 #endif
 
 // Headers in ROS2
-#include <pcl_conversions/pcl_conversions.h>
-
+#include <pcl_apps/adapter.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/point_cloud2.hpp>
 
@@ -74,9 +73,9 @@ public:
   explicit VoxelgridFilterComponent(const rclcpp::NodeOptions & options);
 
 private:
-  rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr sub_;
-  rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr pub_;
-  pcl::VoxelGrid<pcl::PCLPointCloud2> filter_;
+  PointCloudSubscriber sub_;
+  PointCloudPublisher pub_;
+  pcl::VoxelGrid<PCLPointType> filter_;
   double leaf_size_;
   std::string input_topic_;
   rclcpp::Node::OnSetParametersCallbackHandle::SharedPtr param_handler_ptr_;
