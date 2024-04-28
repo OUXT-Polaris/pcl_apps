@@ -21,6 +21,8 @@
 #include <pcl/filters/crop_box.h>
 #include <pcl_conversions/pcl_conversions.h>
 
+#include <color_names/color_names.hpp>
+
 namespace pcl_apps
 {
 CropBoxFilterComponent::CropBoxFilterComponent(const rclcpp::NodeOptions & options)
@@ -42,6 +44,7 @@ CropBoxFilterComponent::CropBoxFilterComponent(const rclcpp::NodeOptions & optio
   get_parameter("keep_organized", keep_organized_);
   declare_parameter("negative", false);
   get_parameter("negative", negative_);
+  marker_pub_ = create_publisher<visualization_msgs::msg::MarkerArray>("~/bbox", 1);
   pub_ = create_publisher<PointCloudAdapterType>("~/points_filtered", 1);
   sub_ = create_subscription<PointCloudAdapterType>(
     "~/points", 1, [this](const PCLPointCloudTypePtr & msg) { pointsCallback(msg); });
@@ -49,6 +52,28 @@ CropBoxFilterComponent::CropBoxFilterComponent(const rclcpp::NodeOptions & optio
 
 void CropBoxFilterComponent::pointsCallback(const PCLPointCloudTypePtr & msg)
 {
+  // pcl_conversions::fromPCL(msg->header).frame_id;
+  visualization_msgs::build<visualization_msgs::msg::MarkerArray>().markers(
+    {visualization_msgs::build<visualization_msgs::msg::Marker>()
+       .header(pcl_conversions::fromPCL(msg->header))
+       .ns("bbox")
+       .id(0)
+       .type(visualization_msgs::msg::Marker::CUBE)
+       .action(visualization_msgs::msg::Marker::ADD)
+       .pose(geometry_msgs::msg::Pose())
+       .scale(geometry_msgs::msg::Vector3())
+       .color(color_names::makeColorMsg("greenyellow", 0.3))
+       .lifetime(builtin_interfaces::msg::Duration())
+       .frame_locked(true)
+       .points({})
+       .colors({})
+       .texture_resource("")
+       .texture(sensor_msgs::msg::CompressedImage())
+       .uv_coordinates({})
+       .text("")
+       .mesh_resource("")
+       .mesh_file(visualization_msgs::msg::MeshFile())
+       .mesh_use_embedded_materials(false)});
   pcl::CropBox<PCLPointType> filter;
   Eigen::Vector4f new_min_point, new_max_point;
   new_min_point << min_x_, min_y_, min_z_, 0.0;
@@ -56,7 +81,7 @@ void CropBoxFilterComponent::pointsCallback(const PCLPointCloudTypePtr & msg)
   filter.setMin(new_min_point);
   filter.setMax(new_max_point);
   filter.setNegative(negative_);
-  filter.setKeepOrganized(keep_organized_);
+  // filter.setKeepOrganized(keep_organized_);
   filter.setInputCloud(msg);
   PCLPointCloudTypePtr filtered_cloud(new PCLPointCloudType());
   filter.filter(*filtered_cloud);
