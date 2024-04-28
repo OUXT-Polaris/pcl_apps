@@ -53,6 +53,9 @@ extern "C" {
 }  // extern "C"
 #endif
 
+#include <geometry_msgs/msg/point.hpp>
+#include <geometry_msgs/msg/pose.hpp>
+#include <geometry_msgs/msg/vector3.hpp>
 #include <memory>
 #include <pcl_apps/adapter.hpp>
 #include <rclcpp/rclcpp.hpp>

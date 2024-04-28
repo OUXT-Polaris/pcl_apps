@@ -52,16 +52,23 @@ CropBoxFilterComponent::CropBoxFilterComponent(const rclcpp::NodeOptions & optio
 
 void CropBoxFilterComponent::pointsCallback(const PCLPointCloudTypePtr & msg)
 {
-  // pcl_conversions::fromPCL(msg->header).frame_id;
-  visualization_msgs::build<visualization_msgs::msg::MarkerArray>().markers(
+  marker_pub_->publish(visualization_msgs::build<visualization_msgs::msg::MarkerArray>().markers(
     {visualization_msgs::build<visualization_msgs::msg::Marker>()
        .header(pcl_conversions::fromPCL(msg->header))
        .ns("bbox")
        .id(0)
        .type(visualization_msgs::msg::Marker::CUBE)
        .action(visualization_msgs::msg::Marker::ADD)
-       .pose(geometry_msgs::msg::Pose())
-       .scale(geometry_msgs::msg::Vector3())
+       .pose(geometry_msgs::build<geometry_msgs::msg::Pose>()
+               .position(geometry_msgs::build<geometry_msgs::msg::Point>()
+                           .x((min_x_ + max_x_) * 0.5)
+                           .y((min_y_ + max_y_) * 0.5)
+                           .z((min_z_ + max_z_) * 0.5))
+               .orientation(geometry_msgs::msg::Quaternion()))
+       .scale(geometry_msgs::build<geometry_msgs::msg::Vector3>()
+                .x(std::abs(max_x_ - min_x_))
+                .y(std::abs(max_y_ - min_y_))
+                .z(std::abs(max_z_ - min_z_)))
        .color(color_names::makeColorMsg("greenyellow", 0.3))
        .lifetime(builtin_interfaces::msg::Duration())
        .frame_locked(true)
@@ -73,7 +80,7 @@ void CropBoxFilterComponent::pointsCallback(const PCLPointCloudTypePtr & msg)
        .text("")
        .mesh_resource("")
        .mesh_file(visualization_msgs::msg::MeshFile())
-       .mesh_use_embedded_materials(false)});
+       .mesh_use_embedded_materials(false)}));
   pcl::CropBox<PCLPointType> filter;
   Eigen::Vector4f new_min_point, new_max_point;
   new_min_point << min_x_, min_y_, min_z_, 0.0;
