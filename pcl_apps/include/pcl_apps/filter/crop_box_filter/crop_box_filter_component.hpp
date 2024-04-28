@@ -53,10 +53,15 @@ extern "C" {
 }  // extern "C"
 #endif
 
+#include <geometry_msgs/msg/point.hpp>
+#include <geometry_msgs/msg/pose.hpp>
+#include <geometry_msgs/msg/vector3.hpp>
 #include <memory>
 #include <pcl_apps/adapter.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/point_cloud2.hpp>
+#include <visualization_msgs/msg/marker.hpp>
+#include <visualization_msgs/msg/marker_array.hpp>
 
 namespace pcl_apps
 {
@@ -73,6 +78,7 @@ private:
   bool keep_organized_, negative_;
   PointCloudPublisher pub_;
   PointCloudSubscriber sub_;
+  std::shared_ptr<rclcpp::Publisher<visualization_msgs::msg::MarkerArray>> marker_pub_;
 };
 }  // namespace pcl_apps
 
