@@ -77,8 +77,8 @@ typedef std::shared_ptr<PointCloudArrayT> PointCloudArrayTPtr;
 
 typedef message_synchronizer::MessageSynchronizer2<CameraInfoT, PointCloudArrayT>
   CameraInfoAndPoints;
-typedef const boost::optional<const CameraInfoTPtr> & CameraInfoCallbackT;
-typedef const boost::optional<const PointCloudArrayTPtr> & PointCloudsCallbackT;
+typedef const std::optional<const CameraInfoT> & CameraInfoCallbackT;
+typedef const std::optional<const PointCloudArrayT> & PointCloudsCallbackT;
 
 class PointCloudProjectionComponent : public rclcpp::Node
 {
