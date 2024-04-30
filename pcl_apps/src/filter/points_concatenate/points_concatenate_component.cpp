@@ -35,17 +35,24 @@ PointsConcatenateComponent::PointsConcatenateComponent(const rclcpp::NodeOptions
       "input_topic" + std::to_string(i), get_name() + std::string("/input") + std::to_string(i));
     get_parameter("input_topic" + std::to_string(i), input_topics_[i]);
   }
+  const auto get_timestamp = [](const auto & data) {
+    return pcl_conversions::fromPCL(data->header).stamp;
+  };
   if (num_input_ == 2) {
     sync2_ = std::shared_ptr<Sync2T>(new Sync2T(
       this, {input_topics_[0], input_topics_[1]}, std::chrono::milliseconds{100},
-      std::chrono::milliseconds{100}));
+      std::chrono::milliseconds{100},
+      rclcpp::SubscriptionOptionsWithAllocator<std::allocator<void>>(), get_timestamp,
+      get_timestamp));
     auto func2 = std::bind(
       &PointsConcatenateComponent::callback2, this, std::placeholders::_1, std::placeholders::_2);
     sync2_->registerCallback(func2);
   } else if (num_input_ == 3) {
     sync3_ = std::shared_ptr<Sync3T>(new Sync3T(
       this, {input_topics_[0], input_topics_[1], input_topics_[2]}, std::chrono::milliseconds{100},
-      std::chrono::milliseconds{100}));
+      std::chrono::milliseconds{100},
+      rclcpp::SubscriptionOptionsWithAllocator<std::allocator<void>>(), get_timestamp,
+      get_timestamp, get_timestamp));
     auto func3 = std::bind(
       &PointsConcatenateComponent::callback3, this, std::placeholders::_1, std::placeholders::_2,
       std::placeholders::_3);
@@ -53,7 +60,9 @@ PointsConcatenateComponent::PointsConcatenateComponent(const rclcpp::NodeOptions
   } else if (num_input_ == 4) {
     sync4_ = std::shared_ptr<Sync4T>(new Sync4T(
       this, {input_topics_[0], input_topics_[1], input_topics_[2], input_topics_[3]},
-      std::chrono::milliseconds{100}, std::chrono::milliseconds{100}));
+      std::chrono::milliseconds{100}, std::chrono::milliseconds{100},
+      rclcpp::SubscriptionOptionsWithAllocator<std::allocator<void>>(), get_timestamp,
+      get_timestamp, get_timestamp, get_timestamp));
     auto func4 = std::bind(
       &PointsConcatenateComponent::callback4, this, std::placeholders::_1, std::placeholders::_2,
       std::placeholders::_3, std::placeholders::_4);
@@ -67,17 +76,11 @@ void PointsConcatenateComponent::callback2(CallbackT in0, CallbackT in1)
   bool empty = true;
   if (in0) {
     empty = false;
-    const auto pc = in0.value();
-    pcl::PointCloud<pcl::PointXYZI>::Ptr pc_cloud(new pcl::PointCloud<pcl::PointXYZI>);
-    pcl::fromROSMsg(pc, *pc_cloud);
-    *cloud = *pc_cloud + *cloud;
+    *cloud = *in0.value();
   }
   if (in1) {
     empty = false;
-    const auto pc = in1.value();
-    pcl::PointCloud<pcl::PointXYZI>::Ptr pc_cloud(new pcl::PointCloud<pcl::PointXYZI>);
-    pcl::fromROSMsg(pc, *pc_cloud);
-    *cloud = *pc_cloud + *cloud;
+    *cloud = *in1.value() + *cloud;
   }
   if (!empty) {
     cloud->header.stamp = pcl_conversions::toPCL(sync2_->getPollTimestamp());
@@ -91,24 +94,15 @@ void PointsConcatenateComponent::callback3(CallbackT in0, CallbackT in1, Callbac
   bool empty = true;
   if (in0) {
     empty = false;
-    const auto pc = in0.value();
-    pcl::PointCloud<pcl::PointXYZI>::Ptr pc_cloud(new pcl::PointCloud<pcl::PointXYZI>);
-    pcl::fromROSMsg(pc, *pc_cloud);
-    *cloud = *pc_cloud + *cloud;
+    *cloud = *in0.value();
   }
   if (in1) {
     empty = false;
-    const auto pc = in1.value();
-    pcl::PointCloud<pcl::PointXYZI>::Ptr pc_cloud(new pcl::PointCloud<pcl::PointXYZI>);
-    pcl::fromROSMsg(pc, *pc_cloud);
-    *cloud = *pc_cloud + *cloud;
+    *cloud = *in1.value() + *cloud;
   }
   if (in2) {
     empty = false;
-    const auto pc = in2.value();
-    pcl::PointCloud<pcl::PointXYZI>::Ptr pc_cloud(new pcl::PointCloud<pcl::PointXYZI>);
-    pcl::fromROSMsg(pc, *pc_cloud);
-    *cloud = *pc_cloud + *cloud;
+    *cloud = *in2.value() + *cloud;
   }
   if (!empty) {
     cloud->header.stamp = pcl_conversions::toPCL(sync3_->getPollTimestamp());
@@ -123,31 +117,19 @@ void PointsConcatenateComponent::callback4(
   bool empty = true;
   if (in0) {
     empty = false;
-    const auto pc = in0.value();
-    pcl::PointCloud<pcl::PointXYZI>::Ptr pc_cloud(new pcl::PointCloud<pcl::PointXYZI>);
-    pcl::fromROSMsg(pc, *pc_cloud);
-    *cloud = *pc_cloud + *cloud;
+    *cloud = *in0.value();
   }
   if (in1) {
     empty = false;
-    const auto pc = in1.value();
-    pcl::PointCloud<pcl::PointXYZI>::Ptr pc_cloud(new pcl::PointCloud<pcl::PointXYZI>);
-    pcl::fromROSMsg(pc, *pc_cloud);
-    *cloud = *pc_cloud + *cloud;
+    *cloud = *in1.value() + *cloud;
   }
   if (in2) {
     empty = false;
-    const auto pc = in2.value();
-    pcl::PointCloud<pcl::PointXYZI>::Ptr pc_cloud(new pcl::PointCloud<pcl::PointXYZI>);
-    pcl::fromROSMsg(pc, *pc_cloud);
-    *cloud = *pc_cloud + *cloud;
+    *cloud = *in2.value() + *cloud;
   }
   if (in3) {
     empty = false;
-    const auto pc = in3.value();
-    pcl::PointCloud<pcl::PointXYZI>::Ptr pc_cloud(new pcl::PointCloud<pcl::PointXYZI>);
-    pcl::fromROSMsg(pc, *pc_cloud);
-    *cloud = *pc_cloud + *cloud;
+    *cloud = *in3.value() + *cloud;
   }
   if (!empty) {
     cloud->header.stamp = pcl_conversions::toPCL(sync4_->getPollTimestamp());
