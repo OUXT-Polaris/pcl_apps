@@ -70,17 +70,14 @@ extern "C" {
 
 namespace pcl_apps
 {
-typedef sensor_msgs::msg::PointCloud2 PointCloud2;
-typedef std::shared_ptr<PointCloud2> PointCloud2Ptr;
-typedef const boost::optional<const PointCloud2Ptr> & CallbackT;
-typedef message_synchronizer::MessageSynchronizer2<PointCloud2, PointCloud2> Sync2T;
-typedef std::shared_ptr<Sync2T> Sync2PtrT;
-typedef message_synchronizer::MessageSynchronizer3<PointCloud2, PointCloud2, PointCloud2> Sync3T;
-typedef std::shared_ptr<Sync3T> Sync3PtrT;
-typedef message_synchronizer::MessageSynchronizer4<
-  PointCloud2, PointCloud2, PointCloud2, PointCloud2>
-  Sync4T;
-typedef std::shared_ptr<Sync4T> Sync4PtrT;
+using PointCloudType = std::shared_ptr<pcl::PointCloud<pcl::PointXYZI>>;
+using AdapterType = rclcpp::TypeAdapter<PointCloudType, sensor_msgs::msg::PointCloud2>;
+using CallbackT = const std::optional<PointCloudType>;
+
+using Sync2T = message_synchronizer::MessageSynchronizer2<AdapterType, AdapterType>;
+using Sync3T = message_synchronizer::MessageSynchronizer3<AdapterType, AdapterType, AdapterType>;
+using Sync4T =
+  message_synchronizer::MessageSynchronizer4<AdapterType, AdapterType, AdapterType, AdapterType>;
 
 class PointsConcatenateComponent : public rclcpp::Node
 {
@@ -92,20 +89,10 @@ private:
   void callback2(CallbackT in0, CallbackT in1);
   void callback3(CallbackT in0, CallbackT in1, CallbackT in2);
   void callback4(CallbackT in0, CallbackT in1, CallbackT in2, CallbackT in3);
-  /*
-  boost::shared_ptr<message_filters::Synchronizer<SyncPolicy>> sync_;
-  void input(
-    const PointCloud2::SharedPtr & in0, const PointCloud2::SharedPtr & in1,
-    const PointCloud2::SharedPtr & in2, const PointCloud2::SharedPtr & in3,
-    const PointCloud2::SharedPtr & in4, const PointCloud2::SharedPtr & in5,
-    const PointCloud2::SharedPtr & in6, const PointCloud2::SharedPtr & in7);
-  std::array<boost::shared_ptr<PointCloudSubsciber>, 8> sub_ptrs_;
-  message_filters::PassThrough<PointCloud2> nf_;
-  */
   PointCloudPublisher pub_;
-  Sync2PtrT sync2_;
-  Sync3PtrT sync3_;
-  Sync4PtrT sync4_;
+  std::shared_ptr<Sync2T> sync2_;
+  std::shared_ptr<Sync3T> sync3_;
+  std::shared_ptr<Sync4T> sync4_;
   std::array<std::string, 8> input_topics_;
   int num_input_;
 };
