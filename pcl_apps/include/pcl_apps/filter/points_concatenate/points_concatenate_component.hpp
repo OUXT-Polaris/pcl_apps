@@ -74,17 +74,10 @@ using PointCloudType = std::shared_ptr<pcl::PointCloud<pcl::PointXYZI>>;
 using AdapterType = rclcpp::TypeAdapter<PointCloudType, sensor_msgs::msg::PointCloud2>;
 using CallbackT = const std::optional<PointCloudType>;
 
-typedef sensor_msgs::msg::PointCloud2 PointCloud2;
-typedef std::shared_ptr<PointCloud2> PointCloud2Ptr;
-// typedef const std::optional<const PointCloud2> & CallbackT;
-typedef message_synchronizer::MessageSynchronizer2<AdapterType, AdapterType> Sync2T;
-typedef std::shared_ptr<Sync2T> Sync2PtrT;
-typedef message_synchronizer::MessageSynchronizer3<AdapterType, AdapterType, AdapterType> Sync3T;
-typedef std::shared_ptr<Sync3T> Sync3PtrT;
-typedef message_synchronizer::MessageSynchronizer4<
-  AdapterType, AdapterType, AdapterType, AdapterType>
-  Sync4T;
-typedef std::shared_ptr<Sync4T> Sync4PtrT;
+using Sync2T = message_synchronizer::MessageSynchronizer2<AdapterType, AdapterType>;
+using Sync3T = message_synchronizer::MessageSynchronizer3<AdapterType, AdapterType, AdapterType>;
+using Sync4T =
+  message_synchronizer::MessageSynchronizer4<AdapterType, AdapterType, AdapterType, AdapterType>;
 
 class PointsConcatenateComponent : public rclcpp::Node
 {
@@ -97,9 +90,9 @@ private:
   void callback3(CallbackT in0, CallbackT in1, CallbackT in2);
   void callback4(CallbackT in0, CallbackT in1, CallbackT in2, CallbackT in3);
   PointCloudPublisher pub_;
-  Sync2PtrT sync2_;
-  Sync3PtrT sync3_;
-  Sync4PtrT sync4_;
+  std::shared_ptr<Sync2T> sync2_;
+  std::shared_ptr<Sync3T> sync3_;
+  std::shared_ptr<Sync4T> sync4_;
   std::array<std::string, 8> input_topics_;
   int num_input_;
 };
