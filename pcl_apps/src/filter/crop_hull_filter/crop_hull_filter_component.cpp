@@ -36,8 +36,8 @@ CropHullFilterComponent::CropHullFilterComponent(const rclcpp::NodeOptions & opt
     rclcpp::SubscriptionOptionsWithAllocator<std::allocator<void>>(),
     [](const auto & data) { return pcl_conversions::fromPCL(data->header).stamp; },
     [](const auto & data) { return data.header.stamp; }));
-  // sync_->registerCallback(std::bind(
-  //   &CropHullFilterComponent::callback, this, std::placeholders::_1, std::placeholders::_2));
+  sync_->registerCallback(std::bind(
+    &CropHullFilterComponent::callback, this, std::placeholders::_1, std::placeholders::_2));
 }
 
 void CropHullFilterComponent::callback(
