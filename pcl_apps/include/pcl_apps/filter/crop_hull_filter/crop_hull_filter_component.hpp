@@ -64,13 +64,13 @@ extern "C" {
 
 namespace pcl_apps
 {
-using PointCloudType = std::shared_ptr<pcl::PointCloud<pcl::PointXYZI>>;
-using AdapterType = rclcpp::TypeAdapter<PointCloudType, sensor_msgs::msg::PointCloud2>;
-using Sync2T =
-  message_synchronizer::MessageSynchronizer2<AdapterType, pcl_apps_msgs::msg::PolygonArray>;
-
 class CropHullFilterComponent : public rclcpp::Node
 {
+  using PointCloudType = std::shared_ptr<pcl::PointCloud<pcl::PointXYZI>>;
+  using AdapterType = rclcpp::TypeAdapter<PointCloudType, sensor_msgs::msg::PointCloud2>;
+  using Sync2T =
+    message_synchronizer::MessageSynchronizer2<AdapterType, pcl_apps_msgs::msg::PolygonArray>;
+
 public:
   PCL_APPS_CROP_HULL_FILTER_PUBLIC
   explicit CropHullFilterComponent(const rclcpp::NodeOptions & options);

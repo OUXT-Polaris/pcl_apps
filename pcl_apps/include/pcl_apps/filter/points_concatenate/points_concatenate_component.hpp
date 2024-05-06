@@ -70,17 +70,17 @@ extern "C" {
 
 namespace pcl_apps
 {
-using PointCloudType = std::shared_ptr<pcl::PointCloud<pcl::PointXYZI>>;
-using AdapterType = rclcpp::TypeAdapter<PointCloudType, sensor_msgs::msg::PointCloud2>;
-using CallbackT = const std::optional<PointCloudType>;
-
-using Sync2T = message_synchronizer::MessageSynchronizer2<AdapterType, AdapterType>;
-using Sync3T = message_synchronizer::MessageSynchronizer3<AdapterType, AdapterType, AdapterType>;
-using Sync4T =
-  message_synchronizer::MessageSynchronizer4<AdapterType, AdapterType, AdapterType, AdapterType>;
-
 class PointsConcatenateComponent : public rclcpp::Node
 {
+  using PointCloudType = std::shared_ptr<pcl::PointCloud<pcl::PointXYZI>>;
+  using AdapterType = rclcpp::TypeAdapter<PointCloudType, sensor_msgs::msg::PointCloud2>;
+  using CallbackT = const std::optional<PointCloudType>;
+
+  using Sync2T = message_synchronizer::MessageSynchronizer2<AdapterType, AdapterType>;
+  using Sync3T = message_synchronizer::MessageSynchronizer3<AdapterType, AdapterType, AdapterType>;
+  using Sync4T =
+    message_synchronizer::MessageSynchronizer4<AdapterType, AdapterType, AdapterType, AdapterType>;
+
 public:
   PCL_APPS_POINTS_CONCATENATE_PUBLIC
   explicit PointsConcatenateComponent(const rclcpp::NodeOptions & options);

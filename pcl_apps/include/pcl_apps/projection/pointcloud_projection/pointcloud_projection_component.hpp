@@ -70,18 +70,18 @@ extern "C" {
 
 namespace pcl_apps
 {
-using CameraInfoT = sensor_msgs::msg::CameraInfo;
-using CameraInfoTPtr = std::shared_ptr<CameraInfoT>;
-using PointCloudArrayT = pcl_apps_msgs::msg::PointCloudArray;
-using PointCloudArrayTPtr = std::shared_ptr<PointCloudArrayT>;
-
-using CameraInfoAndPoints =
-  message_synchronizer::MessageSynchronizer2<CameraInfoT, PointCloudArrayT>;
-using CameraInfoCallbackT = const std::optional<const CameraInfoT> &;
-using PointCloudsCallbackT = const std::optional<const PointCloudArrayT> &;
-
 class PointCloudProjectionComponent : public rclcpp::Node
 {
+  using CameraInfoT = sensor_msgs::msg::CameraInfo;
+  using CameraInfoTPtr = std::shared_ptr<CameraInfoT>;
+  using PointCloudArrayT = pcl_apps_msgs::msg::PointCloudArray;
+  using PointCloudArrayTPtr = std::shared_ptr<PointCloudArrayT>;
+
+  using CameraInfoAndPoints =
+    message_synchronizer::MessageSynchronizer2<CameraInfoT, PointCloudArrayT>;
+  using CameraInfoCallbackT = const std::optional<const CameraInfoT> &;
+  using PointCloudsCallbackT = const std::optional<const PointCloudArrayT> &;
+
 public:
   PCL_APPS_POINTCLOUD_PROJECTION_PUBLIC
   explicit PointCloudProjectionComponent(
