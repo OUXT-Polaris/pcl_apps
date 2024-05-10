@@ -48,7 +48,7 @@ function(add_pcl_apps_component module component_name component_name_in_macro)
   ament_auto_add_library(${component_name}_component SHARED
   src/${module}/${component_name}/${component_name}_component.cpp
   )
-  target_compile_definitions(${component_name}_component PRIVATE "PCL_APPS_${component_name_in_macro}_BUILDING_DLL")
+  target_compile_definitions(${component_name}_component PUBLIC "PCL_APPS_${component_name_in_macro}_BUILDING_DLL")
   target_link_libraries(${component_name}_component
     boost_system ${PCL_LIBRARIES})
 
@@ -56,6 +56,8 @@ function(add_pcl_apps_component module component_name component_name_in_macro)
     src/${module}/${component_name}/${component_name}_node.cpp)
   target_link_libraries(${component_name}_node
     ${component_name}_component ${PCL_LIBRARIES})
+  
+  ament_export_libraries(${component_name}_component)
 
   install(TARGETS ${component_name}_component
     ARCHIVE DESTINATION lib
@@ -64,6 +66,11 @@ function(add_pcl_apps_component module component_name component_name_in_macro)
   install(TARGETS ${component_name}_node DESTINATION lib/pcl_apps)
 endfunction(add_pcl_apps_component)
 
+
+ament_auto_add_library(${PROJECT_NAME}_components SHARED
+  src/filter/crop_hull_filter/crop_hull_filter_component.cpp
+)
+target_link_libraries(${PROJECT_NAME}_components boost_system ${PCL_LIBRARIES})
 
 # Filter Modules
 add_pcl_apps_component(filter points_concatenate POINTS_CONCATENATE)
