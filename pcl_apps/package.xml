@@ -15,7 +15,6 @@
   <depend>image_geometry</depend>
   <depend>libboost-system-dev</depend>
   <depend>libpcl-all-dev</depend>
-  <depend>message_filters</depend>
   <depend>message_synchronizer</depend>
   <depend>ndt_omp</depend>
   <depend>pcl_apps_msgs</depend>
