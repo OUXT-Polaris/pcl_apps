@@ -23,9 +23,9 @@ IntensityFilterComponent::IntensityFilterComponent(const rclcpp::NodeOptions & o
   get_parameter("min_intensity", min_intensity_);
   declare_parameter("max_intensity", 1.0);
   get_parameter("max_intensity", max_intensity_);
-  pub_ = create_publisher<PointCloudAdapterType>("~/points_filtered", 1);
+  pub_ = create_publisher<PointCloudAdapterType>("points_filtered", 1);
   sub_ = create_subscription<PointCloudAdapterType>(
-    "~/points", 1, [this](const PCLPointCloudTypePtr & msg) { pointsCallback(msg); });
+    "points", 1, [this](const PCLPointCloudTypePtr & msg) { pointsCallback(msg); });
 }
 
 void IntensityFilterComponent::pointsCallback(const PCLPointCloudTypePtr & msg)
