@@ -81,6 +81,8 @@ add_pcl_apps_component(filter pointcloud_to_laserscan)
 rclcpp_components_register_nodes(pointcloud_to_laserscan_component "pcl_apps::PointCloudToLaserScanComponent")
 add_pcl_apps_component(filter voxelgrid_filter)
 rclcpp_components_register_nodes(voxelgrid_filter_component "pcl_apps::VoxelgridFilterComponent")
+add_pcl_apps_component(filter intensity_filter)
+rclcpp_components_register_nodes(intensity_filter_component "pcl_apps::IntensityFilterComponent")
 
 # Matching Modules
 add_pcl_apps_component(matching ndt_matching)

@@ -13,17 +13,18 @@
 // limitations under the License.
 
 // Headers in this package
-#include <pcl_apps/filter/intensity_filter/intensity_filter_component.cpp>
+#include <pcl_apps/filter/intensity_filter/intensity_filter_component.hpp>
 // Headers in RCLCPP
 #include <rclcpp/rclcpp.hpp>
 // Headers in STL
 #include <memory>
 
-int main(int argc, char * argv[]){
-    rclcpp::init(argc, argv);
-    rclcpp::NodeOptions options;
-    auto component = std::make_shared<pcl_apps::IntensityFilterComponent>(options);
-    rclcpp::spin(component);
-    rclcpp::shutdown();
-    return 0;
+int main(int argc, char * argv[])
+{
+  rclcpp::init(argc, argv);
+  rclcpp::NodeOptions options;
+  auto component = std::make_shared<pcl_apps::IntensityFilterComponent>(options);
+  rclcpp::spin(component);
+  rclcpp::shutdown();
+  return 0;
 }
