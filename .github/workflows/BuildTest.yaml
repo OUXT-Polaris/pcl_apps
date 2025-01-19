@@ -53,7 +53,7 @@ jobs:
       - name: Search packages in this repository
         id: list_packages
         run: |
-          echo ::set-output name=package_list::$(colcon list --names-only | sed -e ':loop; N; $!b loop; s/\n/ /g')
+          echo name=package_list::$(colcon list --names-only | sed -e ':loop; N; $!b loop; s/\n/ /g') >> "$GITHUB_OUTPUT"
       - name: Show target packages
         run: |
           echo "Target packages: ${{ steps.list_packages.outputs.package_list }}"
