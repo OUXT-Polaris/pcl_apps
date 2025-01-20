@@ -26,6 +26,7 @@ endif()
 
 # find dependencies
 find_package(ament_cmake_auto REQUIRED)
+find_package(OpenMP REQUIRED)
 ament_auto_find_build_dependencies()
 
 find_package(PCL REQUIRED)
